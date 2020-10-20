@@ -156,8 +156,8 @@ class Galaxy:
         ships_by_position = self.get_ships_by_position()
         destroyed_ships = [e.ship for e in self.explosions]
         result = []
-        for position, planet in self.planets.items():
-            ships = ships_by_position.get(position)
+        for planet in self.get_ocuped_planets():
+            ships = ships_by_position.get(planet.position)
             if not ships or not any(s for s in ships
                                     if s.player != planet.player \
                                     and s not in destroyed_ships):
