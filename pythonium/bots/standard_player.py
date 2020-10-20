@@ -22,9 +22,6 @@ class Player:
 
         for ship in my_ships:
 
-            # if len(my_planets) > 100:
-                # ship.target = (100, 100)
-
             # La nave está en un planeta?
             planet = galaxy.planets.get(ship.position)
 
@@ -71,8 +68,7 @@ class Player:
         for planet in my_planets.values():
             planet.taxes = context.get('tolerable_taxes')
             planet.new_mines = planet.can_build_mines()
-            # next_ship = Ship.CARRIER if len(my_ships) < 20 else Ship.WAR
-            next_ship = Ship.WAR
+            next_ship = Ship.CARRIER if len(my_ships) < 10 else Ship.WAR
             if planet.can_build_ship(next_ship):
                 planet.new_ship = next_ship
 
