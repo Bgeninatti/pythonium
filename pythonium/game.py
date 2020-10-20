@@ -217,12 +217,29 @@ class Game:
 
         total_attack = sum(s.attack for s in ships)
         groups = groupby(ships, lambda s: s.player)
-        scores = [(player,
-                   np.random.normal(loc=sum((s.attack for s in ships))/total_attack,
-                                    scale=self.gmode.tenacity))
-                  for player, ships in groups]
-        max_score = max((s for p, s in scores))
-        winner = [p for p, s in scores if s == max_score].pop()
+
+        max_score = 0
+        winner = None
+        for player, player_ships in groups:
+            player_attack = sum((s.attack for s in player_ships))
+            attack_fraction = player_attack/total_attack
+
+            # Compute score probability distribution
+            shape = 10*attack_fraction
+            scale = (1 - self.gmode.tenacity)**attack_fraction
+            score = np.random.gamma(shape, scale)
+
+            self._logger("Score in conflict",
+                         extra={'turn': self.turn,
+                                'player': player,
+                                'player_attack': player_attack,
+                                'player_ships': len(player_ships),
+                                'attack_fraction': attack_fraction,
+                                'score': score})
+            if score > max_score:
+                winner = player
+                max_score = score
+
         self._logger.info("Conflict resolved",
                           extra={'turn': self.turn,
                                  'winner': winner,
