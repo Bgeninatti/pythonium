@@ -1,0 +1,25 @@
+#!/usr/bin/python3
+
+#
+# Copyright 2014 Facundo Batista, Nicolás Demarchi
+#
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License version 3, as published
+# by the Free Software Foundation.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+"""Script to run the 'pythonium' utility."""
+
+import os
+import sys
+
+from pythonium import main
+
+sys.path.insert(0, os.getcwd())
+
+rc = main.go()
+
+sys.exit(rc)
