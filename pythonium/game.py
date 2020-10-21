@@ -26,11 +26,12 @@ class Game:
             raise ValueError("Player names must be unique")
 
         self.sector = self._build_random_sector_name(6)
+        self.logfile = f"{self.sector}.log"
         sys.stdout.write(f"** Pythonium **\n")
         sys.stdout.write(f"Running battle in Sector #{self.sector}\n")
         self.gmode = gmode
         self.players = players
-        self._logger = get_logger(__name__, filename=f"{self.sector}.log")
+        self._logger = get_logger(__name__, filename=self.logfile)
         self._logger.info("Initializing galaxy",
                           extra={'players': len(self.players), 'sector': self.sector})
         self.galaxy = self.gmode.build_galaxy(self.players)
@@ -229,13 +230,12 @@ class Game:
             scale = (1 - self.gmode.tenacity)**attack_fraction
             score = np.random.gamma(shape, scale)
 
-            self._logger("Score in conflict",
-                         extra={'turn': self.turn,
-                                'player': player,
-                                'player_attack': player_attack,
-                                'player_ships': len(player_ships),
-                                'attack_fraction': attack_fraction,
-                                'score': score})
+            self._logger.info("Score in conflict",
+                              extra={'turn': self.turn,
+                                     'player': player,
+                                     'player_attack': player_attack,
+                                     'attack_fraction': attack_fraction,
+                                     'score': score})
             if score > max_score:
                 winner = player
                 max_score = score
