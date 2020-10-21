@@ -18,7 +18,10 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=['Pillow==7.2.0', 'numpy==1.19.1'],
+    install_requires=[
+        'Pillow==7.2.0',
+        'matplotlib==3.3.2',
+        'numpy==1.19.1'],
     python_requires='>=3.6',
     scripts=['bin/pythonium'],
     include_package_data=True

@@ -4,6 +4,7 @@ import os
 import sys
 
 from . import __version__
+from .metrics_collector import MetricsCollector
 from .game_modes import ClassicMode
 from .game import Game
 
@@ -36,3 +37,9 @@ def go():
 
     game = Game(players, game_mode)
     game.play()
+
+    if args.metrics:
+        with open(os.path.join(os.getcwd(), game.logfile)) as logfile:
+            metrics = MetricsCollector(logfile)
+        metrics.build_report()
+
