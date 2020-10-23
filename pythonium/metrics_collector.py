@@ -17,7 +17,8 @@ class MetricsCollector:
 
     def __init__(self, logfile):
         self.figsize = (8, 4)
-        self._section_font = ImageFont.truetype(cfg.font_path, 40)
+        self._section_font = ImageFont.truetype(cfg.font_path, 48)
+        self._title_font = ImageFont.truetype(cfg.font_path, 96)
 
         lines = logfile.readlines()
         self.logdicts = []
@@ -34,9 +35,11 @@ class MetricsCollector:
             self.logdicts.append(groupdict)
         self.turns = [int(l['extras']['turn']) for l in
                       filter(lambda l: l['message'] == "Turn started", self.logdicts)]
-        self.known_players = {l['extras']['player'] for l in
-                              filter(lambda l: l['message'] == "Computing actions for player",
-                                     self.logdicts)}
+        self.known_players = list(
+            {l['extras']['player'] for l in
+             filter(lambda l: l['message'] == "Computing actions for player", self.logdicts)})
+        init_log = list(filter(lambda l: l['message'] == 'Initializing galaxy', self.logdicts))[0]
+        self.sector = init_log['extras']['sector']
 
     def get_metric_for_players(self, message, key, data_type=int):
         """
@@ -124,7 +127,7 @@ class MetricsCollector:
             axs.plot(metrics['turn'], metrics[player], color=color)
         axs.set_xlabel('')
         axs.set_ylabel(ylabel, fontsize=16)
-        axs.set_title(title, fontdict={'fontsize': 24})
+        axs.set_title(title, fontdict={'fontsize': 18})
 
         buf = BytesIO()
         fig.savefig(buf, format='png')
@@ -138,20 +141,27 @@ class MetricsCollector:
         The charts are drawed in mosaic acording to ``rows`` and ``columns``
         """
         sample_chart = charts[0]
-        margin_botom = 20
-        section_size = (sample_chart.width*columns,
-                        sample_chart.height*rows + header_height + margin_botom)
+        margin = 30
+        section_size = (sample_chart.width*columns + margin*2,
+                        sample_chart.height*rows + header_height + margin*2)
         image = Image.new('RGB', section_size, 'white')
         draw = ImageDraw.Draw(image)
-        draw.text((20, 40), title, font=self._section_font, fill='black')
 
-        x = 0
-        y = header_height
+        bounding_box = (
+            (margin/2, margin/2),
+            (section_size[0] - margin/2, section_size[1] - margin/2)
+        )
+        draw.rectangle(bounding_box, outline='black', fill='white', width=5)
+
+        draw.text((margin + 20, margin + 40), title, font=self._section_font, fill='black')
+
+        x = margin
+        y = header_height + margin
         for chart in charts:
             image.paste(chart, (x, y))
             x += chart.width
-            if x == chart.width*columns:
-                x = 0
+            if x == chart.width*columns + margin:
+                x = margin
                 y += chart.height
 
         return image
@@ -252,9 +262,6 @@ class MetricsCollector:
             self.plot_metrics_for_players(built_ships, "Built Ships", "Built ships") \
         )
         economy['charts'].append(
-            self.plot_metrics_for_players(built_mines, "Built Mines", "Built mines") \
-        )
-        economy['charts'].append(
             self.plot_metrics_for_players(
                 avg_dpythonium, "Avg extracted pythonium", "Pythonium") \
         )
@@ -264,6 +271,9 @@ class MetricsCollector:
         economy['charts'].append(
             self.plot_metrics_for_players(
                 avg_dmegacredits, "Avg collected megacredits", "Megacredits") \
+        )
+        economy['charts'].append(
+            self.plot_metrics_for_players(built_mines, "Built Mines", "Built mines") \
         )
         sections.append(economy)
 
@@ -285,12 +295,22 @@ class MetricsCollector:
         """
         Build the report with all the metrics
         """
+
+        report_size = (3260, 2480)
+        report = Image.new('RGB', report_size, 'white')
+        sections_position = {
+            'Execution': (2400, 0),
+            'Economy': (0, 1520),
+            'Score': (0, 960),
+            'Combat': (0, 400)
+        }
+
         sections = self.build_sections()
 
-        sections_imgs = []
         header_height = 100
         for section in sections:
             charts_count = len(section['charts'])
+            title = section['title']
             if charts_count == 8:
                 rows = 2
                 columns = 4
@@ -298,11 +318,11 @@ class MetricsCollector:
                 rows = 1
                 columns = 4
             elif charts_count == 3:
-                rows = 3
-                columns = 1
-            elif charts_count == 2:
                 rows = 1
-                columns = 2
+                columns = 3
+            elif charts_count == 2:
+                rows = 2
+                columns = 1
             elif charts_count == 1:
                 rows = 1
                 columns = 1
@@ -312,7 +332,23 @@ class MetricsCollector:
                 rows,
                 columns,
                 header_height)
-            img.save(f"{section['title']}.png")
-            sections_imgs.append(img)
+            report.paste(img, sections_position[title])
 
-        return sections_imgs
+        draw = ImageDraw.Draw(report)
+        draw.text((100, 50), f"Sector #{self.sector}", font=self._title_font, fill='black')
+        if len(self.known_players) == 2:
+            draw.text((100, 200),
+                      f"{self.known_players[0]} Vs. {self.known_players[1]}",
+                      font=self._section_font,
+                      fill='black')
+        elif len(self.known_players) == 1:
+            draw.text((100, 200),
+                      f"Survival mode for {self.known_players[0]}",
+                      font=self._section_font,
+                      fill='black')
+        draw.text((100, 300),
+                  datetime.now().strftime("%Y-%m-%d %H:%M"),
+                  font=self._section_font,
+                  fill='black')
+
+        report.save('report.png')
