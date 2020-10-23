@@ -1,3 +1,4 @@
+import os
 
 tenacity = .25
 happypoints_tolerance = 40
@@ -10,3 +11,6 @@ planet_max_mines = 500
 taxes_collection_factor = 0.1
 max_mc_in_turn = 5000
 max_clans_in_planet = 10000
+
+base_path = os.path.dirname(os.path.abspath(__file__))
+font_path = os.path.join(base_path, 'font', 'JMH Typewriter.ttf')
