@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 import matplotlib.pyplot as plt
 
-from . import cfg
+from . import cfg, __version__
 
 log_regex = re.compile(r'(?P<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) \[(?P<loglvl>INFO|WARNING|ERROR|DEBUG)\] (?P<file>[\w\W_]+):(?P<function>[a-zA-Z_]+) (?P<message>.+) - (?=(?:(?P<extras>.+))$)?')
 
@@ -17,6 +17,7 @@ class MetricsCollector:
 
     def __init__(self, logfile):
         self.figsize = (8, 4)
+        self._footer_font = ImageFont.truetype(cfg.font_path, 24)
         self._section_font = ImageFont.truetype(cfg.font_path, 48)
         self._title_font = ImageFont.truetype(cfg.font_path, 96)
 
@@ -38,8 +39,15 @@ class MetricsCollector:
         self.known_players = list(
             {l['extras']['player'] for l in
              filter(lambda l: l['message'] == "Computing actions for player", self.logdicts)})
-        init_log = list(filter(lambda l: l['message'] == 'Initializing galaxy', self.logdicts))[0]
+
+        # Search sector name
+        init_log = list(
+            filter(lambda l: l['message'] == 'Initializing galaxy', self.logdicts))[0]
         self.sector = init_log['extras']['sector']
+
+        # Search winner
+        winner_log = list(filter(lambda l: l['message'] == "Winner!", self.logdicts))
+        self.winner = winner_log[0]['extras']['winner'] if winner_log else None
 
     def get_metric_for_players(self, message, key, data_type=int):
         """
@@ -144,16 +152,36 @@ class MetricsCollector:
         margin = 30
         section_size = (sample_chart.width*columns + margin*2,
                         sample_chart.height*rows + header_height + margin*2)
-        image = Image.new('RGB', section_size, 'white')
+        image = Image.new('RGBA', section_size, 'white')
         draw = ImageDraw.Draw(image)
 
-        bounding_box = (
-            (margin/2, margin/2),
-            (section_size[0] - margin/2, section_size[1] - margin/2)
-        )
-        draw.rectangle(bounding_box, outline='black', fill='white', width=5)
+        # Hack to fix hidden margin in section with 2 and 3 charts
+        if len(charts) == 3:
+            bounding_box = (
+                (margin/2, margin/2),
+                (section_size[0], section_size[1] - margin/2)
+            )
+        elif len(charts) == 2:
+            bounding_box = (
+                (0, margin/2),
+                (section_size[0] - margin/2, section_size[1] - margin/2)
+            )
+        else:
+            bounding_box = (
+                (margin/2, margin/2),
+                (section_size[0] - margin/2, section_size[1] - margin/2)
+            )
 
-        draw.text((margin + 20, margin + 40), title, font=self._section_font, fill='black')
+
+        draw.rectangle(bounding_box,
+                       fill='white',
+                       outline=(40, 40, 40, 256),
+                       width=5)
+
+        draw.text((margin + 20, margin + 40),
+                  title,
+                  font=self._section_font,
+                  fill='black')
 
         x = margin
         y = header_height + margin
@@ -231,13 +259,13 @@ class MetricsCollector:
         }
         combat['charts'].append(
             self.plot_metrics_for_players(
-                conquered_planets, "Conquered Planets", "Conquered planets") \
+                conquered_planets, "Conquered Planets", "Planets") \
         )
         combat['charts'].append(
-            self.plot_metrics_for_players(killed_clans, "Killed clans", "Killed clans") \
+            self.plot_metrics_for_players(killed_clans, "Killed clans", "Clans") \
         )
         combat['charts'].append(
-            self.plot_metrics_for_players(ships_lost, "Ships lost", "Ships lost") \
+            self.plot_metrics_for_players(ships_lost, "Ships lost", "Ships") \
         )
         sections.append(combat)
 
@@ -248,18 +276,18 @@ class MetricsCollector:
         }
         economy['charts'].append(
             self.plot_metrics_for_players(
-                total_dpythonium, "Extracted pythonium", "Extracted pythonium") \
+                total_dpythonium, "Extracted pythonium", "Pythonium") \
         )
         economy['charts'].append(
             self.plot_metrics_for_players(
-                total_dclans, "Population growth", "Population growth") \
+                total_dclans, "Population growth", "Clans") \
         )
         economy['charts'].append(
             self.plot_metrics_for_players(
-                total_dmegacredits, "Collected megacredits", "Collected megacredits") \
+                total_dmegacredits, "Collected megacredits", "Megacredits") \
         )
         economy['charts'].append(
-            self.plot_metrics_for_players(built_ships, "Built Ships", "Built ships") \
+            self.plot_metrics_for_players(built_ships, "Built Ships", "Ships") \
         )
         economy['charts'].append(
             self.plot_metrics_for_players(
@@ -273,7 +301,7 @@ class MetricsCollector:
                 avg_dmegacredits, "Avg collected megacredits", "Megacredits") \
         )
         economy['charts'].append(
-            self.plot_metrics_for_players(built_mines, "Built Mines", "Built mines") \
+            self.plot_metrics_for_players(built_mines, "Built Mines", "Mines") \
         )
         sections.append(economy)
 
@@ -282,10 +310,10 @@ class MetricsCollector:
             'charts': []
         }
         execution['charts'].append(
-            self.plot_metrics_for_players(turns_runtime, "Execution Time", "Execution time") \
+            self.plot_metrics_for_players(turns_runtime, "Turn Execution Time", "Microseconds") \
         )
         execution['charts'].append(
-            self.plot_metrics_for_players(player_actions, "Actions", "Actions") \
+            self.plot_metrics_for_players(player_actions, "Actions per turn", "Actions") \
         )
         sections.append(execution)
 
@@ -296,7 +324,7 @@ class MetricsCollector:
         Build the report with all the metrics
         """
 
-        report_size = (3260, 2480)
+        report_size = (3260, 2530)
         report = Image.new('RGB', report_size, 'white')
         sections_position = {
             'Execution': (2400, 0),
@@ -337,8 +365,12 @@ class MetricsCollector:
         draw = ImageDraw.Draw(report)
         draw.text((100, 50), f"Sector #{self.sector}", font=self._title_font, fill='black')
         if len(self.known_players) == 2:
+            p1 = self.known_players[0]
+            p2 = self.known_players[1]
+            text = f"{p1}{'' if self.winner != p1 else ' (w)'} " + \
+                f"Vs. {self.known_players[1]}{'' if self.winner != p2 else ' (w)'}"
             draw.text((100, 200),
-                      f"{self.known_players[0]} Vs. {self.known_players[1]}",
+                      text,
                       font=self._section_font,
                       fill='black')
         elif len(self.known_players) == 1:
@@ -351,4 +383,9 @@ class MetricsCollector:
                   font=self._section_font,
                   fill='black')
 
-        report.save('report.png')
+        draw.text((15, report_size[1] - 40),
+                  f"github.com/Bgeninatti/pythonium - V{__version__}",
+                  font=self._footer_font,
+                  fill='black')
+
+        report.save(f'report_{self.sector}.png')
