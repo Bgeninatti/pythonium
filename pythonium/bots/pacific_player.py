@@ -4,8 +4,11 @@ from ..ship import Ship
 
 
 class Player:
+    """
+    Same as :class:`standard_player.Player` but always build carriers
+    """
 
-    name = 'Rebels'
+    name = 'Nofight Ink.'
 
     def next_turn(self, galaxy, context, t):
         orders = []
@@ -65,7 +68,7 @@ class Player:
         for planet in my_planets.values():
             planet.taxes = context.get('tolerable_taxes')
             planet.new_mines = planet.can_build_mines()
-            next_ship = Ship.CARRIER if len(my_ships) < 10 else Ship.WAR
+            next_ship = Ship.CARRIER
             if planet.can_build_ship(next_ship):
                 planet.new_ship = next_ship
 
