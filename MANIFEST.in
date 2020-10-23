@@ -1,1 +1,1 @@
-recursive-include pythonium *.ttf
+recursive-include font *.ttf
