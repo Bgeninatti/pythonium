@@ -8,8 +8,7 @@ tolerable_taxes = 10
 mine_cost = (2, 5) # (mc, p)
 ship_speed = 80
 planet_max_mines = 500
-taxes_collection_factor = 2
-max_mc_in_turn = 5000
+taxes_collection_factor = .2
 max_clans_in_planet = 10000
 
 base_path = os.path.dirname(os.path.abspath(__file__))

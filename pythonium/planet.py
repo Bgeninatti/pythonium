@@ -104,7 +104,7 @@ class Planet:
         taxes = cfg.taxes_collection_factor * self.clans * self.taxes / 100 \
             * self.rioting_index
 
-        return min(cfg.max_mc_in_turn, max(int(taxes), -self.megacredits))
+        return int(taxes)
 
     @property
     def dhappypoints(self):

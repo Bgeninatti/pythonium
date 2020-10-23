@@ -283,6 +283,8 @@ class Game:
                                      'clans': planet.clans})
             planet.player = winner
             planet.clans = 1
+            planet.mines = 0
+            planet.taxes = 0
 
     def run_player_action(self, name, actions):
         """
