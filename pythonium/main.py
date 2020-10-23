@@ -2,11 +2,12 @@ import argparse
 import importlib
 import os
 import sys
+import time
 
 from . import __version__
-from .metrics_collector import MetricsCollector
-from .game_modes import ClassicMode
 from .game import Game
+from .game_modes import ClassicMode
+from .metrics_collector import MetricsCollector
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 
@@ -35,11 +36,17 @@ def go():
         player = player_class.Player()
         players.append(player)
 
+    start = time.time()
     game = Game(players, game_mode)
     game.play()
+    sys.stdout.write(f"Game ran in {round(time.time() - start, 2)} seconds\n")
 
+    print(args.metrics)
     if args.metrics:
+        sys.stdout.write("Building report...")
+        start = time.time()
         with open(os.path.join(os.getcwd(), game.logfile)) as logfile:
             metrics = MetricsCollector(logfile)
         metrics.build_report()
+        sys.stdout.write(f"Report built in {round(time.time() - start, 2)} seconds\n")
 

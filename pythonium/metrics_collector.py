@@ -1,9 +1,14 @@
 import re
 from collections import defaultdict
 from datetime import datetime
+from io import BytesIO
 from itertools import groupby
 
+from PIL import Image, ImageDraw, ImageFont
+
 import matplotlib.pyplot as plt
+
+from . import cfg
 
 log_regex = re.compile(r'(?P<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) \[(?P<loglvl>INFO|WARNING|ERROR|DEBUG)\] (?P<file>[\w\W_]+):(?P<function>[a-zA-Z_]+) (?P<message>.+) - (?=(?:(?P<extras>.+))$)?')
 
@@ -11,6 +16,9 @@ log_regex = re.compile(r'(?P<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3})
 class MetricsCollector:
 
     def __init__(self, logfile):
+        self.figsize = (8, 4)
+        self._section_font = ImageFont.truetype(cfg.font_path, 40)
+
         lines = logfile.readlines()
         self.logdicts = []
         for line in lines:
@@ -94,17 +102,9 @@ class MetricsCollector:
             for log in logs:
                 player = log['extras']['player']
                 value = data_type(log['extras'][key])
-                data[player][turn].append(value)
+                data[player][turn + 1].append(value)
         data['turn'] = self.turns
         return data
-
-    def plot_metrics_for_players(self, metrics, ylabel):
-        fig, axs = plt.subplots(1, 1)
-        for player in (p for p in metrics.keys() if p != 'turn'):
-            axs.plot(metrics['turn'], metrics[player])
-            axs.set_xlabel('Turn')
-            axs.set_ylabel(ylabel)
-        return fig
 
     def aggregate_events_for_players(self, events, agg):
         """
@@ -116,7 +116,47 @@ class MetricsCollector:
         data['turn'] = events['turn']
         return data
 
-    def build_report(self):
+    def plot_metrics_for_players(self, metrics, title, ylabel):
+        fig, axs = plt.subplots(figsize=self.figsize)
+        available_players_colors = ['#EE302F', '#50A8E0']
+        for player in (p for p in metrics.keys() if p != 'turn'):
+            color = available_players_colors.pop()
+            axs.plot(metrics['turn'], metrics[player], color=color)
+        axs.set_xlabel('')
+        axs.set_ylabel(ylabel, fontsize=16)
+        axs.set_title(title, fontdict={'fontsize': 24})
+
+        buf = BytesIO()
+        fig.savefig(buf, format='png')
+        buf.seek(0)
+        img = Image.open(buf)
+        return img
+
+    def plot_section(self, title, charts, rows, columns, header_height):
+        """
+        Plot a section of metrics.
+        The charts are drawed in mosaic acording to ``rows`` and ``columns``
+        """
+        sample_chart = charts[0]
+        margin_botom = 20
+        section_size = (sample_chart.width*columns,
+                        sample_chart.height*rows + header_height + margin_botom)
+        image = Image.new('RGB', section_size, 'white')
+        draw = ImageDraw.Draw(image)
+        draw.text((20, 40), title, font=self._section_font, fill='black')
+
+        x = 0
+        y = header_height
+        for chart in charts:
+            image.paste(chart, (x, y))
+            x += chart.width
+            if x == chart.width*columns:
+                x = 0
+                y += chart.height
+
+        return image
+
+    def build_sections(self):
         # Score
         planet_scores = self.get_metric_for_players("Current score", "planets")
         carriers_scores = self.get_metric_for_players("Current score", "carrier_ships")
@@ -139,7 +179,6 @@ class MetricsCollector:
         dpythonium = self.get_events_for_players("Pythonium change", "dpythonium")
         dclans = self.get_events_for_players("Population change", "dclans")
         dmegacredits = self.get_events_for_players("Megacredits change", "dmegacredits")
-        dhappypoints = self.get_events_for_players("Happypoints change", "dhappypoints")
         built_mines = self.aggregate_events_for_players(
             self.get_events_for_players("New mines", "new_mines"), sum)
         built_ships = self.aggregate_events_for_players(
@@ -154,46 +193,126 @@ class MetricsCollector:
         avg_dpythonium = self.aggregate_events_for_players(dpythonium, avg)
         avg_dclans = self.aggregate_events_for_players(dclans, avg)
         avg_dmegacredits = self.aggregate_events_for_players(dmegacredits, avg)
-        avg_happypoints = self.aggregate_events_for_players(dhappypoints, avg)
 
-        self.plot_metrics_for_players(planet_scores, "Planets") \
-            .savefig("Planet Score.png")
-        self.plot_metrics_for_players(carriers_scores, "Carriers") \
-            .savefig("Carriers.png")
-        self.plot_metrics_for_players(warships_scores, "War Ships") \
-            .savefig("War Ships.png")
-        self.plot_metrics_for_players(ships_scores, "Total Ships") \
-            .savefig("Total ships.png")
 
-        self.plot_metrics_for_players(turns_runtime, "Execution time") \
-            .savefig("Runtime.png")
-        self.plot_metrics_for_players(player_actions, "Actions") \
-            .savefig("Player actions.png")
+        sections = []
 
-        self.plot_metrics_for_players(conquered_planets, "Conquered planets") \
-            .savefig("Conquered planets.png")
-        self.plot_metrics_for_players(killed_clans, "Killed clans") \
-            .savefig("Killed clans.png")
-        self.plot_metrics_for_players(ships_lost, "Ships lost") \
-            .savefig("Ships lost.png")
+        score = {
+            'title': "Score",
+            'charts': []
+        }
+        score['charts'].append(
+            self.plot_metrics_for_players(planet_scores, "Planets Score", "Planets")
+        )
+        score['charts'].append(
+            self.plot_metrics_for_players(carriers_scores, "Carriers", "Carriers") \
+        )
+        score['charts'].append(
+            self.plot_metrics_for_players(warships_scores, "War Ships", "War Ships") \
+        )
+        score['charts'].append(
+            self.plot_metrics_for_players(ships_scores, "Total Ships", "Total Ships") \
+        )
+        sections.append(score)
 
-        self.plot_metrics_for_players(total_dpythonium, "Extracted pythonium") \
-            .savefig("Extracted pythonium.png")
-        self.plot_metrics_for_players(total_dclans, "Population growth") \
-            .savefig("Population growth.png")
-        self.plot_metrics_for_players(total_dmegacredits, "Collected megacredits") \
-            .savefig("Collected megacredits.png")
-        self.plot_metrics_for_players(built_ships, "Built ships") \
-            .savefig("Built Ships.png")
-        self.plot_metrics_for_players(built_mines, "Built mines") \
-            .savefig("Built mines.png")
+        combat = {
+            'title': "Combat",
+            'charts': []
+        }
+        combat['charts'].append(
+            self.plot_metrics_for_players(
+                conquered_planets, "Conquered Planets", "Conquered planets") \
+        )
+        combat['charts'].append(
+            self.plot_metrics_for_players(killed_clans, "Killed clans", "Killed clans") \
+        )
+        combat['charts'].append(
+            self.plot_metrics_for_players(ships_lost, "Ships lost", "Ships lost") \
+        )
+        sections.append(combat)
 
-        self.plot_metrics_for_players(avg_dpythonium, "Avg extracted pythonium") \
-            .savefig("Avg extracted pythonium.png")
-        self.plot_metrics_for_players(avg_dclans, "Avg population growth") \
-            .savefig("Avg population growth.png")
-        self.plot_metrics_for_players(avg_dmegacredits, "Avg collected megacredits") \
-            .savefig("Avg collected megacredits.png")
-        self.plot_metrics_for_players(avg_happypoints, "Avg Happypoints") \
-            .savefig("Avg happypoints.png")
 
+        economy = {
+            'title': "Economy",
+            'charts': []
+        }
+        economy['charts'].append(
+            self.plot_metrics_for_players(
+                total_dpythonium, "Extracted pythonium", "Extracted pythonium") \
+        )
+        economy['charts'].append(
+            self.plot_metrics_for_players(
+                total_dclans, "Population growth", "Population growth") \
+        )
+        economy['charts'].append(
+            self.plot_metrics_for_players(
+                total_dmegacredits, "Collected megacredits", "Collected megacredits") \
+        )
+        economy['charts'].append(
+            self.plot_metrics_for_players(built_ships, "Built Ships", "Built ships") \
+        )
+        economy['charts'].append(
+            self.plot_metrics_for_players(built_mines, "Built Mines", "Built mines") \
+        )
+        economy['charts'].append(
+            self.plot_metrics_for_players(
+                avg_dpythonium, "Avg extracted pythonium", "Pythonium") \
+        )
+        economy['charts'].append(
+            self.plot_metrics_for_players(avg_dclans, "Avg population growth", "Clans") \
+        )
+        economy['charts'].append(
+            self.plot_metrics_for_players(
+                avg_dmegacredits, "Avg collected megacredits", "Megacredits") \
+        )
+        sections.append(economy)
+
+        execution = {
+            'title': "Execution",
+            'charts': []
+        }
+        execution['charts'].append(
+            self.plot_metrics_for_players(turns_runtime, "Execution Time", "Execution time") \
+        )
+        execution['charts'].append(
+            self.plot_metrics_for_players(player_actions, "Actions", "Actions") \
+        )
+        sections.append(execution)
+
+        return sections
+
+    def build_report(self):
+        """
+        Build the report with all the metrics
+        """
+        sections = self.build_sections()
+
+        sections_imgs = []
+        header_height = 100
+        for section in sections:
+            charts_count = len(section['charts'])
+            if charts_count == 8:
+                rows = 2
+                columns = 4
+            elif charts_count == 4:
+                rows = 1
+                columns = 4
+            elif charts_count == 3:
+                rows = 3
+                columns = 1
+            elif charts_count == 2:
+                rows = 1
+                columns = 2
+            elif charts_count == 1:
+                rows = 1
+                columns = 1
+            img = self.plot_section(
+                section['title'],
+                section['charts'],
+                rows,
+                columns,
+                header_height)
+            img.save(f"{section['title']}.png")
+            sections_imgs.append(img)
+
+        return sections_imgs
