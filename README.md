@@ -20,14 +20,14 @@ Battle for pythonium is waiting for you.
 You can install Pythonium cloning the repository and running
 
 ```
-    $ python setup.py install
+$ python setup.py install
 ```
 
 You can test your installation running
 
 ```
-    $ pythonium --version
-    Running 'pythonium' version x.y.z
+$ pythonium --version
+Running 'pythonium' version x.y.z
 ```
 
 ## Getting started
@@ -41,7 +41,7 @@ Once you have Pythonium installed you can test it for a single player mode with 
 i.e: the ``standard_player`` bot.
 
 ```
-    pythonium --players pythonium.bots.standard_player
+$ pythonium --players pythonium.bots.standard_player
 ```
 
 Once the command finishes you should have a ``<sector>.gif`` file and a ``<sector>.log``, where ``<sector>`` is a unique code generated for the game.
@@ -58,7 +58,7 @@ Pythonium allows up to two players per game, and you can test it by providing tw
 
 
 ```
-    pythonium --players pythonium.bots.standard_player pythonium.bots.pacific_player
+$ pythonium --players pythonium.bots.standard_player pythonium.bots.pacific_player
 ```
 
 The output will be similar to the single player mode: one ``.gif`` and one ``.log`` file.
@@ -70,8 +70,7 @@ Providing the ``--metrics`` arguments, pythonium creates a report with several m
 This is specially useful to evaluate the performance of your players, and know their strengths and wekenesses.
 
 ```
-
-    pythonium --metrics --players pythonium.bots.standard_player pythonium.bots.pacific_player
+$ pythonium --metrics --players pythonium.bots.standard_player pythonium.bots.pacific_player
 ```
 
 In adition to the ``.gif`` and ``.log`` now you will se a ``report_<sector>.png`` with several charts.
