@@ -20,7 +20,7 @@ def go():
     parser.add_argument(
         '--players', action="extend", nargs="+", help="")
     parser.add_argument(
-        '--metrics', action="store_true", default="classic", help="")
+        '--metrics', action="store_true", default=False, help="")
 
     args = parser.parse_args()
 
@@ -41,9 +41,8 @@ def go():
     game.play()
     sys.stdout.write(f"Game ran in {round(time.time() - start, 2)} seconds\n")
 
-    print(args.metrics)
     if args.metrics:
-        sys.stdout.write("Building report...")
+        sys.stdout.write("Building report...\n")
         start = time.time()
         with open(os.path.join(os.getcwd(), game.logfile)) as logfile:
             metrics = MetricsCollector(logfile)
