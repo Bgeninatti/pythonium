@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pythonium-pkg-BGENINATTI", # Replace with your own username
-    version="0.1.0a",
+    version="0.1.0",
     author="Bruno Geninatti",
     author_email="brunogeninatti@gmail.com",
     description="A space strategy algorithmic-game build in python",
@@ -23,7 +23,9 @@ setuptools.setup(
         'matplotlib==3.3.2',
         'numpy==1.19.1',
         'attrs==20.2.0'],
+    tests_require=['pytest'],
+    setup_requires=['pytest-runner'],
     python_requires='>=3.6',
     scripts=['bin/pythonium'],
-    include_package_data=True
+    data_files=[('font', ['font/jmh_typewriter.ttf'])]
 )
