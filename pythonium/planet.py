@@ -1,8 +1,10 @@
+import attr
 
+from . import cfg, validators
 from .ship import Ship
-from . import cfg
 
 
+@attr.s(auto_attribs=True)
 class Planet:
     """
     A planet that belong to a :class:`Galaxy`
@@ -16,59 +18,38 @@ class Planet:
     needs to be extracted with `mines` to be used.
     """
 
+    pid: int = attr.ib()
+    position: tuple = attr.ib(validator=[validators.is_valid_position])
+    temperature: int = attr.ib(converter=int,
+                               validator=validators.number_between_zero_100)
+    underground_pythonium: int = attr.ib(converter=int)
+    concentration: float = attr.ib(converter=float,
+                                   validator=[validators.is_valid_ratio])
+    pythonium: int = attr.ib(converter=int)
 
-    def __init__(self,
-                 pid,
-                 position: tuple,
-                 temperature: int,
-                 underground_pythonium: int,
-                 concentration: float,
-                 pythonium: int,
-                 player=None):
-        """
-        :param pid: Planet unique ID
-        :type pid: *int*
-        :param position: Position of the planet in the galaxy.
-        :type position: tuple of `(x, y)` where `x` and `y` are both *int*.
-        :param temperature: Temperature of the planet. Max temperature
-         is 100 and min temperature is 0.
-        :type temperature: *int*
-        :param underground_pythonium: Amount of pythonium that can be extracted with
-         mines.
-        :type underground_pythonium: positive *int*
-        """
+    # State in turn
+    player: str = attr.ib(default=None, init=False)
+    megacredits: int = attr.ib(converter=int, default=0, init=False)
+    clans: int = attr.ib(converter=int, default=0, init=False)
+    mines: int = attr.ib(converter=int, default=0, init=False)
+    max_happypoints: int = attr.ib(converter=int, init=False)
+    happypoints: int = attr.ib(converter=int, init=False)
 
-        # Initial conditions
-        self.pid = pid
-        self.position = position
-        self.temperature = max(min(temperature, 100), 0)
-        self.underground_pythonium = underground_pythonium
-        self.concentration = max(min(temperature, 1.0), 0.0)
-        self.pythonium = pythonium
+    # User controls
+    new_mines: int = attr.ib(converter=int, default=0, init=False)
+    new_ship: int = attr.ib(converter=int, default=0, init=False)
+    taxes: int = attr.ib(converter=int,
+                         default=0,
+                         validator=[validators.is_valid_ratio],
+                         init=False)
 
-        # State in turn
-        self.player = player
-        self.megacredits = 0
-
+    def __attrs_post_init__(self):
         # `max_happypoints` will decay as long as `temperature` differ from
         # `cfg.optimal_temperature`. `max_happypoints` can't be less than
         # `cfg.happypoints_tolerance`
         self.max_happypoints = max(100 - abs(self.temperature - cfg.optimal_temperature),
                                    cfg.optimal_temperature)
         self.happypoints = self.max_happypoints
-        self.clans = 0
-        self.mines = 0
-
-        # User controls
-        self.new_mines = 0
-        self.new_ship = None
-        self.taxes = 0.0
-
-        # Restrictions
-        self._dpythonium = 0.0
-        self._dmegacredits = 0.0
-        self._dhappypoints = 0.0
-        self._dclans = 0
 
     def __repr__(self):
         return f"Planet #{self.pid} <player={self.player}>"

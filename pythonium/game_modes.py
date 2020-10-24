@@ -117,12 +117,12 @@ class ClassicMode(GameMode):
                    concentrations,
                    temperatures):
 
-            planet = Planet(pid,
-                            tuple(position),
-                            int(temperature),
-                            int(underground_pythonium),
-                            concentration,
-                            int(pythonium))
+            planet = Planet(pid=pid,
+                            position=position,
+                            temperature=temperature,
+                            underground_pythonium=underground_pythonium,
+                            concentration=concentration,
+                            pythonium=pythonium)
             planets[planet.position] = planet
 
         galaxy = Galaxy(self.map_size, planets, [])
@@ -155,10 +155,12 @@ class ClassicMode(GameMode):
             # 2.b Asigna cargueros
             for _ in range(self.starting_carriers):
                 ship_features = Ship.get_type(Ship.CARRIER)
-                ship = Ship(player.name,
-                            Ship.CARRIER,
-                            homeworld.position,
-                            *ship_features)
+                ship = Ship(player=player.name,
+                            type=Ship.CARRIER,
+                            position=homeworld.position,
+                            max_cargo=ship_features[0],
+                            max_mc=ship_features[1],
+                            attack=ship_features[2])
                 galaxy.add_ship(ship)
         return galaxy
 

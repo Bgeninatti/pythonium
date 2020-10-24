@@ -1,6 +1,7 @@
-from . import cfg
+import attr
+from . import cfg, validators
 
-
+@attr.s
 class Ship:
     """
     A ship that belong to a race.
@@ -22,6 +23,7 @@ class Ship:
     ============================================================
     """
 
+    # TODO: Put all this in a `ShipType` class and make it part of the gamemod or cfg
     CARRIER, WAR = range(2)
 
     # (max_cargo, max_mc, attack)
@@ -35,47 +37,33 @@ class Ship:
         CARRIER: (600, 300),
         WAR: (1000, 500)
     }
-    def __init__(self,
-                 player: int,
-                 ship_type: int,
-                 position: tuple,
-                 max_cargo: int,
-                 max_mc: int,
-                 attack: int):
-        """
-        :param player: Race ID of the ship owner
-        :type player: int
-        :param ship_type: Ship type
-        :type ship_type: int
-        :param position: Ship initial position. Is always the position of the planet
-          where the ship has been built.
-        :type position: tuple of `(x, y)` where `x` and `y` are both *int*.
-        :param max_cargo: Define how much `pythonium` and `clans` can be carried into
-          the ship. The cargo space will be shared by this two resources.
-        :type max_cargo: int
-        :param max_mc: Define the max amount of `megacredits` can be carried into the
-          ship.
-        :type max_mc: int
-        :param attack: Define the ship attack capabilites. The more attack the ship has
-          the higher are the probabilities of win a conflict.
-        """
-        # Initial conditions
-        self.nid = None # The id is set when the ship is added to the galaxy
-        self.max_cargo = max_cargo
-        self.max_mc = max_mc
-        self.attack = attack
-        self.type = ship_type
-        self.player = player
 
-        # State in turn
-        self.position = position
-        self.megacredits = 0
-        self.pythonium = 0
-        self.clans = 0
+    # Initial conditions
+    # The id is set when the ship is added to the galaxy
+    nid: int = attr.ib(init=False, default=None)
+    max_cargo: int = attr.ib(converter=int)
+    max_mc: int = attr.ib(converter=int)
+    attack: int = attr.ib(converter=int)
+    type: int = attr.ib(converter=int)
+    player: str = attr.ib()
 
-        # User controls
-        self.target = None
-        self.transfer = (0, 0, 0) # transfer format (clans, mc, pythonium)
+    # State in turn
+    position: tuple = attr.ib(converter=tuple,
+                              validator=[validators.is_valid_position])
+    megacredits: int = attr.ib(converter=int, default=0, init=False)
+    pythonium: int = attr.ib(converter=int, default=0, init=False)
+    clans: int = attr.ib(converter=int, default=0, init=False)
+
+    # User controls
+    target: tuple = attr.ib(default=None,
+                            init=False,
+                            validator=[validators.is_valid_position])
+    # transfer format (clans, mc, pythonium)
+    # TODO: this can be a named tuple
+    transfer = attr.ib(converter=tuple,
+                       default=(0, 0, 0),
+                       init=False,
+                       validator=[validators.is_valid_transfer])
 
     def __repr__(self):
         return f"Ship #{self.nid} <player={self.player}>"

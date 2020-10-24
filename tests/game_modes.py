@@ -26,21 +26,28 @@ class SandboxGameMode(GameMode):
 
         planets = {}
         for i, position in enumerate(planets_positions):
-            planet = Planet(i+1, position, 50, 1000, 1, 100)
+            planet = Planet(pid=i+1,
+                            position=position,
+                            temperature=50,
+                            underground_pythonium=1000,
+                            concentration=1,
+                            pythonium=100)
             planets[position] = planet
         galaxy = Galaxy(map_size, planets, [])
 
         homeworld = galaxy.planets[(10, 10)]
-        homeworld.player = player.jid
+        homeworld.player = player.name
         homeworld.clans = 1000
         homeworld.pythonium = 1000
         homeworld.megacredits = 1000
 
         ship_features = Ship.get_type(Ship.CARRIER)
-        ship = Ship(player.jid,
-                    Ship.CARRIER,
-                    homeworld.position,
-                    *ship_features)
+        ship = Ship(player=player.name,
+                    type=Ship.CARRIER,
+                    position=homeworld.position,
+                    max_cargo=ship_features[0],
+                    max_mc=ship_features[1],
+                    attack=ship_features[2])
         galaxy.add_ship(ship)
 
         return galaxy

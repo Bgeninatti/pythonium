@@ -21,7 +21,8 @@ setuptools.setup(
     install_requires=[
         'Pillow==7.2.0',
         'matplotlib==3.3.2',
-        'numpy==1.19.1'],
+        'numpy==1.19.1',
+        'attrs==20.2.0'],
     python_requires='>=3.6',
     scripts=['bin/pythonium'],
     include_package_data=True

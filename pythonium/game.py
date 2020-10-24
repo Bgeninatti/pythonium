@@ -502,10 +502,12 @@ class Game:
                                         'pythonium': planet.pythonium})
             return
 
-        ship = Ship(planet.player,
-                    ship_type,
-                    planet.position,
-                    *ship_features)
+        ship = Ship(player=planet.player,
+                    type=ship_type,
+                    position=planet.position,
+                    max_cargo=ship_features[0],
+                    max_mc=ship_features[1],
+                    attack=ship_features[2])
 
         planet.megacredits -= cost[0]
         planet.pythonium -= cost[1]
