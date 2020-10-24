@@ -8,13 +8,13 @@ from . import cfg
 
 class GifRenderer:
 
-    available_players_colors = [(238, 48, 47, 256), (80, 168, 224, 256)]
     def __init__(self, galaxy, title=None, speed=200):
         self.galaxy = galaxy
         self.speed = speed
         self.title = title
         self.background_color = (40, 40, 40)
         self._frames = []
+        self.available_players_colors = [(238, 48, 47, 256), (80, 168, 224, 256)]
         self.players_colors = {p: self.available_players_colors.pop()
                                for p in galaxy.known_races}
         self.planet_color = (256, 256, 256, 256)

@@ -41,15 +41,15 @@ class Ship:
     # Initial conditions
     # The id is set when the ship is added to the galaxy
     nid: int = attr.ib(init=False, default=None)
+    player: str = attr.ib()
+    type: int = attr.ib(converter=int)
+    position: tuple = attr.ib(converter=tuple,
+                              validator=[validators.is_valid_position])
     max_cargo: int = attr.ib(converter=int)
     max_mc: int = attr.ib(converter=int)
     attack: int = attr.ib(converter=int)
-    type: int = attr.ib(converter=int)
-    player: str = attr.ib()
 
     # State in turn
-    position: tuple = attr.ib(converter=tuple,
-                              validator=[validators.is_valid_position])
     megacredits: int = attr.ib(converter=int, default=0, init=False)
     pythonium: int = attr.ib(converter=int, default=0, init=False)
     clans: int = attr.ib(converter=int, default=0, init=False)

@@ -1,3 +1,4 @@
+import os
 import random
 import string
 import sys
@@ -15,7 +16,7 @@ from .ship import Ship
 
 class Game:
 
-    def __init__(self, players, gmode, renderer=GifRenderer):
+    def __init__(self, players, gmode, *, renderer=GifRenderer, logdir=None):
         """
         :param gmode: Class that define some game rules
         :tpye gmode: :class:GameMode
@@ -26,7 +27,11 @@ class Game:
             raise ValueError("Player names must be unique")
 
         self.sector = self._build_random_sector_name(6)
-        self.logfile = f"{self.sector}.log"
+        if logdir:
+            self.logfile = os.path.join(logdir, f"{self.sector}.log")
+        else:
+            self.logfile = None
+
         sys.stdout.write(f"** Pythonium **\n")
         sys.stdout.write(f"Running battle in Sector #{self.sector}\n")
         self.gmode = gmode
