@@ -1,1 +1,1 @@
-recursive-include font *.ttf
+include font/jmh_typewriter.ttf
