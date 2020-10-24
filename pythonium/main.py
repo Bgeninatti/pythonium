@@ -37,7 +37,7 @@ def go():
         players.append(player)
 
     start = time.time()
-    game = Game(players, game_mode)
+    game = Game(players, game_mode, logdir=os.getcwd())
     game.play()
     sys.stdout.write(f"Game ran in {round(time.time() - start, 2)} seconds\n")
 
