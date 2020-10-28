@@ -49,6 +49,30 @@ class Game:
         characters = string.ascii_uppercase + string.digits
         return ''.join([random.choice(characters) for _ in range(length)])
 
+    def extract_player_orders(self, player, galaxy, context):
+        player_galaxy = player.next_turn(galaxy, context)
+
+        # The function must return the mutated galaxy
+
+        if id(galaxy) != id(player_galaxy):
+            raise ValueError("The `run_player` method must return a mutated galaxy")
+
+        planets_orders = [p.get_orders() for p in player_galaxy.planets.values()
+                          if p.player == player.name]
+        ships_orders = [s.get_orders() for s in player_galaxy.ships
+                        if s.player == player.name]
+
+
+        orders = [o for orders in ships_orders + planets_orders for o in orders]
+        self._logger.info("Player orders computed",
+                          extra={'turn': self.turn,
+                                 'player': player.name,
+                                 'orders': len(orders)})
+
+        grouped_actions = groupby(orders, lambda o: o[0])
+        return grouped_actions
+
+
     def play(self):
         while True:
 
@@ -57,7 +81,7 @@ class Game:
 
 
             self._logger.info("Turn started", extra={'turn': self.turn})
-            actions = defaultdict(lambda: [])
+            orders = defaultdict(lambda: [])
             context = self.gmode.get_context(self.galaxy, self.players, self.turn)
 
             # Should I record the state?
@@ -72,20 +96,14 @@ class Game:
                 # Filtra cosas que ve el player según las reglas del juego
                 galaxy = self.gmode.galaxy_for_player(self.galaxy, player)
                 try:
-                    self._logger.info("Computing actions for player",
+                    self._logger.info("Computing orders for player",
                                       extra={'turn': self.turn, 'player': player.name})
-                    player_actions = player.next_turn(
-                        galaxy, context, self.turn)
 
-                    grouped_actions = groupby(player_actions, lambda a: a[0])
+                    player_orders = self.extract_player_orders(player, galaxy, context)
+                    for name, player_orders in player_orders:
+                        for order in player_orders:
+                            orders[name].append((player, order[1:]))
 
-                    self._logger.info("Actions computed",
-                                      extra={'turn': self.turn,
-                                             'player': player.name,
-                                             'actions': len(player_actions)})
-                    for name, player_actions in grouped_actions:
-                        for action in player_actions:
-                            actions[name].append((player, action[1:]))
                 except Exception as e:
                     self._logger.error("Player lost turn",
                                        extra={'turn': self.turn,
@@ -116,11 +134,11 @@ class Game:
             # Reset explosions
             self.galaxy.explosions = []
 
-            self.run_turn(actions)
+            self.run_turn(orders)
 
-    def run_turn(self, actions):
+    def run_turn(self, orders):
         """
-        Execute turn actions in the following order.
+        Execute turn orders in the following order.
         1. Ships download transfers :func:`action_ship_transfer`
         2. Ships upload transfers :func:`action_ship_transfer`
         3. Mines construction :func:`action_planet_build_mines`
@@ -136,20 +154,20 @@ class Game:
         """
         # 1. Ships download transfers
         # 2. Ships upload transfers
-        self.run_player_action('ship_transfer', actions.get('ship_transfer', []))
+        self.run_player_action('ship_transfer', orders.get('ship_transfer', []))
 
         # 3. Mines construction
         self.run_player_action('planet_build_mines',
-                               actions.get('planet_build_mines', []))
+                               orders.get('planet_build_mines', []))
 
         # 4. Ship construction
-        self.run_player_action('planet_build_ship', actions.get('planet_build_ship', []))
+        self.run_player_action('planet_build_ship', orders.get('planet_build_ship', []))
 
         # 5. Ship movements
-        self.run_player_action('ship_move', actions.get('ship_move', []))
+        self.run_player_action('ship_move', orders.get('ship_move', []))
 
         # 6. Taxes changes
-        self.run_player_action('planet_set_taxes', actions.get('planet_set_taxes', []))
+        self.run_player_action('planet_set_taxes', orders.get('planet_set_taxes', []))
 
         if cfg.tenacity:
             # 7. Resolve ship to ship combats
@@ -291,7 +309,7 @@ class Game:
             planet.mines = 0
             planet.taxes = 0
 
-    def run_player_action(self, name, actions):
+    def run_player_action(self, name, orders):
         """
         :param name: name del player que ejecuta la params
         :type name: str
@@ -300,7 +318,7 @@ class Game:
         :type params: tuple
         """
         func = getattr(self, f"action_{name}", None)
-        for player, params in actions:
+        for player, params in orders:
             obj = None
             if name.startswith('ship'):
                 nid = params[0]

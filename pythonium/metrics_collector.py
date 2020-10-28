@@ -39,7 +39,7 @@ class MetricsCollector:
                       filter(lambda l: l['message'] == "Turn started", self.logdicts)]
         self.known_players = list(
             {l['extras']['player'] for l in
-             filter(lambda l: l['message'] == "Computing actions for player", self.logdicts)})
+             filter(lambda l: l['message'] == "Player orders computed", self.logdicts)})
 
         # Search sector name
         init_log = list(
@@ -204,7 +204,7 @@ class MetricsCollector:
 
         # Runtime
         turns_runtime = self.get_turns_runtime()
-        player_actions = self.get_metric_for_players("Actions computed", "actions")
+        player_orders = self.get_metric_for_players("Player orders computed", "orders")
 
         # War
         conquered_planets = self.aggregate_events_for_players(
@@ -314,7 +314,7 @@ class MetricsCollector:
             self.plot_metrics_for_players(turns_runtime, "Turn Execution Time", "Microseconds") \
         )
         execution['charts'].append(
-            self.plot_metrics_for_players(player_actions, "Actions per turn", "Actions") \
+            self.plot_metrics_for_players(player_orders, "Orders per turn", "Orders") \
         )
         sections.append(execution)
 
