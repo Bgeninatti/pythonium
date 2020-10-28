@@ -134,6 +134,10 @@ class Game:
             # Reset explosions
             self.galaxy.explosions = []
 
+            # Sort orders by object id
+            for o in orders.values():
+                o.sort(key=lambda o: o[1][0])
+
             self.run_turn(orders)
 
     def run_turn(self, orders):
@@ -497,6 +501,14 @@ class Game:
 
 
     def action_planet_build_ship(self, planet, ship_type):
+
+        ships_count = len(self.galaxy.get_player_ships(planet.player))
+        if ships_count >= self.gmode.max_ships:
+            self._logger.warning("Ships limit reached",
+                                 extra={'turn': self.turn,
+                                        'player': planet.player,
+                                        'ships_count': ships_count})
+            return
 
         try:
             can_build = planet.can_build_ship(ship_type)

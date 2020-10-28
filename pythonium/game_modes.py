@@ -42,6 +42,7 @@ class ClassicMode(GameMode):
 
     def __init__(self,
                  planets_count=300,
+                 max_ships=500,
                  map_size=(500, 500),
                  pythonium_stock=10**6,
                  pythonium_in_surface=0.1,
@@ -72,6 +73,7 @@ class ClassicMode(GameMode):
         self.starting_carriers = starting_carriers
         self.starting_resources = starting_resources
         self.max_turn = max_turn
+        self.max_ships = max_ships
         self.winner = None
 
     def build_galaxy(self, players):
