@@ -146,11 +146,11 @@ class Game:
         1. Ships download transfers :func:`action_ship_transfer`
         2. Ships upload transfers :func:`action_ship_transfer`
         3. Mines construction :func:`action_planet_build_mines`
-        4. Ships construction :func:`action_planet_build_ship`
+        4. Taxes changes
         5. Ships movements :func:`action_ship_move`
-        6. Taxes changes
-        7. Resolve ship to ship combats :func:`resolve_ship_to_ship`
-        8. Resolve ship to planet combats :func:`resolve_planet_to_ship`
+        6. Resolve ship to ship combats :func:`resolve_ship_to_ship`
+        7. Resolve ship to planet combats :func:`resolve_planet_to_ship`
+        8. Ships construction :func:`action_planet_build_ship`
         9. Population changes
         10. Happypoints changes
         11. Taxes recollection
@@ -164,17 +164,14 @@ class Game:
         self.run_player_action('planet_build_mines',
                                orders.get('planet_build_mines', []))
 
-        # 4. Ship construction
-        self.run_player_action('planet_build_ship', orders.get('planet_build_ship', []))
+        # 4. Taxes changes
+        self.run_player_action('planet_set_taxes', orders.get('planet_set_taxes', []))
 
         # 5. Ship movements
         self.run_player_action('ship_move', orders.get('ship_move', []))
 
-        # 6. Taxes changes
-        self.run_player_action('planet_set_taxes', orders.get('planet_set_taxes', []))
-
         if cfg.tenacity:
-            # 7. Resolve ship to ship combats
+            # 6. Resolve ship to ship combats
             ships_in_conflict = self.galaxy.get_ships_conflicts()
             for ships in ships_in_conflict:
                 if not any((s.attack for s in ships)):
@@ -183,12 +180,15 @@ class Game:
 
             self.galaxy.remove_destroyed_ships()
 
-            # 8. Resolve ship to planet combats
+            # 7. Resolve ship to planet combats
             planets_in_conflict = self.galaxy.get_planets_conflicts()
             for planet, ships in planets_in_conflict:
                 if not any((s.attack for s in ships)):
                     continue
                 self.resolve_planet_conflict(planet, ships)
+
+        # 8. Ship construction
+        self.run_player_action('planet_build_ship', orders.get('planet_build_ship', []))
 
         # 9. Population change
         # 10. Happypoints changes
