@@ -33,11 +33,11 @@ Running 'pythonium' version x.y.z
 ## Getting started
 
 Pythonium allows different game modes. The default is the **classic mode**, where each player starts with 1 planet and 2 carriers in a random galaxy of 300 planets.
-The first player in conquer 210 planets (70% of the total) wins. 
+The first player that conquers 210 planets (70% of the total) wins. 
 
 ## Single player mode
 
-Once you have Pythonium installed you can test it for a single player mode with some of the available bots.
+Once you have Pythonium installed you can test it in single player mode with some of the available bots.
 i.e: the ``standard_player`` bot.
 
 ```
@@ -46,15 +46,14 @@ $ pythonium --players pythonium.bots.standard_player
 
 Once the command finishes you should have a ``<sector>.gif`` file and a ``<sector>.log``, where ``<sector>`` is a unique code generated for the game.
 
-* ``<sector>.gif``: This is an animation showing how the galaxy ownership changed along the game, 
-  which planets belongs to each player, ships movements, combats and the score on each turn.
+* ``<sector>.gif``: This is an animation showing how the planets ownership, ship movements and score along the game.
 
-* ``<sector>.log``: Contain the logs with all the relevant events during the game.
+* ``<sector>.log``: Logs with all the relevant events during the game.
 
 
 ## Multiplayer mode
 
-Pythonium allows up to two players per game, and you can test it by providing two bots to the ``--players`` argument. 
+Pythonium allows to play up to two players in a single game. You can test it by providing two bots to the ``--players`` argument. 
 
 
 ```
@@ -66,7 +65,7 @@ The output will be similar to the single player mode: one ``.gif`` and one ``.lo
 
 ## Metrics
 
-Providing the ``--metrics`` arguments, pythonium creates a report with several metrics of the game. 
+By providing the ``--metrics`` arguments pythonium creates a report with several metrics of the game. 
 This is specially useful to evaluate the performance of your players, and know their strengths and wekenesses.
 
 ```
@@ -75,3 +74,7 @@ $ pythonium --metrics --players pythonium.bots.standard_player pythonium.bots.pa
 
 In adition to the ``.gif`` and ``.log`` now you will se a ``report_<sector>.png`` with several charts.
 
+
+## Code your own player.
+
+Tutorial coming soon.
