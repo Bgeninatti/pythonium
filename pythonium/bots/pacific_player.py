@@ -1,17 +1,16 @@
 import random
 
 from ..ship import Ship
+from ..player import AbstractPlayer
 
-
-class Player:
+class Player(AbstractPlayer):
     """
     Same as :class:`standard_player.Player` but always build carriers
     """
 
     name = 'Nofight Ink.'
 
-    def next_turn(self, galaxy, context, t):
-        orders = []
+    def next_turn(self, galaxy, context):
 
         my_ships = galaxy.get_player_ships(self.name)
         my_planets = galaxy.get_player_planets(self.name)
@@ -20,8 +19,6 @@ class Player:
 
         populated_planets = list(
             filter(lambda p: p.clans > 500, my_planets.values()))
-
-        ships_without_target = [ship for ship in my_ships if not ship.target]
 
         for ship in my_ships:
 
@@ -63,8 +60,6 @@ class Player:
 
                 ship.target = destination.position
 
-            orders.extend(ship.get_orders())
-
         for planet in my_planets.values():
             planet.taxes = context.get('tolerable_taxes')
             planet.new_mines = planet.can_build_mines()
@@ -72,7 +67,4 @@ class Player:
             if planet.can_build_ship(next_ship):
                 planet.new_ship = next_ship
 
-            orders.extend(planet.get_orders())
-
-
-        return orders
+        return galaxy

@@ -37,7 +37,7 @@ class Planet:
 
     # User controls
     new_mines: int = attr.ib(converter=int, default=0, init=False)
-    new_ship: int = attr.ib(converter=int, default=0, init=False)
+    new_ship: int = attr.ib(converter=int, default=-1, init=False)
     taxes: int = attr.ib(converter=int,
                          default=0,
                          validator=[validators.is_valid_ratio],
@@ -114,7 +114,7 @@ class Planet:
         """
         orders = [('planet_set_taxes', self.pid, self.taxes)]
 
-        if self.new_ship is not None:
+        if self.new_ship > -1:
             orders.append(('planet_build_ship', self.pid, self.new_ship))
 
         if self.new_mines > 0:

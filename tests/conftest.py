@@ -1,15 +1,15 @@
 
 import pytest
-from pythonium import cfg, Game, Player, Planet
+from pythonium import cfg, Game, AbstractPlayer, Planet
 
 from .game_modes import SandboxGameMode
 
-class TestPlayer(Player):
+class TestPlayer(AbstractPlayer):
 
     name = 'Test Player'
 
-    def next_turn(self, galaxy, context, t):
-        return []
+    def next_turn(self, galaxy, context):
+        return galaxy
 
 @pytest.fixture
 def test_player():
