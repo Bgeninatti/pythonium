@@ -5,6 +5,9 @@ from pythonium import Ship, Planet, Galaxy, GameMode
 
 class SandboxGameMode(GameMode):
 
+    def __init__(self, max_ships=500):
+        self.max_ships = max_ships
+
     def build_galaxy(self, players):
 
         if len(players) != 1:
