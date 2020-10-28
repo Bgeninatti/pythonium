@@ -17,9 +17,12 @@ class MetricsCollector:
 
     def __init__(self, logfile):
         self.figsize = (8, 4)
-        self._footer_font = ImageFont.truetype(cfg.font_path, 24)
-        self._section_font = ImageFont.truetype(cfg.font_path, 48)
-        self._title_font = ImageFont.truetype(cfg.font_path, 96)
+        self._footer_font = ImageFont.truetype(
+            cfg.font_path, 24, layout_engine=ImageFont.LAYOUT_BASIC)
+        self._section_font = ImageFont.truetype(
+            cfg.font_path, 48, layout_engine=ImageFont.LAYOUT_BASIC)
+        self._title_font = ImageFont.truetype(
+            cfg.font_path, 96, layout_engine=ImageFont.LAYOUT_BASIC)
 
         lines = logfile.readlines()
         self.logdicts = []

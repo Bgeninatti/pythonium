@@ -170,14 +170,14 @@ def test_planet_build_mines(game, planet_state, existing_mines, new_mines):
     ((0, 0), 'sarasa'),
     ((2000, 2000), 'sarasa'),
 ])
-def test_planet_build_ship(game, planet_state, ship_type):
+def test_planet_build_ship(test_player, game, planet_state, ship_type):
     """
     Planet build ship:
         - New ship of demanded type located in same position as planet
     Planet attempt to build unkown ship type
     Planet attempt to build a ship without available resources
     """
-    planet = list(game.galaxy.get_player_planets(1).values())[0]
+    planet = list(game.galaxy.get_player_planets(test_player.name).values())[0]
     # generate initial conditions for planet
     planet.megacredits = planet_state[0]
     planet.pythonium = planet_state[1]
@@ -251,11 +251,11 @@ def test_ship_move(game, initial_position, destination):
     (10, 101, 102, 103, 0),
     (500, 101, 102, 103, 90),
 ])
-def test_planet_produce_resources(game, planet_state):
+def test_planet_produce_resources(test_player, game, planet_state):
     """
     In next turn ``pythonium`` must increase in ``dpythonium``
     """
-    planet = list(game.galaxy.get_player_planets(1).values())[0]
+    planet = list(game.galaxy.get_player_planets(test_player.name).values())[0]
     planet.clans = planet_state[0]
     planet.megacredits = planet_state[1]
     planet.pythonium = planet_state[2]
