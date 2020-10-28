@@ -28,7 +28,7 @@ class Planet:
     pythonium: int = attr.ib(converter=int)
 
     # State in turn
-    player: str = attr.ib(default=None, init=False)
+    player: str = attr.ib(default=None)
     megacredits: int = attr.ib(converter=int, default=0, init=False)
     clans: int = attr.ib(converter=int, default=0, init=False)
     mines: int = attr.ib(converter=int, default=0, init=False)

@@ -22,9 +22,12 @@ class GifRenderer:
         self.header = 200
         self.margin = 10
         self.footer = 30
-        self._title_font = ImageFont.truetype(cfg.font_path, 40)
-        self._score_font = ImageFont.truetype(cfg.font_path, 24)
-        self._footer_font = ImageFont.truetype(cfg.font_path, 10)
+        self._title_font = ImageFont.truetype(
+            cfg.font_path, 40, layout_engine=ImageFont.LAYOUT_BASIC)
+        self._score_font = ImageFont.truetype(
+            cfg.font_path, 24, layout_engine=ImageFont.LAYOUT_BASIC)
+        self._footer_font = ImageFont.truetype(
+            cfg.font_path, 10, layout_engine=ImageFont.LAYOUT_BASIC)
         self.frame_size = (self.galaxy.size[0] + self.margin,
                            self.galaxy.size[1] + self.header)
         self.plantet_radius = 3
