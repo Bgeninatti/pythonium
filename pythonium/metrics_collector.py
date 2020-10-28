@@ -4,11 +4,12 @@ from datetime import datetime
 from io import BytesIO
 from itertools import groupby
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
 import matplotlib.pyplot as plt
 
-from . import cfg, __version__
+from . import __version__, cfg
+from .helpers import load_font
 
 log_regex = re.compile(r'(?P<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) \[(?P<loglvl>INFO|WARNING|ERROR|DEBUG)\] (?P<file>[\w\W_]+):(?P<function>[a-zA-Z_]+) (?P<message>.+) - (?=(?:(?P<extras>.+))$)?')
 
@@ -17,12 +18,9 @@ class MetricsCollector:
 
     def __init__(self, logfile):
         self.figsize = (8, 4)
-        self._footer_font = ImageFont.truetype(
-            cfg.font_path, 24, layout_engine=ImageFont.LAYOUT_BASIC)
-        self._section_font = ImageFont.truetype(
-            cfg.font_path, 48, layout_engine=ImageFont.LAYOUT_BASIC)
-        self._title_font = ImageFont.truetype(
-            cfg.font_path, 96, layout_engine=ImageFont.LAYOUT_BASIC)
+        self._footer_font = load_font(24)
+        self._section_font = load_font(48)
+        self._title_font = load_font(96)
 
         lines = logfile.readlines()
         self.logdicts = []
@@ -290,7 +288,7 @@ class MetricsCollector:
                 total_dmegacredits, "Collected megacredits", "Megacredits") \
         )
         economy['charts'].append(
-            self.plot_metrics_for_players(built_ships, "Built Ships", "Ships") \
+            self.plot_metrics_for_players(built_ships, "Ships Built", "Ships") \
         )
         economy['charts'].append(
             self.plot_metrics_for_players(
@@ -304,7 +302,7 @@ class MetricsCollector:
                 avg_dmegacredits, "Avg collected megacredits", "Megacredits") \
         )
         economy['charts'].append(
-            self.plot_metrics_for_players(built_mines, "Built Mines", "Mines") \
+            self.plot_metrics_for_players(built_mines, "Mines Built", "Mines") \
         )
         sections.append(economy)
 
