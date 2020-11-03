@@ -2,10 +2,10 @@
 import math
 
 import pytest
-from pythonium import Planet, Ship, cfg
+from pythonium import Planet, Ship, cfg, TransferVector
 
 
-@pytest.mark.parametrize('planet_state, ship_state, transfer', [
+@pytest.mark.parametrize('planet_state, ship_state, transfer_params', [
     ((100, 100, 100), (100, 100, 100), (-100, -100, -100)),
     ((100, 100, 100), (0, 0, 0), (100, 100, 100)),
     ((100, 100, 100), (10, 10, 10), (-100, -100, -100)),
@@ -13,7 +13,7 @@ from pythonium import Planet, Ship, cfg
     ((10, 10, 10), (0, 0, 0), (100, 100, 100)),
     ((10000, 10000, 10000), (0, 0, 0), (1000, 100000, 1000)),
 ])
-def test_ship_transfer(game, planet_state, ship_state, transfer):
+def test_ship_transfer(game, planet_state, ship_state, transfer_params):
     ship = game.galaxy.ships[0]
     planet = game.galaxy.planets[ship.position]
     planet.clans = planet_state[0]
@@ -22,49 +22,51 @@ def test_ship_transfer(game, planet_state, ship_state, transfer):
     ship.clans = ship_state[0]
     ship.megacredits = ship_state[1]
     ship.pythonium = ship_state[2]
-
+    transfer = TransferVector(clans=transfer_params[0],
+                              megacredits=transfer_params[1],
+                              pythonium=transfer_params[2])
     available_space = ship.max_cargo - (ship.clans + ship.pythonium)
 
     game.action_ship_transfer(ship, transfer)
 
     # Transfering clans...
-    if transfer[0] > 0 and planet_state[0] < transfer[0]:
+    if transfer.clans > 0 and planet_state[0] < transfer.clans:
         # from planet to ship, and attempt to transfer more than available
         assert ship.clans == planet_state[0]
         assert not planet.clans
-    elif transfer[0] < 0 and ship_state[0] < abs(transfer[0]):
+    elif transfer.clans < 0 and ship_state[0] < abs(transfer.clans):
         # from ship to planet, and attempt to transfer more than available
         assert planet.clans == planet_state[0] + ship_state[0]
         assert not ship.clans
     else:
         # in some direction and resources are available
-        assert ship.clans == ship_state[0] + min(transfer[0], available_space)
-        assert planet.clans == planet_state[0] - transfer[0]
+        assert ship.clans == ship_state[0] + min(transfer.clans, available_space)
+        assert planet.clans == planet_state[0] - transfer.clans
 
     # Transfering megacredits...
-    if transfer[1] > 0 and planet_state[1] < transfer[1]:
+    if transfer.megacredits > 0 and planet_state[1] < transfer.megacredits:
         # from planet to ship, and attempt to transfer more than available
         assert ship.megacredits == planet_state[1]
         assert not planet.megacredits
-    elif transfer[1] < 0 and ship_state[1] < abs(transfer[1]):
+    elif transfer.megacredits < 0 and ship_state[1] < abs(transfer.megacredits):
         # from ship to planet, and attempt to transfer more than available
         assert planet.megacredits == planet_state[1] + ship_state[1]
         assert not ship.megacredits
-    elif transfer[1] > 0 and ship_state[1] + transfer[1] > ship.max_mc:
+    elif transfer.megacredits > 0 and ship_state[1] + transfer.megacredits > ship.max_mc:
         # from planet to ship, and transfer is higher than what left to reach ``max_mc``
         assert ship.megacredits == ship.max_mc
         assert planet.megacredits == planet_state[1] - ship.max_mc
     else:
         # in some direction and resources are available
-        assert ship.megacredits == ship_state[1] + transfer[1]
-        assert planet.megacredits == planet_state[1] - transfer[1]
+        assert ship.megacredits == ship_state[1] + transfer.megacredits
+        assert planet.megacredits == planet_state[1] - transfer.megacredits
 
     # Transfering pythonium...
-    if transfer[2] > 0 and planet_state[2] < transfer[0]:
+    if transfer.pythonium > 0 and planet_state[2] < transfer.clans:
         # from planet to ship, and attempt to transfer more than available
         assert ship.pythonium == planet_state[2]
         assert not planet.pythonium
-    elif transfer[2] < 0 and ship_state[2] < abs(transfer[2]):
+    elif transfer.pythonium < 0 and ship_state[2] < abs(transfer.pythonium):
         # from ship to planet, and attempt to transfer more than available
         assert planet.pythonium == planet_state[2] + ship_state[2]
         assert not ship.pythonium
@@ -72,7 +74,7 @@ def test_ship_transfer(game, planet_state, ship_state, transfer):
         # in some direction and resources are available
         transfered_clans = ship.clans - ship_state[0]
         assert ship.pythonium == \
-            ship_state[2] + min(transfer[2], available_space - transfered_clans)
+            ship_state[2] + min(transfer.pythonium, available_space - transfered_clans)
         assert planet.pythonium == planet_state[2] - ship.pythonium + ship_state[2]
 
     # Resources can never be negative
@@ -100,7 +102,7 @@ def test_ship_colonize_planet(game, transfered_clans):
     # ship must have clans
     ship.clans = transfered_clans
 
-    game.action_ship_transfer(ship, (-transfered_clans, 0, 0))
+    game.action_ship_transfer(ship, TransferVector(clans=-transfered_clans))
 
     assert planet.player == ship.player
     assert planet.clans == transfered_clans
@@ -162,19 +164,16 @@ def test_planet_build_mines(game, planet_state, existing_mines, new_mines):
         assert planet.mines == existing_mines + can_build_mines
 
 
-@pytest.mark.parametrize('planet_state, ship_type', [
-    ((0, 0), Ship.CARRIER),
-    ((2000, 2000), Ship.CARRIER),
-    ((0, 0), Ship.WAR),
-    ((2000, 2000), Ship.WAR),
-    ((0, 0), 'sarasa'),
-    ((2000, 2000), 'sarasa'),
+@pytest.mark.parametrize('planet_state, ship_type_name', [
+    ((0, 0), 'carrier'),
+    ((2000, 2000), 'carrier'),
+    ((0, 0), 'war'),
+    ((2000, 2000), 'war'),
 ])
-def test_planet_build_ship(test_player, game, planet_state, ship_type):
+def test_planet_build_ship(test_player, game, planet_state, ship_type_name):
     """
     Planet build ship:
         - New ship of demanded type located in same position as planet
-    Planet attempt to build unkown ship type
     Planet attempt to build a ship without available resources
     """
     planet = list(game.galaxy.get_player_planets(test_player.name).values())[0]
@@ -183,10 +182,7 @@ def test_planet_build_ship(test_player, game, planet_state, ship_type):
     planet.pythonium = planet_state[1]
     # ``can_build_mines`` also checks for ``max_mines``
 
-    if ship_type not in Ship.COSTS.keys():
-        with pytest.raises(KeyError):
-            planet.can_build_ship(ship_type)
-        return
+    ship_type = game.gmode.ship_types.get(ship_type_name)
 
     can_build_ship = planet.can_build_ship(ship_type)
     ships_count = len(game.galaxy.ships)
@@ -327,23 +323,23 @@ def test_ship_to_ship_conflict(game, ships_args):
 
 @pytest.mark.parametrize('planet_args, ships_args', [
     [
-        (1000, (10, 10), 0, 0, 0, 0, 1),
+        (1000, (10, 10), 0, 0, 0, 0, 1, (10, 20)),
         [
             (1, 0, (10, 10), 0, 0, 100),
         ]
     ], [
-        (1000, (10, 10), 0, 0, 0, 0, 1),
+        (1000, (10, 10), 0, 0, 0, 0, 1, (10, 20)),
         [
             (1, 0, (10, 10), 0, 0, 100),
         ]
     ], [
-        (1000, (10, 10), 0, 0, 0, 0, 1),
+        (1000, (10, 10), 0, 0, 0, 0, 1, (10, 20)),
         [
             (2, 0, (10, 10), 0, 0, 100),
             (2, 0, (10, 10), 0, 0, 100)
         ]
     ], [
-        (1000, (10, 10), 0, 0, 0, 0, 1),
+        (1000, (10, 10), 0, 0, 0, 0, 1, (10, 20)),
         [
             (1, 0, (10, 10), 0, 0, 100),
             (4, 0, (10, 10), 0, 0, 100)

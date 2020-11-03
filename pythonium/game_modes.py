@@ -1,16 +1,41 @@
 import copy
-import random
 from collections import Counter
 
 from . import cfg
 from .galaxy import Galaxy
 from .planet import Planet
 from .ship import Ship
+from .ship_type import ShipType
+from .vectors import CostVector
+
+
+CLASSIC_MODE_SHIPS = (
+    ShipType(name='carrier',
+             cost=CostVector(megacredits=600, pythonium=450),
+             max_cargo=1200,
+             max_mc=10**3,
+             attack=0),
+    ShipType(name='war',
+             cost=CostVector(megacredits=1000, pythonium=600),
+             max_cargo=1200,
+             max_mc=10**3,
+             attack=0),
+)
+
+CLASSIC_MINE_COST = (
+    CostVector(megacredits=3, pythonium=5)
+)
 
 
 class GameMode:
 
-    tenacity = cfg.tenacity
+    def __init__(self,
+                 ship_types=CLASSIC_MODE_SHIPS,
+                 mine_cost=CLASSIC_MINE_COST,
+                 tenacity=cfg.tenacity):
+        self.ship_types = {st.name: st for st in ship_types}
+        self.mine_cost = mine_cost
+        self.tenacity = tenacity
 
     def build_galaxy(self, players):
         """
@@ -46,10 +71,10 @@ class ClassicMode(GameMode):
                  map_size=(500, 500),
                  pythonium_stock=10**6,
                  pythonium_in_surface=0.1,
-                 starting_carriers=2,
+                 starting_ships=(('carrier', 2),),
                  starting_resources=(10**4, 2*10**3, 5*10**3),
-                 max_turn=150):
-
+                 max_turn=150,
+                 *args, **kwargs):
         """
         :param planets_count: Cantidad de planets en la galaxy
         :type planets_count: int
@@ -66,11 +91,12 @@ class ClassicMode(GameMode):
         ;paran max_turn; Número máximo de turnos
         :type limi: int
         """
+        super().__init__(*args, **kwargs)
         self.planets_count = planets_count
         self.map_size = map_size
         self.pythonium_stock = pythonium_stock
         self.pythonium_in_surface = pythonium_in_surface
-        self.starting_carriers = starting_carriers
+        self.starting_ships = starting_ships
         self.starting_resources = starting_resources
         self.max_turn = max_turn
         self.max_ships = max_ships
@@ -124,7 +150,8 @@ class ClassicMode(GameMode):
                             temperature=temperature,
                             underground_pythonium=underground_pythonium,
                             concentration=concentration,
-                            pythonium=pythonium)
+                            pythonium=pythonium,
+                            mine_cost=self.mine_cost)
             planets[planet.position] = planet
 
         galaxy = Galaxy(self.map_size, planets, [])
@@ -155,15 +182,16 @@ class ClassicMode(GameMode):
             homeworld.megacredits = self.starting_resources[2]
 
             # 2.b Asigna cargueros
-            for _ in range(self.starting_carriers):
-                ship_features = Ship.get_type(Ship.CARRIER)
-                ship = Ship(player=player.name,
-                            type=Ship.CARRIER,
-                            position=homeworld.position,
-                            max_cargo=ship_features[0],
-                            max_mc=ship_features[1],
-                            attack=ship_features[2])
-                galaxy.add_ship(ship)
+            for ship_type_name, quantity in self.starting_ships:
+                ship_type = self.ship_types[ship_type_name]
+                for _ in range(quantity):
+                    ship = Ship(player=player.name,
+                                type=ship_type.name,
+                                position=homeworld.position,
+                                max_cargo=ship_type.max_cargo,
+                                max_mc=ship_type.max_mc,
+                                attack=ship_type.attack)
+                    galaxy.add_ship(ship)
         return galaxy
 
     def galaxy_for_player(self, galaxy, player):
@@ -236,9 +264,9 @@ class ClassicMode(GameMode):
         planets_score = Counter(
             (p.player for p in galaxy.planets.values() if p.player is not None))
         ships_carrier_score = Counter(
-            (s.player for s in galaxy.ships if s.type == Ship.CARRIER))
+            (s.player for s in galaxy.ships if s.type == 'carrier'))
         ships_war_score = Counter(
-            (s.player for s in galaxy.ships if s.type == Ship.WAR))
+            (s.player for s in galaxy.ships if s.type == 'war'))
         score = []
         for player in players:
             name = player.name
@@ -256,7 +284,9 @@ class ClassicMode(GameMode):
 
     def get_context(self, galaxy, players, turn):
         score = self.get_score(galaxy, players, turn)
+        # FIXME: Can the user change the ship types attribute?
         return {
+            'ship_types': self.ship_types,
             'ship_speed': cfg.ship_speed,
             'tolerable_taxes': cfg.tolerable_taxes,
             'happypoints_tolerance': cfg.happypoints_tolerance,

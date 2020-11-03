@@ -33,4 +33,4 @@ def dummy_planet():
     """
     Returns a dummy instance of :class:`Planet`
     """
-    return Planet(1, (0, 0), cfg.optimal_temperature, 0, 0, 0)
+    return Planet(1, (0, 0), cfg.optimal_temperature, 0, 0, 0, (10, 20))

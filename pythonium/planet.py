@@ -1,7 +1,9 @@
 import attr
 
 from . import cfg, validators
+from .vectors import CostVector
 from .ship import Ship
+from .ship_type import ShipType
 
 
 @attr.s(auto_attribs=True)
@@ -26,6 +28,7 @@ class Planet:
     concentration: float = attr.ib(converter=float,
                                    validator=[validators.is_valid_ratio])
     pythonium: int = attr.ib(converter=int)
+    mine_cost: CostVector = attr.ib()
 
     # State in turn
     player: str = attr.ib(default=None)
@@ -37,7 +40,7 @@ class Planet:
 
     # User controls
     new_mines: int = attr.ib(converter=int, default=0, init=False)
-    new_ship: int = attr.ib(converter=int, default=-1, init=False)
+    new_ship: ShipType = attr.ib(default=None, init=False)
     taxes: int = attr.ib(converter=int,
                          default=0,
                          validator=[validators.is_valid_ratio],
@@ -124,10 +127,10 @@ class Planet:
 
     def can_build_mines(self):
         return int(min(
-            self.pythonium / cfg.mine_cost[1],
-            self.megacredits / cfg.mine_cost[0],
+            self.pythonium / self.mine_cost.pythonium,
+            self.megacredits / self.mine_cost.megacredits,
             self.max_mines - self.mines))
 
     def can_build_ship(self, ship_type):
-        ship_cost = Ship.COSTS[ship_type]
-        return self.megacredits >= ship_cost[0] and self.pythonium >= ship_cost[1]
+        return self.megacredits >= ship_type.cost.megacredits \
+            and self.pythonium >= ship_type.cost.pythonium
