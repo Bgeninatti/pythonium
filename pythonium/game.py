@@ -404,10 +404,6 @@ class Game:
         return
 
     def action_ship_transfer(self, ship, transfer):
-        if not any(transfer):
-            # Nada que hacer
-            return
-
         planet = self.galaxy.planets.get(ship.position)
 
         if not planet:
@@ -422,35 +418,33 @@ class Game:
                                         'planet': planet.pid})
             return
 
-        tclans, tmc, tpythonium = transfer
-
         # Check if transfers + existances are grather than capacity on clans and pythonium
         available_cargo = ship.max_cargo - (ship.pythonium + ship.clans)
 
         # Adjust transfers to real availability in planet and ship
-        tclans = min(tclans, planet.clans, available_cargo) \
-            if tclans > 0 else max(tclans, -ship.clans)
-        tpythonium = min(tpythonium, planet.pythonium, available_cargo - tclans) \
-            if tpythonium > 0 else max(tpythonium, -ship.pythonium)
-        tmc = min(tmc, planet.megacredits, ship.max_mc - ship.megacredits) \
-            if tmc > 0 else max(tmc, -ship.megacredits)
+        transfer.clans = min(transfer.clans, planet.clans, available_cargo) \
+            if transfer.clans > 0 else max(transfer.clans, -ship.clans)
+        transfer.pythonium = min(transfer.pythonium, planet.pythonium, available_cargo - transfer.clans) \
+            if transfer.pythonium > 0 else max(transfer.pythonium, -ship.pythonium)
+        transfer.megacredits = min(transfer.megacredits, planet.megacredits, ship.max_mc - ship.megacredits) \
+            if transfer.megacredits > 0 else max(transfer.megacredits, -ship.megacredits)
 
         # Do transfers
-        ship.clans += tclans
-        ship.pythonium += tpythonium
-        ship.megacredits += tmc
+        ship.clans += transfer.clans
+        ship.pythonium += transfer.pythonium
+        ship.megacredits += transfer.megacredits
 
         self._logger.info("Ship transfer to planet",
                           extra={'turn': self.turn,
                                  'player': ship.player,
                                  'ship': ship.nid,
-                                 'clans': tclans,
-                                 'pythonium': tpythonium,
-                                 'megacredits': tmc})
+                                 'clans': transfer.clans,
+                                 'pythonium': transfer.pythonium,
+                                 'megacredits': transfer.megacredits})
 
-        planet.clans -= tclans
-        planet.pythonium -= tpythonium
-        planet.megacredits -= tmc
+        planet.clans -= transfer.clans
+        planet.pythonium -= transfer.pythonium
+        planet.megacredits -= transfer.megacredits
 
         if not planet.clans:
             # If nobody stays in the planet the player doesn't own it anymore
@@ -475,9 +469,7 @@ class Game:
             # Nada que hacer
             return
 
-        cost = cfg.mine_cost
-        new_mines = int(min(new_mines,
-                            planet.can_build_mines()))
+        new_mines = int(min(new_mines, planet.can_build_mines()))
 
         if not new_mines:
             self._logger.warning("Can not build mines",
@@ -490,8 +482,8 @@ class Game:
             return
 
         planet.mines += new_mines
-        planet.megacredits -= new_mines * cost[0]
-        planet.pythonium -= new_mines * cost[1]
+        planet.megacredits -= new_mines * self.gmode.mine_cost.megacredits
+        planet.pythonium -= new_mines * self.gmode.mine_cost.pythonium
 
         self._logger.info("New mines",
                           extra={'turn': self.turn,
@@ -511,13 +503,9 @@ class Game:
             return
 
         try:
-            can_build = planet.can_build_ship(ship_type)
-            ship_features = Ship.get_type(ship_type)
-            cost = Ship.COSTS[ship_type]
-
-            if not ship_features:
+            if not ship_type:
                 self._logger.error("Ship features not found",
-                                   extra={'turn': self.turn, 'ship_type': ship_type})
+                                   extra={'turn': self.turn, 'ship_type': ship_type.name})
                 return
 
         except KeyError:
@@ -525,10 +513,10 @@ class Game:
                                  extra={'turn': self.turn,
                                         'player': planet.player,
                                         'planet': planet.pid,
-                                        'ship_type': ship_type})
+                                        'ship_type': ship_type.name})
             return
 
-        if not can_build:
+        if not planet.can_build_ship(ship_type):
             self._logger.warning("Missing resources",
                                  extra={'turn': self.turn,
                                         'planet': planet.pid,
@@ -538,14 +526,14 @@ class Game:
             return
 
         ship = Ship(player=planet.player,
-                    type=ship_type,
+                    type=ship_type.name,
                     position=planet.position,
-                    max_cargo=ship_features[0],
-                    max_mc=ship_features[1],
-                    attack=ship_features[2])
+                    max_cargo=ship_type.max_cargo,
+                    max_mc=ship_type.max_mc,
+                    attack=ship_type.attack)
 
-        planet.megacredits -= cost[0]
-        planet.pythonium -= cost[1]
+        planet.megacredits -= ship_type.cost.megacredits
+        planet.pythonium -= ship_type.cost.pythonium
 
         self.galaxy.add_ship(ship)
 
@@ -553,7 +541,7 @@ class Game:
                           extra={'turn': self.turn,
                                  'player': planet.player,
                                  'planet': planet.pid,
-                                 'ship_type': ship_type})
+                                 'ship_type': ship_type.name})
 
     def action_planet_set_taxes(self, planet, taxes):
         if planet.taxes == taxes:

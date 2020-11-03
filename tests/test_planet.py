@@ -27,7 +27,7 @@ def test_rioting_index(dummy_planet, happypoints):
 
 @pytest.mark.parametrize('temperature', range(1, 100))
 def test_max_happypoints(temperature):
-    planet = Planet(1, (0, 0), temperature, 0, 0, 0)
+    planet = Planet(1, (0, 0), temperature, 0, 0, 0, (10, 20))
 
     if not temperature or temperature == 100:
         assert planet.max_happypoints == cfg.happypoints_tolerance

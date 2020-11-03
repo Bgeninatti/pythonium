@@ -1,5 +1,7 @@
+
 import attr
-from . import cfg, validators
+from .vectors import TransferVector
+from . import validators
 
 @attr.s
 class Ship:
@@ -23,26 +25,11 @@ class Ship:
     ============================================================
     """
 
-    # TODO: Put all this in a `ShipType` class and make it part of the gamemod or cfg
-    CARRIER, WAR = range(2)
-
-    # (max_cargo, max_mc, attack)
-    TYPES = {
-        CARRIER: (1200, 10000, 0),
-        WAR: (100, 10000, 100),
-    }
-
-    # Cost format (mc, p)
-    COSTS = {
-        CARRIER: (600, 300),
-        WAR: (1000, 500)
-    }
-
     # Initial conditions
     # The id is set when the ship is added to the galaxy
     nid: int = attr.ib(init=False, default=None)
     player: str = attr.ib()
-    type: int = attr.ib(converter=int)
+    type: int = attr.ib(converter=str)
     position: tuple = attr.ib(converter=tuple,
                               validator=[validators.is_valid_position])
     max_cargo: int = attr.ib(converter=int)
@@ -58,22 +45,10 @@ class Ship:
     target: tuple = attr.ib(default=None,
                             init=False,
                             validator=[validators.is_valid_position])
-    # transfer format (clans, mc, pythonium)
-    # TODO: this can be a named tuple
-    transfer = attr.ib(converter=tuple,
-                       default=(0, 0, 0),
-                       init=False,
-                       validator=[validators.is_valid_transfer])
+    transfer: TransferVector = attr.ib(default=TransferVector(), init=False)
 
     def __repr__(self):
         return f"Ship #{self.nid} <player={self.player}>"
-
-    @classmethod
-    def get_type(cls, ship_type):
-        """
-        Return the specs of a given ship type or ``None`` if the type don't exist.
-        """
-        return cls.TYPES.get(ship_type)
 
     def get_orders(self):
         """

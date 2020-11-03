@@ -5,7 +5,8 @@ from pythonium import Ship, Planet, Galaxy, GameMode
 
 class SandboxGameMode(GameMode):
 
-    def __init__(self, max_ships=500):
+    def __init__(self, max_ships=500, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.max_ships = max_ships
 
     def build_galaxy(self, players):
@@ -34,7 +35,8 @@ class SandboxGameMode(GameMode):
                             temperature=50,
                             underground_pythonium=1000,
                             concentration=1,
-                            pythonium=100)
+                            pythonium=100,
+                            mine_cost=self.mine_cost)
             planets[position] = planet
         galaxy = Galaxy(map_size, planets, [])
 
@@ -44,13 +46,13 @@ class SandboxGameMode(GameMode):
         homeworld.pythonium = 1000
         homeworld.megacredits = 1000
 
-        ship_features = Ship.get_type(Ship.CARRIER)
+        ship_type = self.ship_types.get('carrier')
         ship = Ship(player=player.name,
-                    type=Ship.CARRIER,
+                    type=ship_type.name,
                     position=homeworld.position,
-                    max_cargo=ship_features[0],
-                    max_mc=ship_features[1],
-                    attack=ship_features[2])
+                    max_cargo=ship_type.max_cargo,
+                    max_mc=ship_type.max_mc,
+                    attack=ship_type.attack)
         galaxy.add_ship(ship)
 
         return galaxy
