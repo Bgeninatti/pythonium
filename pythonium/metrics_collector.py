@@ -221,7 +221,7 @@ class MetricsCollector:
         built_mines = self.aggregate_events_for_players(
             self.get_events_for_players("New mines", "new_mines"), sum)
         built_ships = self.aggregate_events_for_players(
-            self.get_events_for_players("New ship built", "ship_type"), len)
+            self.get_events_for_players("New ship built", "ship_type", bool), len)
 
         total_dpythonium = self.aggregate_events_for_players(dpythonium, sum)
         total_dclans = self.aggregate_events_for_players(dclans, sum)
