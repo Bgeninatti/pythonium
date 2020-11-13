@@ -8,6 +8,9 @@ class CostVector:
     megacredits: int = attr.ib(converter=int, default=0)
     pythonium: int = attr.ib(converter=int, default=0)
 
+    def __repr__(self):
+        return f"({self.megacredits}, {self.pythonium})"
+
 @attr.s
 class TransferVector:
     """
@@ -21,5 +24,8 @@ class TransferVector:
 
     def __bool__(self):
         return abs(self.megacredits + self.pythonium + self.clans) > 0
+
+    def __repr__(self):
+        return f"({self.clans}, {self.megacredits}, {self.pythonium})"
 
 
