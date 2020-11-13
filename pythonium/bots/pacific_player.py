@@ -27,7 +27,8 @@ class Player(AbstractPlayer):
 
             # Si no es de nadie y tengo clanes lo colonizo
             if ship.clans and planet and not planet.player:
-                ship.transfer = (-100, -50, 0)
+                ship.transfer.clans = -100
+                ship.transfer.megacredits = -50
 
             # Tengo clanes?
             if not ship.clans:
@@ -35,7 +36,7 @@ class Player(AbstractPlayer):
                 # Los puedo sacar del planeta en el que estoy?
                 if planet is not None and planet.player == self.name \
                         and planet.clans > 500:
-                    ship.transfer = (200, 0, 0)
+                    ship.transfer.clans = 200
                 else:
                     # Entonces voy a buscar en que planeta hay y voy a ir ahí.
 
@@ -63,7 +64,7 @@ class Player(AbstractPlayer):
         for planet in my_planets.values():
             planet.taxes = context.get('tolerable_taxes')
             planet.new_mines = planet.can_build_mines()
-            next_ship = Ship.CARRIER
+            next_ship = context['ship_types']['carrier']
             if planet.can_build_ship(next_ship):
                 planet.new_ship = next_ship
 
