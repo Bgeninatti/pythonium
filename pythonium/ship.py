@@ -1,7 +1,10 @@
 
 import attr
-from .vectors import TransferVector
+
 from . import validators
+from .ship_type import ShipType
+from .vectors import TransferVector
+
 
 @attr.s
 class Ship:
@@ -29,7 +32,8 @@ class Ship:
     # The id is set when the ship is added to the galaxy
     nid: int = attr.ib(init=False, default=None)
     player: str = attr.ib()
-    type: int = attr.ib(converter=str)
+    type: int = attr.ib(
+        validator=[attr.validators.instance_of((ShipType, None.__class__))])
     position: tuple = attr.ib(converter=tuple,
                               validator=[validators.is_valid_position])
     max_cargo: int = attr.ib(converter=int)
@@ -55,7 +59,7 @@ class Ship:
         Compute orders based on player control attributes: ``transfer`` and ``target``
         """
         orders = []
-        if any(self.transfer):
+        if self.transfer:
             orders.append(('ship_transfer', self.nid, self.transfer))
 
         if self.target is not None:
