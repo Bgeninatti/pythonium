@@ -22,13 +22,11 @@ class Planet:
 
     pid: int = attr.ib()
     position: tuple = attr.ib(validator=[validators.is_valid_position])
-    temperature: int = attr.ib(converter=int,
-                               validator=validators.number_between_zero_100)
-    underground_pythonium: int = attr.ib(converter=int)
-    concentration: float = attr.ib(converter=float,
-                                   validator=[validators.is_valid_ratio])
-    pythonium: int = attr.ib(converter=int)
-    mine_cost: CostVector = attr.ib()
+    temperature: int = attr.ib(validator=validators.number_between_zero_100)
+    underground_pythonium: int = attr.ib(validator=[attr.validators.instance_of(int)])
+    concentration: float = attr.ib(validator=[validators.is_valid_ratio])
+    pythonium: int = attr.ib(validator=[attr.validators.instance_of(int)])
+    mine_cost: CostVector = attr.ib(validator=[attr.validators.instance_of(CostVector)])
 
     # State in turn
     player: str = attr.ib(default=None)
@@ -39,8 +37,13 @@ class Planet:
     happypoints: int = attr.ib(converter=int, init=False)
 
     # User controls
-    new_mines: int = attr.ib(converter=int, default=0, init=False)
-    new_ship: ShipType = attr.ib(default=None, init=False)
+    new_mines: int = attr.ib(validator=[attr.validators.instance_of(int)],
+                             default=0,
+                             init=False)
+    new_ship: ShipType = attr.ib(
+        default=None,
+        validator=[attr.validators.instance_of((ShipType, None.__class__))],
+        init=False)
     taxes: int = attr.ib(converter=int,
                          default=0,
                          validator=[validators.is_valid_ratio],
@@ -117,7 +120,7 @@ class Planet:
         """
         orders = [('planet_set_taxes', self.pid, self.taxes)]
 
-        if self.new_ship > -1:
+        if self.new_ship is not None:
             orders.append(('planet_build_ship', self.pid, self.new_ship))
 
         if self.new_mines > 0:
