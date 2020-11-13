@@ -16,7 +16,15 @@ from .ship import Ship
 
 class Game:
 
-    def __init__(self, players, gmode, *, renderer=GifRenderer, logdir=None):
+    def __init__(self,
+                 sector,
+                 players,
+                 gmode,
+                 logger,
+                 *,
+                 renderer=GifRenderer,
+                 verbose=False,
+                 raise_exceptions=False):
         """
         :param gmode: Class that define some game rules
         :tpye gmode: :class:GameMode
@@ -26,28 +34,19 @@ class Game:
         if len(players) != len({p.name for p in players}):
             raise ValueError("Player names must be unique")
 
-        self.sector = self._build_random_sector_name(6)
-        if logdir:
-            self.logfile = os.path.join(logdir, f"{self.sector}.log")
-        else:
-            self.logfile = None
-
+        self.sector = sector
         sys.stdout.write(f"** Pythonium **\n")
         sys.stdout.write(f"Running battle in Sector #{self.sector}\n")
         self.gmode = gmode
         self.players = players
-        self._logger = get_logger(__name__, filename=self.logfile)
+        self._logger = logger
+        self.raise_exceptions = raise_exceptions
         self._logger.info("Initializing galaxy",
                           extra={'players': len(self.players), 'sector': self.sector})
         self.galaxy = self.gmode.build_galaxy(self.players)
         self._logger.info("Galaxy initialized")
         self._renderer = renderer(self.galaxy, f"Sector #{self.sector}")
         self.turn = 0
-
-    @staticmethod
-    def _build_random_sector_name(length):
-        characters = string.ascii_uppercase + string.digits
-        return ''.join([random.choice(characters) for _ in range(length)])
 
     def extract_player_orders(self, player, galaxy, context):
         player_galaxy = player.next_turn(galaxy, context)
@@ -109,6 +108,8 @@ class Game:
                                        extra={'turn': self.turn,
                                               'player': player.name,
                                               'reason': e})
+                    if self.raise_exceptions:
+                        raise e
                     continue
 
             if self.gmode.has_ended(self.galaxy, self.turn):
@@ -526,7 +527,7 @@ class Game:
             return
 
         ship = Ship(player=planet.player,
-                    type=ship_type.name,
+                    type=ship_type,
                     position=planet.position,
                     max_cargo=ship_type.max_cargo,
                     max_mc=ship_type.max_mc,
