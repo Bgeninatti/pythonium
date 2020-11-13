@@ -11,7 +11,7 @@ class ContextLogger(logging.Logger):
         super()._log(level, msg, args, exc_info, extra)
 
 
-def get_logger(name, lvl=logging.INFO, filename=None):
+def get_logger(name, lvl=logging.INFO, filename=None, verbose=False):
 
     formatter = logging.Formatter(
         '%(asctime)s [%(levelname)s] %(module)s:%(funcName)s %(message)s')
@@ -22,10 +22,12 @@ def get_logger(name, lvl=logging.INFO, filename=None):
     if filename:
         handler = logging.FileHandler(filename)
         handler.setFormatter(formatter)
-    else:
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setFormatter(formatter)
-    logger.addHandler(handler)
+        logger.addHandler(handler)
+
+    if verbose or not filename:
+        stream_handler = logging.StreamHandler(sys.stdout)
+        stream_handler.setFormatter(formatter)
+        logger.addHandler(stream_handler)
 
     logger.setLevel(lvl)
 
