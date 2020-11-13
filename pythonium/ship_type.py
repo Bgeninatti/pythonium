@@ -14,3 +14,5 @@ class ShipType:
     max_mc: int = attr.ib()
     attack: int = attr.ib()
 
+    def __repr__(self):
+        return self.name
