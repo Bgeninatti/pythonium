@@ -283,7 +283,7 @@ class Game:
                               extra={'turn': self.turn,
                                      'player': ship.player,
                                      'ship': ship.nid,
-                                     'ship_type': ship.type,
+                                     'ship_type': ship.type.name,
                                      'position': ship.position})
             self.galaxy.explosions.append(
                 Explosion(ship, len(ships), total_attack)
@@ -521,7 +521,7 @@ class Game:
             self._logger.warning("Missing resources",
                                  extra={'turn': self.turn,
                                         'planet': planet.pid,
-                                        'ship_type': ship_type,
+                                        'ship_type': ship_type.name,
                                         'megacredits': planet.megacredits,
                                         'pythonium': planet.pythonium})
             return

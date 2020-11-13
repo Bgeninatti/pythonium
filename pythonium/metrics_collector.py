@@ -33,6 +33,7 @@ class MetricsCollector:
                 groupdict['datetime'].replace(',', '.'))
             extras = groupdict.get('extras')
             if extras:
+                print(extras)
                 groupdict['extras'] = dict((el.split('=') for el in extras.split('; ')))
             self.logdicts.append(groupdict)
         self.turns = [int(l['extras']['turn']) for l in
@@ -198,8 +199,9 @@ class MetricsCollector:
     def build_sections(self):
         # Score
         planet_scores = self.get_metric_for_players("Current score", "planets")
-        carriers_scores = self.get_metric_for_players("Current score", "carrier_ships")
-        warships_scores = self.get_metric_for_players("Current score", "war_ships")
+        # FIXME: This only works with the two classic mode ship types
+        carriers_scores = self.get_metric_for_players("Current score", "ships_carrier")
+        warships_scores = self.get_metric_for_players("Current score", "ships_war")
         ships_scores = self.get_metric_for_players("Current score", "total_ships")
 
         # Runtime
