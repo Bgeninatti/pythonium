@@ -48,7 +48,7 @@ class SandboxGameMode(GameMode):
 
         ship_type = self.ship_types.get('carrier')
         ship = Ship(player=player.name,
-                    type=ship_type.name,
+                    type=ship_type,
                     position=homeworld.position,
                     max_cargo=ship_type.max_cargo,
                     max_mc=ship_type.max_mc,

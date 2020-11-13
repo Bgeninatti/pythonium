@@ -2,7 +2,7 @@
 import math
 
 import pytest
-from pythonium import Planet, Ship, cfg, TransferVector
+from pythonium import Planet, Ship, cfg, TransferVector, CostVector
 
 
 @pytest.mark.parametrize('planet_state, ship_state, transfer_params', [
@@ -287,30 +287,40 @@ def test_planet_produce_resources(test_player, game, planet_state):
 
 @pytest.mark.parametrize('ships_args', [
     [
-        (1, 0, (10, 10), 0, 0, 100),
-        (1, 0, (10, 10), 0, 0, 100),
-        (1, 0, (10, 10), 0, 0, 100),
-        (2, 0, (10, 10), 0, 0, 100)
+        (1, 'war', (10, 10), 0, 0, 100),
+        (1, 'war', (10, 10), 0, 0, 100),
+        (1, 'war', (10, 10), 0, 0, 100),
+        (2, 'war', (10, 10), 0, 0, 100)
     ], [
-        (1, 0, (10, 10), 0, 0, 100),
-        (1, 0, (10, 10), 0, 0, 100),
-        (2, 0, (10, 10), 0, 0, 100),
-        (2, 0, (10, 10), 0, 0, 100)
+        (1, 'war', (10, 10), 0, 0, 100),
+        (1, 'war', (10, 10), 0, 0, 100),
+        (2, 'war', (10, 10), 0, 0, 100),
+        (2, 'war', (10, 10), 0, 0, 100)
     ], [
-        (1, 0, (10, 10), 0, 0, 100),
-        (2, 0, (10, 10), 0, 0, 100),
-        (2, 0, (10, 10), 0, 0, 100),
-        (2, 0, (10, 10), 0, 0, 100)
+        (1, 'war', (10, 10), 0, 0, 100),
+        (2, 'war', (10, 10), 0, 0, 100),
+        (2, 'war', (10, 10), 0, 0, 100),
+        (2, 'war', (10, 10), 0, 0, 100)
     ], [
-        (1, 0, (10, 10), 0, 0, 100),
-        (2, 0, (10, 10), 0, 0, 100),
-        (3, 0, (10, 10), 0, 0, 100),
-        (4, 0, (10, 10), 0, 0, 100)
+        (1, 'war', (10, 10), 0, 0, 100),
+        (2, 'war', (10, 10), 0, 0, 100),
+        (3, 'war', (10, 10), 0, 0, 100),
+        (4, 'war', (10, 10), 0, 0, 100)
     ]
 ])
 def test_ship_to_ship_conflict(game, ships_args):
 
-    ships = [Ship(*ship_args) for ship_args in ships_args]
+    ships = []
+    for ship_args in ships_args:
+        ship_type = game.gmode.ship_types.get(ship_args[1])
+        ships.append(
+            Ship(player=ship_args[0],
+                 type=ship_type,
+                 position=ship_args[2],
+                 max_cargo=ship_type.max_cargo,
+                 max_mc=ship_type.max_mc,
+                 attack=ship_type.attack)
+        )
     game.galaxy.ships = ships
 
     game.resolve_ships_to_ship_conflict(ships)
@@ -323,33 +333,50 @@ def test_ship_to_ship_conflict(game, ships_args):
 
 @pytest.mark.parametrize('planet_args, ships_args', [
     [
-        (1000, (10, 10), 0, 0, 0, 0, 1, (10, 20)),
+        (1000, (10, 10), 0, 0, 0, 0, CostVector(pythonium=10, megacredits=20), 1),
         [
-            (1, 0, (10, 10), 0, 0, 100),
+            (1, 'war', (10, 10), 0, 0, 100),
         ]
     ], [
-        (1000, (10, 10), 0, 0, 0, 0, 1, (10, 20)),
+        (1000, (10, 10), 0, 0, 0, 0, CostVector(pythonium=10, megacredits=20), 1),
         [
-            (1, 0, (10, 10), 0, 0, 100),
+            (1, 'war', (10, 10), 0, 0, 100),
         ]
     ], [
-        (1000, (10, 10), 0, 0, 0, 0, 1, (10, 20)),
+        (1000, (10, 10), 0, 0, 0, 0, CostVector(pythonium=10, megacredits=20), 1),
         [
-            (2, 0, (10, 10), 0, 0, 100),
-            (2, 0, (10, 10), 0, 0, 100)
+            (2, 'war', (10, 10), 0, 0, 100),
+            (2, 'war', (10, 10), 0, 0, 100)
         ]
     ], [
-        (1000, (10, 10), 0, 0, 0, 0, 1, (10, 20)),
+        (1000, (10, 10), 0, 0, 0, 0, CostVector(pythonium=10, megacredits=20), 1),
         [
-            (1, 0, (10, 10), 0, 0, 100),
-            (4, 0, (10, 10), 0, 0, 100)
+            (1, 'war', (10, 10), 0, 0, 100),
+            (4, 'war', (10, 10), 0, 0, 100)
         ]
     ]
 ])
 def test_planet_conflict(game, planet_args, ships_args):
 
-    ships = [Ship(*ship_args) for ship_args in ships_args]
-    planet = Planet(*planet_args)
+    ships = []
+    for ship_args in ships_args:
+        ship_type = game.gmode.ship_types.get(ship_args[1])
+        ships.append(
+            Ship(player=ship_args[0],
+                 type=ship_type,
+                 position=ship_args[2],
+                 max_cargo=ship_type.max_cargo,
+                 max_mc=ship_type.max_mc,
+                 attack=ship_type.attack)
+        )
+
+    planet = Planet(pid=planet_args[0],
+                    position=planet_args[1],
+                    temperature=planet_args[2],
+                    underground_pythonium=planet_args[3],
+                    concentration=planet_args[4],
+                    pythonium=planet_args[5],
+                    mine_cost=planet_args[6])
     original_player = planet_args[-1]
     game.galaxy.galaxy = ships
     game.galaxy.planets[planet.position] = planet
