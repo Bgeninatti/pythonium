@@ -265,23 +265,26 @@ class ClassicMode(GameMode):
     def get_score(self, galaxy, players, turn):
         planets_score = Counter(
             (p.player for p in galaxy.planets.values() if p.player is not None))
-        ships_carrier_score = Counter(
-            (s.player for s in galaxy.ships if s.type == 'carrier'))
-        ships_war_score = Counter(
-            (s.player for s in galaxy.ships if s.type == 'war'))
+
+        ship_scores = {}
+        for ship_type in self.ship_types.values():
+            ship_scores[ship_type.name] = Counter(
+                (s.player for s in galaxy.ships if s.type.name == ship_type.name))
         score = []
         for player in players:
             name = player.name
-            war_ships = ships_war_score.get(name, 0)
-            carrier_ships = ships_carrier_score.get(name, 0)
-            score.append({
+            player_score = {
                 'turn': turn,
                 'player': name,
                 'planets': planets_score.get(name, 0),
-                'war_ships': war_ships,
-                'carrier_ships': carrier_ships,
-                'total_ships': war_ships + carrier_ships
-            })
+            }
+            total_ships = 0
+            for ship_type_name, ship_type_score in ship_scores.items():
+                ships_count = ship_type_score.get(name, 0)
+                total_ships += ships_count
+                player_score[f"ships_{ship_type_name}"] = ships_count
+            player_score['total_ships'] = total_ships
+            score.append(player_score)
         return score
 
     def get_context(self, galaxy, players, turn):
