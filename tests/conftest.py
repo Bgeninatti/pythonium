@@ -1,8 +1,10 @@
 
 import pytest
-from pythonium import cfg, Game, AbstractPlayer, Planet
+from pythonium import AbstractPlayer, CostVector, Game, Planet, cfg
+from pythonium.logger import get_logger
 
 from .game_modes import SandboxGameMode
+
 
 class TestPlayer(AbstractPlayer):
 
@@ -26,11 +28,13 @@ def game():
     """
     game_mode = SandboxGameMode()
     player = TestPlayer()
-    return Game([player], game_mode)
+    logger = get_logger(__name__)
+    return Game("test_sector", [player], game_mode, logger)
 
 @pytest.fixture
 def dummy_planet():
     """
     Returns a dummy instance of :class:`Planet`
     """
-    return Planet(1, (0, 0), cfg.optimal_temperature, 0, 0, 0, (10, 20))
+    mine_cost = CostVector(megacredits=10, pythonium=20)
+    return Planet(1, (0, 0), cfg.optimal_temperature, 0, 0, 0, mine_cost)
