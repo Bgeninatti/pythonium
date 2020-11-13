@@ -1,4 +1,6 @@
+
 import copy
+import random
 from collections import Counter
 
 from . import cfg
@@ -8,7 +10,6 @@ from .ship import Ship
 from .ship_type import ShipType
 from .vectors import CostVector
 
-
 CLASSIC_MODE_SHIPS = (
     ShipType(name='carrier',
              cost=CostVector(megacredits=600, pythonium=450),
@@ -17,9 +18,9 @@ CLASSIC_MODE_SHIPS = (
              attack=0),
     ShipType(name='war',
              cost=CostVector(megacredits=1000, pythonium=600),
-             max_cargo=1200,
+             max_cargo=100,
              max_mc=10**3,
-             attack=0),
+             attack=100),
 )
 
 CLASSIC_MINE_COST = (
@@ -121,20 +122,21 @@ class ClassicMode(GameMode):
         # Genera comdiciones iniciales aleatorias para el resto de los atributos
         # de los planets
         # 1.b Distribuye el pythonium en superficie
-        pythonium_distribution = [random.random() for i in range(self.planets_count)]
+        pythonium_distribution = [round(random.random()*100)
+                                  for i in range(self.planets_count)]
         coef_pythonium = total_pythonium/sum(pythonium_distribution)
-        pythonium = (d*coef_pythonium for d in pythonium_distribution)
+        pythonium = (round(d*coef_pythonium) for d in pythonium_distribution)
         # 1.c Distribuye el pythonium subterraneo
         underground_pythonium_distribution = [random.random()
                                               for i in range(self.planets_count)]
         coef_underground_pythonium = total_underground_pythonium / \
             sum(underground_pythonium_distribution)
-        underground_pythonium = (d*coef_underground_pythonium
+        underground_pythonium = (round(d*coef_underground_pythonium)
                                  for d in underground_pythonium_distribution)
         # 1.d Distribuye las concentraciones de pythonium
         concentrations = (round(random.random(), 2) for i in range(self.planets_count))
         # 1.e Genera las temperatures de los planets
-        temperatures = (int(random.random()*100) for i in range(self.planets_count))
+        temperatures = (round(random.random()*100) for i in range(self.planets_count))
 
         planets = {}
         for pid, position, pythonium, underground_pythonium, concentration, temperature \
@@ -186,7 +188,7 @@ class ClassicMode(GameMode):
                 ship_type = self.ship_types[ship_type_name]
                 for _ in range(quantity):
                     ship = Ship(player=player.name,
-                                type=ship_type.name,
+                                type=ship_type,
                                 position=homeworld.position,
                                 max_cargo=ship_type.max_cargo,
                                 max_mc=ship_type.max_mc,
