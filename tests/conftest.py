@@ -1,6 +1,6 @@
 
 import pytest
-from pythonium import AbstractPlayer, CostVector, Game, Planet, cfg
+from pythonium import AbstractPlayer, Transfer, Game, Planet, cfg
 from pythonium.logger import get_logger
 
 from .game_modes import SandboxGameMode
@@ -36,5 +36,5 @@ def dummy_planet():
     """
     Returns a dummy instance of :class:`Planet`
     """
-    mine_cost = CostVector(megacredits=10, pythonium=20)
+    mine_cost = Transfer(megacredits=10, pythonium=20)
     return Planet(1, (0, 0), cfg.optimal_temperature, 0, 0, 0, mine_cost)

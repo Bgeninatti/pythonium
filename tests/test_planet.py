@@ -1,6 +1,6 @@
 
 import pytest
-from pythonium import CostVector, Planet, cfg
+from pythonium import Transfer, Planet, cfg
 
 
 @pytest.mark.parametrize('clans_in_planet', [
@@ -27,7 +27,7 @@ def test_rioting_index(dummy_planet, happypoints):
 
 @pytest.mark.parametrize('temperature', range(1, 100))
 def test_max_happypoints(temperature):
-    mine_cost = CostVector(megacredits=10, pythonium=20)
+    mine_cost = Transfer(megacredits=10, pythonium=20)
     planet = Planet(1, (0, 0), temperature, 0, 0, 0, mine_cost)
 
     if not temperature or temperature == 100:
