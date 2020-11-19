@@ -33,7 +33,6 @@ class MetricsCollector:
                 groupdict['datetime'].replace(',', '.'))
             extras = groupdict.get('extras')
             if extras:
-                print(extras)
                 groupdict['extras'] = dict((el.split('=') for el in extras.split('; ')))
             self.logdicts.append(groupdict)
         self.turns = [int(l['extras']['turn']) for l in
@@ -214,7 +213,7 @@ class MetricsCollector:
         killed_clans = self.aggregate_events_for_players(
             self.get_events_for_players("Planet conquered by force", "clans"), sum)
         ships_lost = self.aggregate_events_for_players(
-            self.get_events_for_players("Explosion", "ship_type"), len)
+            self.get_events_for_players("Explosion", "ship_type", bool), len)
 
         # Economy
         dpythonium = self.get_events_for_players("Pythonium change", "dpythonium")
