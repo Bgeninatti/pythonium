@@ -21,6 +21,7 @@ class MetricsCollector:
         self._footer_font = load_font(24)
         self._section_font = load_font(48)
         self._title_font = load_font(96)
+        self._available_players_colors = ['#EE302F', '#50A8E0']
 
         lines = logfile.readlines()
         self.logdicts = []
@@ -130,9 +131,8 @@ class MetricsCollector:
 
     def plot_metrics_for_players(self, metrics, title, ylabel):
         fig, axs = plt.subplots(figsize=self.figsize)
-        available_players_colors = ['#EE302F', '#50A8E0']
-        for player in (p for p in metrics.keys() if p != 'turn'):
-            color = available_players_colors.pop()
+        for i, player in enumerate(p for p in metrics.keys() if p != 'turn'):
+            color = self._available_players_colors[i]
             axs.plot(metrics['turn'], metrics[player], color=color)
         axs.set_xlabel('')
         axs.set_ylabel(ylabel, fontsize=16)
@@ -364,6 +364,7 @@ class MetricsCollector:
                 header_height)
             report.paste(img, sections_position[title])
 
+        # Draw Header
         draw = ImageDraw.Draw(report)
         draw.text((100, 50), f"Sector #{self.sector}", font=self._title_font, fill='black')
         if len(self.known_players) == 2:
