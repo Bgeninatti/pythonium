@@ -4,9 +4,6 @@ import attr
 from ..ship import Ship
 from ..player import AbstractPlayer
 from ..vectors import Transfer
-from ..logger import get_logger
-
-logger =get_logger(__name__, filename=f"{__name__}.log")
 
 
 class Player(AbstractPlayer):
@@ -31,7 +28,6 @@ class Player(AbstractPlayer):
                 lambda p: p.clans > self.populated_planet_threshold.clans,
                 my_planets.values())
             )
-        logger.info("Populated planets are: ", extra={'planets': len(populated_planets)})
 
         for ship in my_ships:
 
@@ -41,8 +37,6 @@ class Player(AbstractPlayer):
             # Si no es de nadie y tengo clanes lo colonizo
             if ship.clans and planet and not planet.player:
                 ship.transfer = -self.colonization_transfer
-                logger.info("Transfering",
-                            extra={'transfer': attr.asdict(ship.transfer)})
 
             # Tengo clanes?
             if not ship.clans:
@@ -50,17 +44,12 @@ class Player(AbstractPlayer):
                 # Los puedo sacar del planeta en el que estoy?
                 if planet in populated_planets:
                     ship.transfer = self.colonization_refill_transfer
-                    logger.info("Uploading resources",
-                                extra={'transfer': attr.asdict(ship.transfer)})
                 elif populated_planets:
                     # Voy a cualquier planeta del que pueda sacar recursos
                     target_planet = populated_planets.pop()
                     ship.target = target_planet.position
-                    logger.info("Target set to populated planet",
-                                extra={'planet': target_planet.pid,
-                                       'position': target_planet.position})
                 else:
-                    logger.info("Do nothing")
+                    pass
 
             # Si.
             # Voy a buscar un planeta que no sea mio para colonizar.
@@ -72,14 +61,8 @@ class Player(AbstractPlayer):
                                           and p.pid not in visited_planets]
                 if unknown_nearby_planets:
                     destination = random.choice(unknown_nearby_planets)
-                    logger.info("Exploring a nearby unknown planet",
-                                extra={'planet': destination.pid,
-                                       'position': destination.position})
                 else:
                     destination = random.choice(nearby_planets)
-                    logger.info("Moving to nearby planet",
-                                extra={'planet': destination.pid,
-                                       'position': destination.position})
 
                 ship.target = destination.position
 
