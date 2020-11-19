@@ -5,6 +5,7 @@ import sys
 from collections import defaultdict
 from itertools import groupby
 
+import attr
 import numpy as np
 
 from . import cfg
@@ -107,7 +108,11 @@ class Game:
                     self._logger.error("Player lost turn",
                                        extra={'turn': self.turn,
                                               'player': player.name,
-                                              'reason': e})
+                                              'reason': str(e)})
+                    self._logger.info("Player orders computed",
+                                      extra={'turn': self.turn,
+                                             'player': player.name,
+                                             'orders': 0})
                     if self.raise_exceptions:
                         raise e
                     continue
@@ -406,6 +411,12 @@ class Game:
 
     def action_ship_transfer(self, ship, transfer):
         planet = self.galaxy.planets.get(ship.position)
+
+        self._logger.info("Attempt to transfer",
+                          extra={'ship': ship.nid,
+                                 'clans': transfer.clans,
+                                 'pythonium': transfer.pythonium,
+                                 'megacredits': transfer.megacredits})
 
         if not planet:
             self._logger.warning("Can not transfer in deep space",
