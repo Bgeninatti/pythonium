@@ -8,23 +8,23 @@ from .galaxy import Galaxy
 from .planet import Planet
 from .ship import Ship
 from .ship_type import ShipType
-from .vectors import CostVector
+from .vectors import Transfer
 
 CLASSIC_MODE_SHIPS = (
     ShipType(name='carrier',
-             cost=CostVector(megacredits=600, pythonium=450),
+             cost=Transfer(megacredits=600, pythonium=450),
              max_cargo=1200,
              max_mc=10**3,
              attack=0),
     ShipType(name='war',
-             cost=CostVector(megacredits=1000, pythonium=600),
+             cost=Transfer(megacredits=1000, pythonium=600),
              max_cargo=100,
              max_mc=10**3,
              attack=100),
 )
 
 CLASSIC_MINE_COST = (
-    CostVector(megacredits=3, pythonium=5)
+    Transfer(megacredits=3, pythonium=5)
 )
 
 

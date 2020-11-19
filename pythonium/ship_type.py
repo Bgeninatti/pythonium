@@ -1,5 +1,4 @@
 import attr
-from .vectors import CostVector
 
 @attr.s
 class ShipType:

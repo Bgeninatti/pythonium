@@ -1,7 +1,7 @@
 import attr
 
 from . import cfg, validators
-from .vectors import CostVector
+from .vectors import Transfer
 from .ship import Ship
 from .ship_type import ShipType
 
@@ -26,7 +26,7 @@ class Planet:
     underground_pythonium: int = attr.ib(validator=[attr.validators.instance_of(int)])
     concentration: float = attr.ib(validator=[validators.is_valid_ratio])
     pythonium: int = attr.ib(validator=[attr.validators.instance_of(int)])
-    mine_cost: CostVector = attr.ib(validator=[attr.validators.instance_of(CostVector)])
+    mine_cost: Transfer = attr.ib(validator=[attr.validators.instance_of(Transfer)])
 
     # State in turn
     player: str = attr.ib(default=None)
