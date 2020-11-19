@@ -3,7 +3,7 @@ import attr
 
 from . import validators
 from .ship_type import ShipType
-from .vectors import TransferVector
+from .vectors import Transfer
 
 
 @attr.s
@@ -49,7 +49,7 @@ class Ship:
     target: tuple = attr.ib(default=None,
                             init=False,
                             validator=[validators.is_valid_position])
-    transfer: TransferVector = attr.ib(default=TransferVector(), init=False)
+    transfer: Transfer = attr.ib(default=Transfer(), init=False)
 
     def __repr__(self):
         return f"Ship #{self.nid} <player={self.player}>"
