@@ -2,7 +2,7 @@
 import math
 
 import pytest
-from pythonium import Planet, Ship, cfg, TransferVector, CostVector
+from pythonium import Planet, Ship, cfg, Transfer
 
 
 @pytest.mark.parametrize('planet_state, ship_state, transfer_params', [
@@ -22,9 +22,9 @@ def test_ship_transfer(game, planet_state, ship_state, transfer_params):
     ship.clans = ship_state[0]
     ship.megacredits = ship_state[1]
     ship.pythonium = ship_state[2]
-    transfer = TransferVector(clans=transfer_params[0],
-                              megacredits=transfer_params[1],
-                              pythonium=transfer_params[2])
+    transfer = Transfer(clans=transfer_params[0],
+                        megacredits=transfer_params[1],
+                        pythonium=transfer_params[2])
     available_space = ship.max_cargo - (ship.clans + ship.pythonium)
 
     game.action_ship_transfer(ship, transfer)
@@ -102,7 +102,7 @@ def test_ship_colonize_planet(game, transfered_clans):
     # ship must have clans
     ship.clans = transfered_clans
 
-    game.action_ship_transfer(ship, TransferVector(clans=-transfered_clans))
+    game.action_ship_transfer(ship, Transfer(clans=-transfered_clans))
 
     assert planet.player == ship.player
     assert planet.clans == transfered_clans
@@ -333,23 +333,23 @@ def test_ship_to_ship_conflict(game, ships_args):
 
 @pytest.mark.parametrize('planet_args, ships_args', [
     [
-        (1000, (10, 10), 0, 0, 0, 0, CostVector(pythonium=10, megacredits=20), 1),
+        (1000, (10, 10), 0, 0, 0, 0, Transfer(pythonium=10, megacredits=20), 1),
         [
             (1, 'war', (10, 10), 0, 0, 100),
         ]
     ], [
-        (1000, (10, 10), 0, 0, 0, 0, CostVector(pythonium=10, megacredits=20), 1),
+        (1000, (10, 10), 0, 0, 0, 0, Transfer(pythonium=10, megacredits=20), 1),
         [
             (1, 'war', (10, 10), 0, 0, 100),
         ]
     ], [
-        (1000, (10, 10), 0, 0, 0, 0, CostVector(pythonium=10, megacredits=20), 1),
+        (1000, (10, 10), 0, 0, 0, 0, Transfer(pythonium=10, megacredits=20), 1),
         [
             (2, 'war', (10, 10), 0, 0, 100),
             (2, 'war', (10, 10), 0, 0, 100)
         ]
     ], [
-        (1000, (10, 10), 0, 0, 0, 0, CostVector(pythonium=10, megacredits=20), 1),
+        (1000, (10, 10), 0, 0, 0, 0, Transfer(pythonium=10, megacredits=20), 1),
         [
             (1, 'war', (10, 10), 0, 0, 100),
             (4, 'war', (10, 10), 0, 0, 100)
