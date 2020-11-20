@@ -27,10 +27,20 @@ class Game:
                  verbose=False,
                  raise_exceptions=False):
         """
+        :param sector: Sector name
+        :type sector: str
+        :param players: Players for the game. Supports one or two players.
+        :type players: list of instances of classes that extends
+            from :class:`AbstractPlayer`
         :param gmode: Class that define some game rules
-        :tpye gmode: :class:GameMode
-        :param players: Lista de players
-        :type players: :class:`Jugador`
+        :type gmode: :class:GameMode
+        :param logger: Logger for the game
+        :param renderer: Instance that renders the game on each turn
+        :param verbose: If ``True`` print the logs in stdout
+        :type verbose: bool
+        :param raise_exceptions: If ``True`` stop the game if an exception is raised when
+            computing player actions. Useful for debuging players.
+        :type raise_exceptions: bool
         """
         if len(players) != len({p.name for p in players}):
             raise ValueError("Player names must be unique")

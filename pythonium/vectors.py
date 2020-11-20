@@ -4,15 +4,65 @@ import attr
 @attr.s
 class Transfer:
     """
-    Represent the transfer of resources from ship
-    to planet or vice-versa, or cost of structures.
+    Represent the transfer of resources from a ship
+    to a planet and vice-versa, or the cost of structures.
     This second case can be considered as a transfer between the player
     and the game.
+
+    Some useful properties of this class are:
+
+    **Negation**
+
+    Changes the direction of the transfer.
+
+    >>> t = Transfer(clans=100, megacredits=100, pythonium=100)
+    >>> print(-t)
+    Transfer(megacredits=-100, pythonium=-100, clans=-100)
+
+    **Addition and Subtraction**
+
+    Add/subtracts two transfers
+
+    >>> t1 = Transfer(clans=100, megacredits=100, pythonium=100)
+    >>> t2 = Transfer(clans=10, megacredits=10, pythonium=10)
+    >>> print(t1 + t2)
+    Transfer(megacredits=110, pythonium=110, clans=110)
+
+    **Multiplication and Division**
+
+    Multiplies/divides a transfer with an scalar
+
+    >>> t = Transfer(clans=100, megacredits=100, pythonium=100)
+    >>> print(t*1.5)
+    Transfer(megacredits=150, pythonium=150, clans=150)
+    >>> print(t/1.5)
+    Transfer(megacredits=150, pythonium=150, clans=150)
+
+    **Empty transfers**
+
+    The conversion of a transfer to a boolean return ``False`` if the transfer is empty
+
+    >>> t = Transfer()
+    >>> print(bool(t))
+    False
+
     """
 
     megacredits: int = attr.ib(converter=int, default=0)
+    """
+    Amount of megacredits to transfer
+    """
+
     pythonium: int = attr.ib(converter=int, default=0)
+    """
+    Amount of pythonium to transfer
+    """
+
     clans: int = attr.ib(converter=int, default=0)
+    """
+    Amount of clans to transfer
+    """
+
 
     def __neg__(self):
         return self.__class__(megacredits=-self.megacredits,
@@ -42,7 +92,7 @@ class Transfer:
                               pythonium=self.pythonium * factor)
 
 
-    def __div__(self, denom):
+    def __truediv__(self, denom):
 
         if not isinstance(denom, (int, float)):
             msg = "Can not apply division to {}".format(type(denom))
