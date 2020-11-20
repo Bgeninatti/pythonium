@@ -109,11 +109,11 @@ def test_ship_colonize_planet(game, transfered_clans):
 
 
 @pytest.mark.parametrize('planet_state, ship_state, transfer', [
-    ((100, 100, 100), (100, 100, 100), (-100, -100, -100)),
-    ((100, 100, 100), (0, 0, 0), (100, 100, 100)),
-    ((100, 100, 100), (10, 10, 10), (-100, -100, -100)),
-    ((100, 100, 100), (0, 0, 0), (0, 10**10, 0)),
-    ((10, 10, 10), (0, 0, 0), (100, 100, 100)),
+    ((100, 100, 100), (100, 100, 100), Transfer(clans=-100, megacredits=-100, pythonium=-100)),
+    ((100, 100, 100), (0, 0, 0), Transfer(clans=100, megacredits=100, pythonium=100)),
+    ((100, 100, 100), (10, 10, 10), Transfer(clans=-100, megacredits=-100, pythonium=-100)),
+    ((100, 100, 100), (0, 0, 0), Transfer(megacredits=10**10)),
+    ((10, 10, 10), (0, 0, 0), Transfer(clans=100, megacredits=100, pythonium=100)),
 ])
 def test_ship_attempt_transfer_to_enemy(game, planet_state, ship_state, transfer):
     ship = game.galaxy.ships[0]
