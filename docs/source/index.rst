@@ -107,12 +107,5 @@ Check out the :doc:`tutorial` to see how to do it.
    :maxdepth: 2
    :caption: Contents
 
-
-   index
    tutorial
-
-.. toctree::
-   :maxdepth: 2
-   :caption: API Reference
-
    api
