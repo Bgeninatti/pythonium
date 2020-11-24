@@ -1,6 +1,6 @@
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0"
+version = "0.2.0a0"
 version_files = [
     "pythonium/__version__.py",
     "setup.py:version",
