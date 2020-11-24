@@ -1,4 +1,4 @@
-
+.. _First Player:
 
 Coding your first player
 ========================
