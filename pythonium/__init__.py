@@ -12,6 +12,3 @@ from .vectors import Transfer
 
 __all__ = ['Planet', 'Galaxy', 'Ship', 'ShipType', 'Explosion', 'ClassicMode', 'GameMode',
            'Game', 'GifRenderer', 'AbstractPlayer', 'Transfer', 'bots']
-
-
-__version__ = '0.1.0a'
