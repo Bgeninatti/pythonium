@@ -19,13 +19,13 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        'Pillow==7.2.0',
-        'matplotlib==3.3.2',
-        'numpy==1.19.1',
-        'attrs==20.2.0'],
+        'Pillow',
+        'matplotlib',
+        'numpy',
+        'attrs'],
     tests_require=['pytest'],
     setup_requires=['pytest-runner'],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     scripts=['bin/pythonium'],
     data_files=[('font', ['font/jmh_typewriter.ttf'])]
 )
