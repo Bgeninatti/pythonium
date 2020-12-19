@@ -25,7 +25,7 @@ setuptools.setup(
         'attrs'],
     tests_require=['pytest'],
     setup_requires=['pytest-runner'],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     scripts=['bin/pythonium'],
     data_files=[('font', ['font/jmh_typewriter.ttf'])]
 )
