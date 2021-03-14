@@ -28,11 +28,12 @@ jobs:
       COVERAGE_SINGLE: 60
       COVERAGE_TOTAL: 60
     steps:
+      - uses: actions/checkout@v2
       - name: pytester-cov
         id: pytester-cov
         uses: alexanderdamiani/pytester-cov@v1.0.0
         with:
-          pytest-root-dir: 'pythonium'
+          pytest-root-dir: './pythonium'
           cov-threshold-single: ${{ env.COVERAGE_SINGLE }}
           cov-threshold-total: ${{ env.COVERAGE_TOTAL }}
       - name: Comment PR on coverage total fails
