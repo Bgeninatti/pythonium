@@ -26,6 +26,7 @@ jobs:
     needs: build
     steps:
       - name: Generate coverage report
+        shell: pwsh
         run: |
           pip install pytest
           pip install pytest-cov
