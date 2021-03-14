@@ -23,6 +23,7 @@ jobs:
           pip install -r requirements.txt
   tests:
     runs-on: ubuntu-latest
+    needs: build
     env:
       OS: ubuntu-latest
       PYTHON: '3.9'
