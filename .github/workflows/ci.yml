@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Python 3
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: 3.7
       - name: Install dependencies
@@ -24,6 +24,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pytest
           pip install -r requirements.txt
+      - name: Run flake8
+        uses: julianwachholz/flake8-action@v1.1.0
+        with:
+          checkName: "Python Lint"
+          path: path/to/files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: jamescurtin/isort-action@master
+        with:
+            requirementsFiles: "requirements.txt"
       - name: pytester-cov
         id: pytester-cov
         uses: alexanderdamiani/pytester-cov@v1.0.0
