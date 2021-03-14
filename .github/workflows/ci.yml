@@ -10,9 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      COVERAGE_SINGLE: 60
-      COVERAGE_TOTAL: 60
     steps:
       - uses: actions/checkout@v2
       - name: Install Python 3
@@ -24,16 +21,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pytest isort
           pip install -r requirements.txt
-      - name: Run flake8
-        uses: julianwachholz/flake8-action@v1.1.0
-        with:
-          checkName: "Python Lint"
-          path: pythonium
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: jamescurtin/isort-action@master
-        with:
-            requirementsFiles: "requirements.txt"
+  tests:
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      COVERAGE_SINGLE: 60
+      COVERAGE_TOTAL: 60
+    steps:
       - name: pytester-cov
         id: pytester-cov
         uses: alexanderdamiani/pytester-cov@v1.0.0
@@ -46,3 +40,17 @@ jobs:
         with:
           message: ${{ steps.pytester-cov.outputs.output-table }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  stlye:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Run flake8
+        uses: julianwachholz/flake8-action@v1.1.0
+        with:
+          checkName: "Python Lint"
+          path: pythonium
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: jamescurtin/isort-action@master
+        with:
+            requirementsFiles: "requirements.txt"
