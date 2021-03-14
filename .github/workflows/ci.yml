@@ -1,4 +1,4 @@
-name: Run Python Tests
+name: Pythonium CI
 on:
   push:
     branches:
@@ -11,14 +11,68 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Install Python 3
-        uses: actions/setup-python@v1
+      - uses: actions/checkout@master
+      - name: Setup Python
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.7
+      - name: Build package
+        run: |
+          python setup.py install
+  tests:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Python
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.7
+      - name: Generate coverage report
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov
+          pip install -r requirements.txt
+          pytest --cov=./pythonium --cov-report=xml
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          name: codecov-pythonium
+          fail_ci_if_error: true 
+          verbose: true 
+  stlye:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Python
+        uses: actions/setup-python@master
         with:
           python-version: 3.7
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-      - name: Run tests with pytest
-        run: python setup.py test 
-
+          pip install flake8
+      - name: Run flake8
+        uses: julianwachholz/flake8-action@v1.1.0
+        with:
+          checkName: "Python Lint"
+          path: pythonium
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  imports:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Python
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.7
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install isort
+      - uses: jamescurtin/isort-action@master
+        with:
+            requirementsFiles: "requirements.txt"
