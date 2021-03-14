@@ -32,7 +32,7 @@ jobs:
         id: pytester-cov
         uses: alexanderdamiani/pytester-cov@v1.0.0
         with:
-          pytest-root-dir: '.'
+          pytest-root-dir: 'pythonium'
           cov-threshold-single: ${{ env.COVERAGE_SINGLE }}
           cov-threshold-total: ${{ env.COVERAGE_TOTAL }}
       - name: Comment PR on coverage total fails
