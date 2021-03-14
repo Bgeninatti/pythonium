@@ -1,4 +1,4 @@
-name: Run Python Tests
+name: Pythonium CI
 on:
   push:
     branches:
@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-python@master
         with:
           python-version: 3.7
-      - name: Install dependencies
+      - name: Build package
         run: |
           python setup.py install
   tests:
