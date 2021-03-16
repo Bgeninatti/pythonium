@@ -1,7 +1,8 @@
 import math
 
 import pytest
-from pythonium import Planet, Ship, cfg, Transfer
+
+from pythonium import Planet, Ship, Transfer, cfg
 
 
 @pytest.mark.parametrize(

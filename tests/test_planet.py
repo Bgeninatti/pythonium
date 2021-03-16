@@ -1,5 +1,6 @@
 import pytest
-from pythonium import Transfer, Planet, cfg
+
+from pythonium import Planet, Transfer, cfg
 
 
 @pytest.mark.parametrize(

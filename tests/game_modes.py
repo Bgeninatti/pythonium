@@ -1,4 +1,4 @@
-from pythonium import Ship, Planet, Galaxy, GameMode
+from pythonium import Galaxy, GameMode, Planet, Ship
 
 
 class SandboxGameMode(GameMode):

@@ -1,5 +1,6 @@
 import pytest
-from pythonium import AbstractPlayer, Transfer, Game, Planet, cfg
+
+from pythonium import AbstractPlayer, Game, Planet, Transfer, cfg
 from pythonium.logger import get_logger
 
 from .game_modes import SandboxGameMode
