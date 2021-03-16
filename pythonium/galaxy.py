@@ -1,12 +1,12 @@
 from itertools import groupby
-from typing import Dict, List, Tuple, Set
+from typing import Dict, List, Set, Tuple
 
 import numpy as np
 
 from . import cfg
+from .explosion import Explosion
 from .planet import Planet
 from .ship import Ship
-from .explosion import Explosion
 
 
 class Galaxy:

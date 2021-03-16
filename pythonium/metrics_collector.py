@@ -4,9 +4,8 @@ from datetime import datetime
 from io import BytesIO
 from itertools import groupby
 
-from PIL import Image, ImageDraw
-
 import matplotlib.pyplot as plt
+from PIL import Image, ImageDraw
 
 from . import __version__, cfg
 from .helpers import load_font

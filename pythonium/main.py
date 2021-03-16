@@ -7,9 +7,9 @@ import time
 from . import __version__
 from .game import Game
 from .game_modes import ClassicMode
-from .metrics_collector import MetricsCollector
 from .helpers import random_name
 from .logger import get_logger
+from .metrics_collector import MetricsCollector
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 

@@ -1,5 +1,4 @@
 import configparser
-
 import os
 
 from .logger import get_logger

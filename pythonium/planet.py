@@ -1,9 +1,9 @@
 import attr
 
 from . import cfg, validators
-from .vectors import Transfer
 from .ship import Ship
 from .ship_type import ShipType
+from .vectors import Transfer
 
 
 @attr.s(auto_attribs=True)

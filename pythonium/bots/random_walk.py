@@ -1,7 +1,7 @@
 import random
 
-from ..ship import Ship
 from ..player import AbstractPlayer
+from ..ship import Ship
 
 
 class Player(AbstractPlayer):

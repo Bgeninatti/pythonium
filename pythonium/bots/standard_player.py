@@ -1,8 +1,9 @@
 import random
+
 import attr
 
-from ..ship import Ship
 from ..player import AbstractPlayer
+from ..ship import Ship
 from ..vectors import Transfer
 
 
