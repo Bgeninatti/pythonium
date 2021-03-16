@@ -11,6 +11,6 @@ repos:
     hooks:
     - id: flake8
 -   repo: https://github.com/timothycrosley/isort
-    rev: 4.3.21
+    rev: 9042488762e10137fd535601d9f433f1e3920dad
     hooks:
     -   id: isort
