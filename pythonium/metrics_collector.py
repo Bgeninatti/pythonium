@@ -11,17 +11,18 @@ import matplotlib.pyplot as plt
 from . import __version__, cfg
 from .helpers import load_font
 
-log_regex = re.compile(r'(?P<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) \[(?P<loglvl>INFO|WARNING|ERROR|DEBUG)\] (?P<file>[\w\W_]+):(?P<function>[a-zA-Z_]+) (?P<message>.+) - (?=(?:(?P<extras>.+))$)?')
+log_regex = re.compile(
+    r"(?P<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) \[(?P<loglvl>INFO|WARNING|ERROR|DEBUG)\] (?P<file>[\w\W_]+):(?P<function>[a-zA-Z_]+) (?P<message>.+) - (?=(?:(?P<extras>.+))$)?"
+)
 
 
 class MetricsCollector:
-
     def __init__(self, logfile):
         self.figsize = (8, 4)
         self._footer_font = load_font(24)
         self._section_font = load_font(48)
         self._title_font = load_font(96)
-        self._available_players_colors = ['#EE302F', '#50A8E0']
+        self._available_players_colors = ["#EE302F", "#50A8E0"]
 
         lines = logfile.readlines()
         self.logdicts = []
@@ -30,26 +31,44 @@ class MetricsCollector:
             if not result:
                 continue
             groupdict = result.groupdict()
-            groupdict['datetime'] = datetime.fromisoformat(
-                groupdict['datetime'].replace(',', '.'))
-            extras = groupdict.get('extras')
+            groupdict["datetime"] = datetime.fromisoformat(
+                groupdict["datetime"].replace(",", ".")
+            )
+            extras = groupdict.get("extras")
             if extras:
-                groupdict['extras'] = dict((el.split('=') for el in extras.split('; ')))
+                groupdict["extras"] = dict(
+                    (el.split("=") for el in extras.split("; "))
+                )
             self.logdicts.append(groupdict)
-        self.turns = [int(l['extras']['turn']) for l in
-                      filter(lambda l: l['message'] == "Turn started", self.logdicts)]
+        self.turns = [
+            int(log["extras"]["turn"])
+            for log in filter(
+                lambda log: log["message"] == "Turn started", self.logdicts
+            )
+        ]
         self.known_players = list(
-            {l['extras']['player'] for l in
-             filter(lambda l: l['message'] == "Player orders computed", self.logdicts)})
+            {
+                log["extras"]["player"]
+                for log in filter(
+                    lambda log: log["message"] == "Player orders computed",
+                    self.logdicts,
+                )
+            }
+        )
 
         # Search sector name
         init_log = list(
-            filter(lambda l: l['message'] == 'Initializing galaxy', self.logdicts))[0]
-        self.sector = init_log['extras']['sector']
+            filter(
+                lambda l: l["message"] == "Initializing galaxy", self.logdicts
+            )
+        )[0]
+        self.sector = init_log["extras"]["sector"]
 
         # Search winner
-        winner_log = list(filter(lambda l: l['message'] == "Winner!", self.logdicts))
-        self.winner = winner_log[0]['extras']['winner'] if winner_log else None
+        winner_log = list(
+            filter(lambda l: l["message"] == "Winner!", self.logdicts)
+        )
+        self.winner = winner_log[0]["extras"]["winner"] if winner_log else None
 
     def get_metric_for_players(self, message, key, data_type=int):
         """
@@ -64,14 +83,16 @@ class MetricsCollector:
         This is used to filter, for example, the score of the players
         on each turn, or metrics that we know that are only one per player and turn.
         """
-        logs = filter(lambda l: l['message'] == message, self.logdicts)
+        logs = filter(lambda l: l["message"] == message, self.logdicts)
         data = defaultdict(lambda: [])
         for log in logs:
-            extras = log['extras']
-            data[extras['player']].append(data_type(extras[key]))
-        data['turn'] = self.turns
+            extras = log["extras"]
+            data[extras["player"]].append(data_type(extras[key]))
+        data["turn"] = self.turns
         # Check that all players have a metrics for each turn
-        assert all(len(metrics) == len(self.turns) for metrics in data.values())
+        assert all(
+            len(metrics) == len(self.turns) for metrics in data.values()
+        )
         found_players = data.keys()
         assert all(p in found_players for p in self.known_players)
         return data
@@ -80,13 +101,15 @@ class MetricsCollector:
         """
         Return a time serie with the runtime in microseconds for each turn
         """
-        logs = list(filter(lambda l: l['message'] == "Turn started", self.logdicts))
-        previous = logs[0]['datetime']
+        logs = list(
+            filter(lambda l: l["message"] == "Turn started", self.logdicts)
+        )
+        previous = logs[0]["datetime"]
         data = defaultdict(lambda: [])
         for log in logs[1:]:
-            data['turn'].append(int(log['extras']['turn']))
-            data['runtime'].append((log['datetime'] - previous).microseconds)
-            previous = log['datetime']
+            data["turn"].append(int(log["extras"]["turn"]))
+            data["runtime"].append((log["datetime"] - previous).microseconds)
+            previous = log["datetime"]
         return data
 
     def get_events_for_players(self, message, key, data_type=int):
@@ -103,20 +126,19 @@ class MetricsCollector:
         """
         # Filter logs and group by turn
         grouped_logs = groupby(
-            filter(lambda l: l['message'] == message, self.logdicts),
-            lambda l: int(l['extras']['turn'])
+            filter(lambda l: l["message"] == message, self.logdicts),
+            lambda l: int(l["extras"]["turn"]),
         )
 
         # Create the empty container for each player
-        data = dict((p, [[] for t in self.turns])
-                    for p in self.known_players)
+        data = dict((p, [[] for t in self.turns]) for p in self.known_players)
         for turn, logs in grouped_logs:
             # group by player
             for log in logs:
-                player = log['extras']['player']
-                value = data_type(log['extras'][key])
+                player = log["extras"]["player"]
+                value = data_type(log["extras"][key])
                 data[player][turn + 1].append(value)
-        data['turn'] = self.turns
+        data["turn"] = self.turns
         return data
 
     def aggregate_events_for_players(self, events, agg):
@@ -124,22 +146,25 @@ class MetricsCollector:
         Perform aggregation (count, sum, avg, etc) to events metrics for each player
         ``events`` is the output of ``get_events_for_players``
         """
-        data = {player: [agg(m) for m in metrics]
-                for player, metrics in events.items() if player != 'turn'}
-        data['turn'] = events['turn']
+        data = {
+            player: [agg(m) for m in metrics]
+            for player, metrics in events.items()
+            if player != "turn"
+        }
+        data["turn"] = events["turn"]
         return data
 
     def plot_metrics_for_players(self, metrics, title, ylabel):
         fig, axs = plt.subplots(figsize=self.figsize)
-        for i, player in enumerate(p for p in metrics.keys() if p != 'turn'):
+        for i, player in enumerate(p for p in metrics.keys() if p != "turn"):
             color = self._available_players_colors[i]
-            axs.plot(metrics['turn'], metrics[player], color=color)
-        axs.set_xlabel('')
+            axs.plot(metrics["turn"], metrics[player], color=color)
+        axs.set_xlabel("")
         axs.set_ylabel(ylabel, fontsize=16)
-        axs.set_title(title, fontdict={'fontsize': 18})
+        axs.set_title(title, fontdict={"fontsize": 18})
 
         buf = BytesIO()
-        fig.savefig(buf, format='png')
+        fig.savefig(buf, format="png")
         buf.seek(0)
         img = Image.open(buf)
         return img
@@ -151,45 +176,47 @@ class MetricsCollector:
         """
         sample_chart = charts[0]
         margin = 30
-        section_size = (sample_chart.width*columns + margin*2,
-                        sample_chart.height*rows + header_height + margin*2)
-        image = Image.new('RGBA', section_size, 'white')
+        section_size = (
+            sample_chart.width * columns + margin * 2,
+            sample_chart.height * rows + header_height + margin * 2,
+        )
+        image = Image.new("RGBA", section_size, "white")
         draw = ImageDraw.Draw(image)
 
         # Hack to fix hidden margin in section with 2 and 3 charts
         if len(charts) == 3:
             bounding_box = (
-                (margin/2, margin/2),
-                (section_size[0], section_size[1] - margin/2)
+                (margin / 2, margin / 2),
+                (section_size[0], section_size[1] - margin / 2),
             )
         elif len(charts) == 2:
             bounding_box = (
-                (0, margin/2),
-                (section_size[0] - margin/2, section_size[1] - margin/2)
+                (0, margin / 2),
+                (section_size[0] - margin / 2, section_size[1] - margin / 2),
             )
         else:
             bounding_box = (
-                (margin/2, margin/2),
-                (section_size[0] - margin/2, section_size[1] - margin/2)
+                (margin / 2, margin / 2),
+                (section_size[0] - margin / 2, section_size[1] - margin / 2),
             )
 
+        draw.rectangle(
+            bounding_box, fill="white", outline=(40, 40, 40, 256), width=5
+        )
 
-        draw.rectangle(bounding_box,
-                       fill='white',
-                       outline=(40, 40, 40, 256),
-                       width=5)
-
-        draw.text((margin + 20, margin + 40),
-                  title,
-                  font=self._section_font,
-                  fill='black')
+        draw.text(
+            (margin + 20, margin + 40),
+            title,
+            font=self._section_font,
+            fill="black",
+        )
 
         x = margin
         y = header_height + margin
         for chart in charts:
             image.paste(chart, (x, y))
             x += chart.width
-            if x == chart.width*columns + margin:
+            if x == chart.width * columns + margin:
                 x = margin
                 y += chart.height
 
@@ -199,123 +226,154 @@ class MetricsCollector:
         # Score
         planet_scores = self.get_metric_for_players("Current score", "planets")
         # FIXME: This only works with the two classic mode ship types
-        carriers_scores = self.get_metric_for_players("Current score", "ships_carrier")
-        warships_scores = self.get_metric_for_players("Current score", "ships_war")
-        ships_scores = self.get_metric_for_players("Current score", "total_ships")
+        carriers_scores = self.get_metric_for_players(
+            "Current score", "ships_carrier"
+        )
+        warships_scores = self.get_metric_for_players(
+            "Current score", "ships_war"
+        )
+        ships_scores = self.get_metric_for_players(
+            "Current score", "total_ships"
+        )
 
         # Runtime
         turns_runtime = self.get_turns_runtime()
-        player_orders = self.get_metric_for_players("Player orders computed", "orders")
+        player_orders = self.get_metric_for_players(
+            "Player orders computed", "orders"
+        )
 
         # War
         conquered_planets = self.aggregate_events_for_players(
-            self.get_events_for_players("Planet conquered by force", "planet"), len)
+            self.get_events_for_players("Planet conquered by force", "planet"),
+            len,
+        )
         killed_clans = self.aggregate_events_for_players(
-            self.get_events_for_players("Planet conquered by force", "clans"), sum)
+            self.get_events_for_players("Planet conquered by force", "clans"),
+            sum,
+        )
         ships_lost = self.aggregate_events_for_players(
-            self.get_events_for_players("Explosion", "ship_type", bool), len)
+            self.get_events_for_players("Explosion", "ship_type", bool), len
+        )
 
         # Economy
-        dpythonium = self.get_events_for_players("Pythonium change", "dpythonium")
+        dpythonium = self.get_events_for_players(
+            "Pythonium change", "dpythonium"
+        )
         dclans = self.get_events_for_players("Population change", "dclans")
-        dmegacredits = self.get_events_for_players("Megacredits change", "dmegacredits")
+        dmegacredits = self.get_events_for_players(
+            "Megacredits change", "dmegacredits"
+        )
         built_mines = self.aggregate_events_for_players(
-            self.get_events_for_players("New mines", "new_mines"), sum)
+            self.get_events_for_players("New mines", "new_mines"), sum
+        )
         built_ships = self.aggregate_events_for_players(
-            self.get_events_for_players("New ship built", "ship_type", bool), len)
+            self.get_events_for_players("New ship built", "ship_type", bool),
+            len,
+        )
 
         total_dpythonium = self.aggregate_events_for_players(dpythonium, sum)
         total_dclans = self.aggregate_events_for_players(dclans, sum)
-        total_dmegacredits = self.aggregate_events_for_players(dmegacredits, sum)
+        total_dmegacredits = self.aggregate_events_for_players(
+            dmegacredits, sum
+        )
 
-        avg = lambda i: sum(i) / len(i) if i else 0
+        def avg(i):
+            return sum(i) / len(i) if i else 0
 
         avg_dpythonium = self.aggregate_events_for_players(dpythonium, avg)
         avg_dclans = self.aggregate_events_for_players(dclans, avg)
         avg_dmegacredits = self.aggregate_events_for_players(dmegacredits, avg)
 
-
         sections = []
 
-        score = {
-            'title': "Score",
-            'charts': []
-        }
-        score['charts'].append(
-            self.plot_metrics_for_players(planet_scores, "Planets Score", "Planets")
+        score = {"title": "Score", "charts": []}
+        score["charts"].append(
+            self.plot_metrics_for_players(
+                planet_scores, "Planets Score", "Planets"
+            )
         )
-        score['charts'].append(
-            self.plot_metrics_for_players(carriers_scores, "Carriers", "Carriers") \
+        score["charts"].append(
+            self.plot_metrics_for_players(
+                carriers_scores, "Carriers", "Carriers"
+            )
         )
-        score['charts'].append(
-            self.plot_metrics_for_players(warships_scores, "War Ships", "War Ships") \
+        score["charts"].append(
+            self.plot_metrics_for_players(
+                warships_scores, "War Ships", "War Ships"
+            )
         )
-        score['charts'].append(
-            self.plot_metrics_for_players(ships_scores, "Total Ships", "Total Ships") \
+        score["charts"].append(
+            self.plot_metrics_for_players(
+                ships_scores, "Total Ships", "Total Ships"
+            )
         )
         sections.append(score)
 
-        combat = {
-            'title': "Combat",
-            'charts': []
-        }
-        combat['charts'].append(
+        combat = {"title": "Combat", "charts": []}
+        combat["charts"].append(
             self.plot_metrics_for_players(
-                conquered_planets, "Conquered Planets", "Planets") \
+                conquered_planets, "Conquered Planets", "Planets"
+            )
         )
-        combat['charts'].append(
-            self.plot_metrics_for_players(killed_clans, "Killed clans", "Clans") \
+        combat["charts"].append(
+            self.plot_metrics_for_players(
+                killed_clans, "Killed clans", "Clans"
+            )
         )
-        combat['charts'].append(
-            self.plot_metrics_for_players(ships_lost, "Ships lost", "Ships") \
+        combat["charts"].append(
+            self.plot_metrics_for_players(ships_lost, "Ships lost", "Ships")
         )
         sections.append(combat)
 
-
-        economy = {
-            'title': "Economy",
-            'charts': []
-        }
-        economy['charts'].append(
+        economy = {"title": "Economy", "charts": []}
+        economy["charts"].append(
             self.plot_metrics_for_players(
-                total_dpythonium, "Extracted pythonium", "Pythonium") \
+                total_dpythonium, "Extracted pythonium", "Pythonium"
+            )
         )
-        economy['charts'].append(
+        economy["charts"].append(
             self.plot_metrics_for_players(
-                total_dclans, "Population growth", "Clans") \
+                total_dclans, "Population growth", "Clans"
+            )
         )
-        economy['charts'].append(
+        economy["charts"].append(
             self.plot_metrics_for_players(
-                total_dmegacredits, "Collected megacredits", "Megacredits") \
+                total_dmegacredits, "Collected megacredits", "Megacredits"
+            )
         )
-        economy['charts'].append(
-            self.plot_metrics_for_players(built_ships, "Ships Built", "Ships") \
+        economy["charts"].append(
+            self.plot_metrics_for_players(built_ships, "Ships Built", "Ships")
         )
-        economy['charts'].append(
+        economy["charts"].append(
             self.plot_metrics_for_players(
-                avg_dpythonium, "Avg extracted pythonium", "Pythonium") \
+                avg_dpythonium, "Avg extracted pythonium", "Pythonium"
+            )
         )
-        economy['charts'].append(
-            self.plot_metrics_for_players(avg_dclans, "Avg population growth", "Clans") \
-        )
-        economy['charts'].append(
+        economy["charts"].append(
             self.plot_metrics_for_players(
-                avg_dmegacredits, "Avg collected megacredits", "Megacredits") \
+                avg_dclans, "Avg population growth", "Clans"
+            )
         )
-        economy['charts'].append(
-            self.plot_metrics_for_players(built_mines, "Mines Built", "Mines") \
+        economy["charts"].append(
+            self.plot_metrics_for_players(
+                avg_dmegacredits, "Avg collected megacredits", "Megacredits"
+            )
+        )
+        economy["charts"].append(
+            self.plot_metrics_for_players(built_mines, "Mines Built", "Mines")
         )
         sections.append(economy)
 
-        execution = {
-            'title': "Execution",
-            'charts': []
-        }
-        execution['charts'].append(
-            self.plot_metrics_for_players(turns_runtime, "Turn Execution Time", "Microseconds") \
+        execution = {"title": "Execution", "charts": []}
+        execution["charts"].append(
+            self.plot_metrics_for_players(
+                turns_runtime, "Turn Execution Time", "Microseconds"
+            )
         )
-        execution['charts'].append(
-            self.plot_metrics_for_players(player_orders, "Orders per turn", "Orders") \
+        execution["charts"].append(
+            self.plot_metrics_for_players(
+                player_orders, "Orders per turn", "Orders"
+            )
         )
         sections.append(execution)
 
@@ -327,20 +385,20 @@ class MetricsCollector:
         """
 
         report_size = (3260, 2530)
-        report = Image.new('RGB', report_size, 'white')
+        report = Image.new("RGB", report_size, "white")
         sections_position = {
-            'Execution': (2400, 0),
-            'Economy': (0, 1520),
-            'Score': (0, 960),
-            'Combat': (0, 400)
+            "Execution": (2400, 0),
+            "Economy": (0, 1520),
+            "Score": (0, 960),
+            "Combat": (0, 400),
         }
 
         sections = self.build_sections()
 
         header_height = 100
         for section in sections:
-            charts_count = len(section['charts'])
-            title = section['title']
+            charts_count = len(section["charts"])
+            title = section["title"]
             if charts_count == 8:
                 rows = 2
                 columns = 4
@@ -357,38 +415,49 @@ class MetricsCollector:
                 rows = 1
                 columns = 1
             img = self.plot_section(
-                section['title'],
-                section['charts'],
+                section["title"],
+                section["charts"],
                 rows,
                 columns,
-                header_height)
+                header_height,
+            )
             report.paste(img, sections_position[title])
 
         # Draw Header
         draw = ImageDraw.Draw(report)
-        draw.text((100, 50), f"Sector #{self.sector}", font=self._title_font, fill='black')
+        draw.text(
+            (100, 50),
+            f"Sector #{self.sector}",
+            font=self._title_font,
+            fill="black",
+        )
         if len(self.known_players) == 2:
             p1 = self.known_players[0]
             p2 = self.known_players[1]
-            text = f"{p1}{'' if self.winner != p1 else ' (w)'} " + \
-                f"Vs. {self.known_players[1]}{'' if self.winner != p2 else ' (w)'}"
-            draw.text((100, 200),
-                      text,
-                      font=self._section_font,
-                      fill='black')
+            text = (
+                f"{p1}{'' if self.winner != p1 else ' (w)'} "
+                + f"Vs. {self.known_players[1]}{'' if self.winner != p2 else ' (w)'}"
+            )
+            draw.text((100, 200), text, font=self._section_font, fill="black")
         elif len(self.known_players) == 1:
-            draw.text((100, 200),
-                      f"Survival mode for {self.known_players[0]}",
-                      font=self._section_font,
-                      fill='black')
-        draw.text((100, 300),
-                  datetime.now().strftime("%Y-%m-%d %H:%M"),
-                  font=self._section_font,
-                  fill='black')
+            draw.text(
+                (100, 200),
+                f"Survival mode for {self.known_players[0]}",
+                font=self._section_font,
+                fill="black",
+            )
+        draw.text(
+            (100, 300),
+            datetime.now().strftime("%Y-%m-%d %H:%M"),
+            font=self._section_font,
+            fill="black",
+        )
 
-        draw.text((15, report_size[1] - 40),
-                  f"github.com/Bgeninatti/pythonium - V{__version__}",
-                  font=self._footer_font,
-                  fill='black')
+        draw.text(
+            (15, report_size[1] - 40),
+            f"github.com/Bgeninatti/pythonium - V{__version__}",
+            font=self._footer_font,
+            fill="black",
+        )
 
-        report.save(f'report_{self.sector}.png')
+        report.save(f"report_{self.sector}.png")

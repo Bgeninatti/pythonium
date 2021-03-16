@@ -1,4 +1,3 @@
-
 from typing import Tuple
 
 import attr
@@ -30,13 +29,15 @@ class Ship:
     """
 
     type: int = attr.ib(
-        validator=[attr.validators.instance_of((ShipType, type(None)))])
+        validator=[attr.validators.instance_of((ShipType, type(None)))]
+    )
     """
     Name of the :class:`ShipType`
     """
 
-    position: Tuple[int, int] = attr.ib(converter=tuple,
-                                        validator=[validators.is_valid_position])
+    position: Tuple[int, int] = attr.ib(
+        converter=tuple, validator=[validators.is_valid_position]
+    )
     """
     Position of the ship in (x, y) coordinates
     """
@@ -76,9 +77,9 @@ class Ship:
     """
 
     # User controls
-    target: Tuple[int, int] = attr.ib(default=None,
-                                      init=False,
-                                      validator=[validators.is_valid_position])
+    target: Tuple[int, int] = attr.ib(
+        default=None, init=False, validator=[validators.is_valid_position]
+    )
     """
     **Attribute that can be modified by the player**
 
@@ -105,9 +106,9 @@ class Ship:
         """
         orders = []
         if self.transfer:
-            orders.append(('ship_transfer', self.nid, self.transfer))
+            orders.append(("ship_transfer", self.nid, self.transfer))
 
         if self.target is not None:
-            orders.append(('ship_move', self.nid, self.target))
+            orders.append(("ship_move", self.nid, self.target))
 
         return orders

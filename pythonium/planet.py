@@ -17,15 +17,15 @@ class Planet:
     (temperature defines the ``max_happypoints`` for the planet).
 
     Each planet has some amount of ``pythonium`` on the surface that can be used by the
-    colonizer race and some ``underground_pythonium`` (with a certain ``concentration``)
-    that needs to be extracted with ``mines`` to be used.
+    colonizer race, and some ``underground_pythonium`` (with a certain ``concentration``)
+    that needs to be extracted with ``mines``.
 
     The higher the ``taxes`` are over ``cfg.tolerable_taxes``, the faster the
     ``happypoints`` decay.
 
     The lower the ``happypoints`` are over ``cfg.happypoints_tolerance``, the lower the
     planet production of ``clans``, ``pythonium``, and ``megacredits`` will be
-    (because of the ``rioting_index`` influence).
+    (in proportion of ``rioting_index``).
     """
 
     pid: int = attr.ib()
@@ -43,7 +43,9 @@ class Planet:
     The temperature of the planet. It is always between zero and 100.
     """
 
-    underground_pythonium: int = attr.ib(validator=[attr.validators.instance_of(int)])
+    underground_pythonium: int = attr.ib(
+        validator=[attr.validators.instance_of(int)]
+    )
     """
     Amount of pythonium under the surface of the planet, that needs to be extracted with
     mines.
@@ -59,7 +61,9 @@ class Planet:
     Pythonium in the surface of the planet. The available resource to build things.
     """
 
-    mine_cost: Transfer = attr.ib(validator=[attr.validators.instance_of(Transfer)])
+    mine_cost: Transfer = attr.ib(
+        validator=[attr.validators.instance_of(Transfer)]
+    )
     """
     Indicates the cost of building one mine.
     """
@@ -103,9 +107,9 @@ class Planet:
     """
 
     # User controls
-    new_mines: int = attr.ib(validator=[attr.validators.instance_of(int)],
-                             default=0,
-                             init=False)
+    new_mines: int = attr.ib(
+        validator=[attr.validators.instance_of(int)], default=0, init=False
+    )
     """
     **Attribute that can be modified by the player**
 
@@ -116,7 +120,8 @@ class Planet:
     new_ship: ShipType = attr.ib(
         default=None,
         validator=[attr.validators.instance_of((ShipType, None.__class__))],
-        init=False)
+        init=False,
+    )
     """
     **Attribute that can be modified by the player**
 
@@ -125,10 +130,12 @@ class Planet:
     This value is set to ``None`` when the player orders are executed
     """
 
-    taxes: int = attr.ib(converter=int,
-                         default=0,
-                         validator=[validators.is_valid_ratio],
-                         init=False)
+    taxes: int = attr.ib(
+        converter=int,
+        default=0,
+        validator=[validators.is_valid_ratio],
+        init=False,
+    )
     """
     **Attribute that can be modified by the player**
 
@@ -146,8 +153,10 @@ class Planet:
         # `max_happypoints` will decay as long as `temperature` differ from
         # `cfg.optimal_temperature`. `max_happypoints` can't be less than
         # `cfg.happypoints_tolerance`
-        self.max_happypoints = max(100 - abs(self.temperature - cfg.optimal_temperature),
-                                   cfg.optimal_temperature)
+        self.max_happypoints = max(
+            100 - abs(self.temperature - cfg.optimal_temperature),
+            cfg.optimal_temperature,
+        )
         self.happypoints = self.max_happypoints
 
     def __repr__(self):
@@ -198,8 +207,13 @@ class Planet:
 
         Do not consider ``new_mines`` and ``new_ship`` cost, or ship transfers.
         """
-        taxes = cfg.taxes_collection_factor * self.clans * self.taxes / 100 \
+        taxes = (
+            cfg.taxes_collection_factor
+            * self.clans
+            * self.taxes
+            / 100
             * self.rioting_index
+        )
 
         return int(taxes)
 
@@ -209,9 +223,12 @@ class Planet:
         Absolute change on happypoints for the next turn
         """
         return max(
-            min(cfg.tolerable_taxes - self.taxes,
-                self.max_happypoints - self.happypoints),
-            -self.happypoints)
+            min(
+                cfg.tolerable_taxes - self.taxes,
+                self.max_happypoints - self.happypoints,
+            ),
+            -self.happypoints,
+        )
 
     @property
     def dclans(self) -> int:
@@ -225,21 +242,23 @@ class Planet:
         * ``clans``: Positive influence
         """
         growth_rate = cfg.max_population_rate * self.rioting_index
-        return min(cfg.max_clans_in_planet - self.clans,
-                   max(int(self.clans * growth_rate), -self.clans))
+        return min(
+            cfg.max_clans_in_planet - self.clans,
+            max(int(self.clans * growth_rate), -self.clans),
+        )
 
     def get_orders(self):
         """
         Compute orders based on player control attributes: ``new_mines``, \
         ``new_ship`` and ``taxes``
         """
-        orders = [('planet_set_taxes', self.pid, self.taxes)]
+        orders = [("planet_set_taxes", self.pid, self.taxes)]
 
         if self.new_ship is not None:
-            orders.append(('planet_build_ship', self.pid, self.new_ship))
+            orders.append(("planet_build_ship", self.pid, self.new_ship))
 
         if self.new_mines > 0:
-            orders.append(('planet_build_mines', self.pid, self.new_mines))
+            orders.append(("planet_build_mines", self.pid, self.new_mines))
 
         return orders
 
@@ -248,15 +267,20 @@ class Planet:
         Computes the number of mines that can be built on the planet based \
         on available resources and ``max_mines``
         """
-        return int(min(
-            self.pythonium / self.mine_cost.pythonium,
-            self.megacredits / self.mine_cost.megacredits,
-            self.max_mines - self.mines))
+        return int(
+            min(
+                self.pythonium / self.mine_cost.pythonium,
+                self.megacredits / self.mine_cost.megacredits,
+                self.max_mines - self.mines,
+            )
+        )
 
     def can_build_ship(self, ship_type: ShipType) -> bool:
         """
         Indicates whether ``ship_type`` can be built on this planet \
         with the available resources
         """
-        return self.megacredits >= ship_type.cost.megacredits \
+        return (
+            self.megacredits >= ship_type.cost.megacredits
             and self.pythonium >= ship_type.cost.pythonium
+        )

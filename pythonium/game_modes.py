@@ -1,4 +1,3 @@
-
 import copy
 import random
 from collections import Counter
@@ -11,29 +10,36 @@ from .ship_type import ShipType
 from .vectors import Transfer
 
 CLASSIC_MODE_SHIPS = (
-    ShipType(name='carrier',
-             cost=Transfer(megacredits=600, pythonium=450),
-             max_cargo=1200,
-             max_mc=10**3,
-             attack=0),
-    ShipType(name='war',
-             cost=Transfer(megacredits=1000, pythonium=600),
-             max_cargo=100,
-             max_mc=10**3,
-             attack=100),
+    ShipType(
+        name="carrier",
+        cost=Transfer(megacredits=600, pythonium=450),
+        max_cargo=1200,
+        max_mc=10 ** 3,
+        attack=0,
+    ),
+    ShipType(
+        name="war",
+        cost=Transfer(megacredits=1000, pythonium=600),
+        max_cargo=100,
+        max_mc=10 ** 3,
+        attack=100,
+    ),
 )
 
-CLASSIC_MINE_COST = (
-    Transfer(megacredits=3, pythonium=5)
-)
+CLASSIC_MINE_COST = Transfer(megacredits=3, pythonium=5)
 
 
 class GameMode:
 
-    def __init__(self,
-                 ship_types=CLASSIC_MODE_SHIPS,
-                 mine_cost=CLASSIC_MINE_COST,
-                 tenacity=cfg.tenacity):
+    name: str
+
+    def __init__(
+        self,
+        ship_types=CLASSIC_MODE_SHIPS,
+        mine_cost=CLASSIC_MINE_COST,
+        tenacity=cfg.tenacity,
+    ):
+        self.cfg = cfg
         self.ship_types = {st.name: st for st in ship_types}
         self.mine_cost = mine_cost
         self.tenacity = tenacity
@@ -60,22 +66,23 @@ class GameMode:
         raise NotImplementedError("Metodo no implementado")
 
 
-
 class ClassicMode(GameMode):
 
     # Define los atributos de las ships que se pueden construir.
 
-
-    def __init__(self,
-                 planets_count=300,
-                 max_ships=500,
-                 map_size=(500, 500),
-                 pythonium_stock=10**6,
-                 pythonium_in_surface=0.1,
-                 starting_ships=(('carrier', 2),),
-                 starting_resources=(10**4, 2*10**3, 5*10**3),
-                 max_turn=150,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        planets_count=300,
+        max_ships=500,
+        map_size=(500, 500),
+        pythonium_stock=10 ** 6,
+        pythonium_in_surface=0.1,
+        starting_ships=(("carrier", 2),),
+        starting_resources=(10 ** 4, 2 * 10 ** 3, 5 * 10 ** 3),
+        max_turn=150,
+        *args,
+        **kwargs,
+    ):
         """
         :param planets_count: Cantidad de planets en la galaxy
         :type planets_count: int
@@ -115,45 +122,66 @@ class ClassicMode(GameMode):
         # Nos aseguramos de todas las positiones sean únicas.
         positions = set()
         while len(positions) < self.planets_count:
-            pos = (random.randint(0, self.map_size[0] - 10),
-                   random.randint(0, self.map_size[1] - 10))
+            pos = (
+                random.randint(0, self.map_size[0] - 10),
+                random.randint(0, self.map_size[1] - 10),
+            )
             positions.add(pos)
 
         # Genera comdiciones iniciales aleatorias para el resto de los atributos
         # de los planets
         # 1.b Distribuye el pythonium en superficie
-        pythonium_distribution = [round(random.random()*100)
-                                  for i in range(self.planets_count)]
-        coef_pythonium = total_pythonium/sum(pythonium_distribution)
-        pythonium = (round(d*coef_pythonium) for d in pythonium_distribution)
+        pythonium_distribution = [
+            round(random.random() * 100) for i in range(self.planets_count)
+        ]
+        coef_pythonium = total_pythonium / sum(pythonium_distribution)
+        pythonium = (round(d * coef_pythonium) for d in pythonium_distribution)
         # 1.c Distribuye el pythonium subterraneo
-        underground_pythonium_distribution = [random.random()
-                                              for i in range(self.planets_count)]
-        coef_underground_pythonium = total_underground_pythonium / \
-            sum(underground_pythonium_distribution)
-        underground_pythonium = (round(d*coef_underground_pythonium)
-                                 for d in underground_pythonium_distribution)
+        underground_pythonium_distribution = [
+            random.random() for i in range(self.planets_count)
+        ]
+        coef_underground_pythonium = total_underground_pythonium / sum(
+            underground_pythonium_distribution
+        )
+        underground_pythonium = (
+            round(d * coef_underground_pythonium)
+            for d in underground_pythonium_distribution
+        )
         # 1.d Distribuye las concentraciones de pythonium
-        concentrations = (round(random.random(), 2) for i in range(self.planets_count))
+        concentrations = (
+            round(random.random(), 2) for i in range(self.planets_count)
+        )
         # 1.e Genera las temperatures de los planets
-        temperatures = (round(random.random()*100) for i in range(self.planets_count))
+        temperatures = (
+            round(random.random() * 100) for i in range(self.planets_count)
+        )
 
         planets = {}
-        for pid, position, pythonium, underground_pythonium, concentration, temperature \
-            in zip(range(self.planets_count),
-                   positions,
-                   pythonium,
-                   underground_pythonium,
-                   concentrations,
-                   temperatures):
+        for (
+            pid,
+            position,
+            pythonium,
+            underground_pythonium,
+            concentration,
+            temperature,
+        ) in zip(
+            range(self.planets_count),
+            positions,
+            pythonium,
+            underground_pythonium,
+            concentrations,
+            temperatures,
+        ):
 
-            planet = Planet(pid=pid,
-                            position=position,
-                            temperature=temperature,
-                            underground_pythonium=underground_pythonium,
-                            concentration=concentration,
-                            pythonium=pythonium,
-                            mine_cost=self.mine_cost)
+            planet = Planet(
+                pid=pid,
+                position=position,
+                temperature=temperature,
+                underground_pythonium=underground_pythonium,
+                concentration=concentration,
+                pythonium=pythonium,
+                mine_cost=self.mine_cost,
+            )
             planets[planet.position] = planet
 
         galaxy = Galaxy(self.map_size, planets, [])
@@ -165,16 +193,17 @@ class ClassicMode(GameMode):
     def init_players(self, players, galaxy):
         # 2. Genera las condiciones iniciales de los players.
 
-        margins = (galaxy.size[0]*0.1, galaxy.size[1]*0.1)
+        margins = (galaxy.size[0] * 0.1, galaxy.size[1] * 0.1)
         for i, player in enumerate(players):
             # 2.a Asigna planets
             if not i:
                 position = margins
             else:
-                position = (galaxy.size[0] - margins[0],
-                            galaxy.size[1] - margins[1])
+                position = (
+                    galaxy.size[0] - margins[0],
+                    galaxy.size[1] - margins[1],
+                )
             nearby_planets = galaxy.nearby_planets(position, 2)
-
 
             homeworld = random.choice(nearby_planets)
 
@@ -187,12 +216,14 @@ class ClassicMode(GameMode):
             for ship_type_name, quantity in self.starting_ships:
                 ship_type = self.ship_types[ship_type_name]
                 for _ in range(quantity):
-                    ship = Ship(player=player.name,
-                                type=ship_type,
-                                position=homeworld.position,
-                                max_cargo=ship_type.max_cargo,
-                                max_mc=ship_type.max_mc,
-                                attack=ship_type.attack)
+                    ship = Ship(
+                        player=player.name,
+                        type=ship_type,
+                        position=homeworld.position,
+                        max_cargo=ship_type.max_cargo,
+                        max_mc=ship_type.max_mc,
+                        attack=ship_type.attack,
+                    )
                     galaxy.add_ship(ship)
         return galaxy
 
@@ -208,11 +239,13 @@ class ClassicMode(GameMode):
         # * Belongs to him
         # * Are located in any of his planets.
         # * Are in deep space. Not locate in any planet
-        visible_ships = [ship for ship in galaxy.ships \
-                         if player.name == ship.player \
-                         or ship.position in player_planets.keys() \
-                         or ship.position not in galaxy.planets.keys()
-                        ]
+        visible_ships = [
+            ship
+            for ship in galaxy.ships
+            if player.name == ship.player
+            or ship.position in player_planets.keys()
+            or ship.position not in galaxy.planets.keys()
+        ]
         planets = copy.deepcopy(galaxy.planets)
         ships = copy.deepcopy(visible_ships)
 
@@ -229,10 +262,15 @@ class ClassicMode(GameMode):
 
         # Hide information of enemy planets and unknown planets
         # (without a player's ship in the planet)
-        for planet in [p for pos, p in planets.items()
-                       if p.player != player.name \
-                       and (p.player is not None \
-                            and pos not in [n.position for n in visible_ships])]:
+        for planet in [
+            p
+            for pos, p in planets.items()
+            if p.player != player.name
+            and (
+                p.player is not None
+                and pos not in [n.position for n in visible_ships]
+            )
+        ]:
             planet.temperature = None
             planet.underground_pythonium = None
             planet.concentration = None
@@ -254,7 +292,8 @@ class ClassicMode(GameMode):
             return True
 
         planets_score = Counter(
-            (p.player for p in galaxy.planets.values() if p.player is not None))
+            (p.player for p in galaxy.planets.values() if p.player is not None)
+        )
         threshold = len(galaxy.planets) * 0.7
         for name, score in planets_score.items():
             if score > threshold:
@@ -264,26 +303,32 @@ class ClassicMode(GameMode):
 
     def get_score(self, galaxy, players, turn):
         planets_score = Counter(
-            (p.player for p in galaxy.planets.values() if p.player is not None))
+            (p.player for p in galaxy.planets.values() if p.player is not None)
+        )
 
         ship_scores = {}
         for ship_type in self.ship_types.values():
             ship_scores[ship_type.name] = Counter(
-                (s.player for s in galaxy.ships if s.type.name == ship_type.name))
+                (
+                    s.player
+                    for s in galaxy.ships
+                    if s.type.name == ship_type.name
+                )
+            )
         score = []
         for player in players:
             name = player.name
             player_score = {
-                'turn': turn,
-                'player': name,
-                'planets': planets_score.get(name, 0),
+                "turn": turn,
+                "player": name,
+                "planets": planets_score.get(name, 0),
             }
             total_ships = 0
             for ship_type_name, ship_type_score in ship_scores.items():
                 ships_count = ship_type_score.get(name, 0)
                 total_ships += ships_count
                 player_score[f"ships_{ship_type_name}"] = ships_count
-            player_score['total_ships'] = total_ships
+            player_score["total_ships"] = total_ships
             score.append(player_score)
         return score
 
@@ -291,9 +336,10 @@ class ClassicMode(GameMode):
         score = self.get_score(galaxy, players, turn)
         # FIXME: Can the user change the ship types attribute?
         return {
-            'ship_types': self.ship_types,
-            'ship_speed': cfg.ship_speed,
-            'tolerable_taxes': cfg.tolerable_taxes,
-            'happypoints_tolerance': cfg.happypoints_tolerance,
-            'score': score,
-            'turn': turn}
+            "ship_types": self.ship_types,
+            "ship_speed": cfg.ship_speed,
+            "tolerable_taxes": cfg.tolerable_taxes,
+            "happypoints_tolerance": cfg.happypoints_tolerance,
+            "score": score,
+            "turn": turn,
+        }

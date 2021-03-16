@@ -7,8 +7,21 @@ from .ship_type import ShipType
 from .ship import Ship
 from .renderer import GifRenderer
 from .player import AbstractPlayer
-from . import bots
+from . import bots, logger
 from .vectors import Transfer
 
-__all__ = ['Planet', 'Galaxy', 'Ship', 'ShipType', 'Explosion', 'ClassicMode', 'GameMode',
-           'Game', 'GifRenderer', 'AbstractPlayer', 'Transfer', 'bots']
+__all__ = [
+    "Planet",
+    "Galaxy",
+    "Ship",
+    "ShipType",
+    "Explosion",
+    "ClassicMode",
+    "GameMode",
+    "Game",
+    "GifRenderer",
+    "AbstractPlayer",
+    "Transfer",
+    "bots",
+    "logger",
+]

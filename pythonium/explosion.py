@@ -1,5 +1,6 @@
 from .ship import Ship
 
+
 # TODO: Use attrs in this class
 class Explosion:
     """
@@ -27,4 +28,3 @@ class Explosion:
         """
         Total attack involved in the combat.
         """
-

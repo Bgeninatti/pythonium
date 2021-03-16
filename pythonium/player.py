@@ -1,6 +1,7 @@
 import attr
 from .galaxy import Galaxy
 
+
 @attr.s
 class AbstractPlayer:
 
@@ -59,4 +60,5 @@ class AbstractPlayer:
 
         """
         raise NotImplementedError(
-            "You must implement the ``next_turn`` method in your ``Player`` class")
+            "You must implement the ``next_turn`` method in your ``Player`` class"
+        )

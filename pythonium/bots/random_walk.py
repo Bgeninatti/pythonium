@@ -9,7 +9,7 @@ class Player(AbstractPlayer):
     Move the available ships randomly
     """
 
-    name = 'Walkers'
+    name = "Walkers"
 
     def run_turn(self, galaxy, context):
 
