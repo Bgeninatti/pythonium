@@ -3,7 +3,6 @@ import sys
 
 
 class ContextLogger(logging.Logger):
-
     def _log(self, level, msg, args, exc_info=None, extra=None):
         msg = f"{msg} - "
         if extra:
@@ -14,7 +13,8 @@ class ContextLogger(logging.Logger):
 def get_logger(name, lvl=logging.INFO, filename=None, verbose=False):
 
     formatter = logging.Formatter(
-        '%(asctime)s [%(levelname)s] %(module)s:%(funcName)s %(message)s')
+        "%(asctime)s [%(levelname)s] %(module)s:%(funcName)s %(message)s"
+    )
 
     logging.setLoggerClass(ContextLogger)
     logger = logging.getLogger(name)
@@ -32,4 +32,3 @@ def get_logger(name, lvl=logging.INFO, filename=None, verbose=False):
     logger.setLevel(lvl)
 
     return logger
-

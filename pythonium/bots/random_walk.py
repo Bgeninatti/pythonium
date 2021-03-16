@@ -1,7 +1,7 @@
 import random
 
-from ..ship import Ship
 from ..player import AbstractPlayer
+from ..ship import Ship
 
 
 class Player(AbstractPlayer):
@@ -9,7 +9,7 @@ class Player(AbstractPlayer):
     Move the available ships randomly
     """
 
-    name = 'Walkers'
+    name = "Walkers"
 
     def run_turn(self, galaxy, context):
 

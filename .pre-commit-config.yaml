@@ -2,11 +2,15 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 -   repo: https://github.com/ambv/black
-    rev: stable
+    rev: 5446a92f0161e398de765bf9532d8c76c5652333
     hooks:
     - id: black
       language_version: python3.9
 -   repo: https://gitlab.com/pycqa/flake8
-    rev: 3.7.9
+    rev: 3.9.0
     hooks:
     - id: flake8
+-   repo: https://github.com/timothycrosley/isort
+    rev: 9042488762e10137fd535601d9f433f1e3920dad
+    hooks:
+    -   id: isort
