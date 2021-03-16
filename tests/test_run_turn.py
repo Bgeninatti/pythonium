@@ -1,18 +1,21 @@
-
 import math
 
 import pytest
-from pythonium import Planet, Ship, cfg, Transfer
+
+from pythonium import Planet, Ship, Transfer, cfg
 
 
-@pytest.mark.parametrize('planet_state, ship_state, transfer_params', [
-    ((100, 100, 100), (100, 100, 100), (-100, -100, -100)),
-    ((100, 100, 100), (0, 0, 0), (100, 100, 100)),
-    ((100, 100, 100), (10, 10, 10), (-100, -100, -100)),
-    ((100, 100, 100), (0, 0, 0), (0, 10**10, 0)),
-    ((10, 10, 10), (0, 0, 0), (100, 100, 100)),
-    ((10000, 10000, 10000), (0, 0, 0), (1000, 100000, 1000)),
-])
+@pytest.mark.parametrize(
+    "planet_state, ship_state, transfer_params",
+    [
+        ((100, 100, 100), (100, 100, 100), (-100, -100, -100)),
+        ((100, 100, 100), (0, 0, 0), (100, 100, 100)),
+        ((100, 100, 100), (10, 10, 10), (-100, -100, -100)),
+        ((100, 100, 100), (0, 0, 0), (0, 10 ** 10, 0)),
+        ((10, 10, 10), (0, 0, 0), (100, 100, 100)),
+        ((10000, 10000, 10000), (0, 0, 0), (1000, 100000, 1000)),
+    ],
+)
 def test_ship_transfer(game, planet_state, ship_state, transfer_params):
     ship = game.galaxy.ships[0]
     planet = game.galaxy.planets[ship.position]
@@ -22,9 +25,11 @@ def test_ship_transfer(game, planet_state, ship_state, transfer_params):
     ship.clans = ship_state[0]
     ship.megacredits = ship_state[1]
     ship.pythonium = ship_state[2]
-    transfer = Transfer(clans=transfer_params[0],
-                        megacredits=transfer_params[1],
-                        pythonium=transfer_params[2])
+    transfer = Transfer(
+        clans=transfer_params[0],
+        megacredits=transfer_params[1],
+        pythonium=transfer_params[2],
+    )
     available_space = ship.max_cargo - (ship.clans + ship.pythonium)
 
     game.action_ship_transfer(ship, transfer)
@@ -40,7 +45,9 @@ def test_ship_transfer(game, planet_state, ship_state, transfer_params):
         assert not ship.clans
     else:
         # in some direction and resources are available
-        assert ship.clans == ship_state[0] + min(transfer.clans, available_space)
+        assert ship.clans == ship_state[0] + min(
+            transfer.clans, available_space
+        )
         assert planet.clans == planet_state[0] - transfer.clans
 
     # Transfering megacredits...
@@ -48,11 +55,16 @@ def test_ship_transfer(game, planet_state, ship_state, transfer_params):
         # from planet to ship, and attempt to transfer more than available
         assert ship.megacredits == planet_state[1]
         assert not planet.megacredits
-    elif transfer.megacredits < 0 and ship_state[1] < abs(transfer.megacredits):
+    elif transfer.megacredits < 0 and ship_state[1] < abs(
+        transfer.megacredits
+    ):
         # from ship to planet, and attempt to transfer more than available
         assert planet.megacredits == planet_state[1] + ship_state[1]
         assert not ship.megacredits
-    elif transfer.megacredits > 0 and ship_state[1] + transfer.megacredits > ship.max_mc:
+    elif (
+        transfer.megacredits > 0
+        and ship_state[1] + transfer.megacredits > ship.max_mc
+    ):
         # from planet to ship, and transfer is higher than what left to reach ``max_mc``
         assert ship.megacredits == ship.max_mc
         assert planet.megacredits == planet_state[1] - ship.max_mc
@@ -73,9 +85,13 @@ def test_ship_transfer(game, planet_state, ship_state, transfer_params):
     else:
         # in some direction and resources are available
         transfered_clans = ship.clans - ship_state[0]
-        assert ship.pythonium == \
-            ship_state[2] + min(transfer.pythonium, available_space - transfered_clans)
-        assert planet.pythonium == planet_state[2] - ship.pythonium + ship_state[2]
+        assert ship.pythonium == ship_state[2] + min(
+            transfer.pythonium, available_space - transfered_clans
+        )
+        assert (
+            planet.pythonium
+            == planet_state[2] - ship.pythonium + ship_state[2]
+        )
 
     # Resources can never be negative
     assert ship.clans >= 0
@@ -90,7 +106,7 @@ def test_ship_transfer(game, planet_state, ship_state, transfer_params):
     assert ship.megacredits <= ship.max_mc
 
 
-@pytest.mark.parametrize('transfered_clans', list(range(1, 1000, 100)))
+@pytest.mark.parametrize("transfered_clans", list(range(1, 1000, 100)))
 def test_ship_colonize_planet(game, transfered_clans):
     ship = game.galaxy.ships[0]
     planet = game.galaxy.planets[ship.position]
@@ -108,14 +124,35 @@ def test_ship_colonize_planet(game, transfered_clans):
     assert planet.clans == transfered_clans
 
 
-@pytest.mark.parametrize('planet_state, ship_state, transfer', [
-    ((100, 100, 100), (100, 100, 100), Transfer(clans=-100, megacredits=-100, pythonium=-100)),
-    ((100, 100, 100), (0, 0, 0), Transfer(clans=100, megacredits=100, pythonium=100)),
-    ((100, 100, 100), (10, 10, 10), Transfer(clans=-100, megacredits=-100, pythonium=-100)),
-    ((100, 100, 100), (0, 0, 0), Transfer(megacredits=10**10)),
-    ((10, 10, 10), (0, 0, 0), Transfer(clans=100, megacredits=100, pythonium=100)),
-])
-def test_ship_attempt_transfer_to_enemy(game, planet_state, ship_state, transfer):
+@pytest.mark.parametrize(
+    "planet_state, ship_state, transfer",
+    [
+        (
+            (100, 100, 100),
+            (100, 100, 100),
+            Transfer(clans=-100, megacredits=-100, pythonium=-100),
+        ),
+        (
+            (100, 100, 100),
+            (0, 0, 0),
+            Transfer(clans=100, megacredits=100, pythonium=100),
+        ),
+        (
+            (100, 100, 100),
+            (10, 10, 10),
+            Transfer(clans=-100, megacredits=-100, pythonium=-100),
+        ),
+        ((100, 100, 100), (0, 0, 0), Transfer(megacredits=10 ** 10)),
+        (
+            (10, 10, 10),
+            (0, 0, 0),
+            Transfer(clans=100, megacredits=100, pythonium=100),
+        ),
+    ],
+)
+def test_ship_attempt_transfer_to_enemy(
+    game, planet_state, ship_state, transfer
+):
     ship = game.galaxy.ships[0]
     ship.clans = ship_state[0]
     ship.megacredits = ship_state[1]
@@ -137,15 +174,19 @@ def test_ship_attempt_transfer_to_enemy(game, planet_state, ship_state, transfer
     assert ship.pythonium == ship_state[2]
 
 
-@pytest.mark.parametrize('planet_state, existing_mines, new_mines', [
-    ((100, 0, 0), 100, 100),
-    ((1000, 1000, 1000), 100, 100),
-    ((1000, 100, 100), 100, 200),
-    ((100, 100, 100), 100, -100),
-])
+@pytest.mark.parametrize(
+    "planet_state, existing_mines, new_mines",
+    [
+        ((100, 0, 0), 100, 100),
+        ((1000, 1000, 1000), 100, 100),
+        ((1000, 100, 100), 100, 200),
+        ((100, 100, 100), 100, -100),
+    ],
+)
 def test_planet_build_mines(game, planet_state, existing_mines, new_mines):
     planet = list(
-        filter(lambda p: p.player is not None, game.galaxy.planets.values())).pop()
+        filter(lambda p: p.player is not None, game.galaxy.planets.values())
+    ).pop()
     # generate initial conditions for planet
     planet.clans = planet_state[0]
     planet.megacredits = planet_state[1]
@@ -164,12 +205,15 @@ def test_planet_build_mines(game, planet_state, existing_mines, new_mines):
         assert planet.mines == existing_mines + can_build_mines
 
 
-@pytest.mark.parametrize('planet_state, ship_type_name', [
-    ((0, 0), 'carrier'),
-    ((2000, 2000), 'carrier'),
-    ((0, 0), 'war'),
-    ((2000, 2000), 'war'),
-])
+@pytest.mark.parametrize(
+    "planet_state, ship_type_name",
+    [
+        ((0, 0), "carrier"),
+        ((2000, 2000), "carrier"),
+        ((0, 0), "war"),
+        ((2000, 2000), "war"),
+    ],
+)
 def test_planet_build_ship(test_player, game, planet_state, ship_type_name):
     """
     Planet build ship:
@@ -190,7 +234,9 @@ def test_planet_build_ship(test_player, game, planet_state, ship_type_name):
 
     game.action_planet_build_ship(planet, ship_type)
 
-    last_ship = [s for s in game.galaxy.ships if s.nid == game.galaxy._next_ship_id-1][0]
+    last_ship = [
+        s for s in game.galaxy.ships if s.nid == game.galaxy._next_ship_id - 1
+    ][0]
     actual_ships_in_planet = game.galaxy.get_ships_in_position(planet.position)
 
     if can_build_ship:
@@ -205,16 +251,60 @@ def test_planet_build_ship(test_player, game, planet_state, ship_type_name):
         assert last_ship in actual_ships_in_planet
 
 
-
-@pytest.mark.parametrize('initial_position, destination', [
-    ((0, 0,), (100, 100)),
-    ((0, 0,), (10, 10)),
-    ((120, 120,), (0, 0)),
-    ((120, 120,), (220, 220)),
-    ((120, 120,), (0, 220)),
-    ((0, 0,), (-1, -10)),
-    ((0, 0,), (0, 1000)),
-])
+@pytest.mark.parametrize(
+    "initial_position, destination",
+    [
+        (
+            (
+                0,
+                0,
+            ),
+            (100, 100),
+        ),
+        (
+            (
+                0,
+                0,
+            ),
+            (10, 10),
+        ),
+        (
+            (
+                120,
+                120,
+            ),
+            (0, 0),
+        ),
+        (
+            (
+                120,
+                120,
+            ),
+            (220, 220),
+        ),
+        (
+            (
+                120,
+                120,
+            ),
+            (0, 220),
+        ),
+        (
+            (
+                0,
+                0,
+            ),
+            (-1, -10),
+        ),
+        (
+            (
+                0,
+                0,
+            ),
+            (0, 1000),
+        ),
+    ],
+)
 def test_ship_move(game, initial_position, destination):
     """
     Ship moves less than ``ship_speed`` ly
@@ -226,7 +316,9 @@ def test_ship_move(game, initial_position, destination):
     """
     ship = game.galaxy.ships[0]
     ship.position = initial_position
-    distance_to_target = game.galaxy.compute_distance(initial_position, destination)
+    distance_to_target = game.galaxy.compute_distance(
+        initial_position, destination
+    )
 
     game.action_ship_move(ship, destination)
 
@@ -235,18 +327,22 @@ def test_ship_move(game, initial_position, destination):
         assert ship.target is None
     else:
         new_distance_to_origin = game.galaxy.compute_distance(
-            ship.position, initial_position)
+            ship.position, initial_position
+        )
         # TODO: Somehow also test the direction. Now only the traveled distance is tested
         assert math.isclose(new_distance_to_origin, cfg.ship_speed, abs_tol=1)
         assert ship.target == destination
 
 
-@pytest.mark.parametrize('planet_state', [
-    (1, 101, 102, 103, 20),
-    (100, 101, 102, 103, 25),
-    (10, 101, 102, 103, 0),
-    (500, 101, 102, 103, 90),
-])
+@pytest.mark.parametrize(
+    "planet_state",
+    [
+        (1, 101, 102, 103, 20),
+        (100, 101, 102, 103, 25),
+        (10, 101, 102, 103, 0),
+        (500, 101, 102, 103, 90),
+    ],
+)
 def test_planet_produce_resources(test_player, game, planet_state):
     """
     In next turn ``pythonium`` must increase in ``dpythonium``
@@ -278,48 +374,55 @@ def test_planet_produce_resources(test_player, game, planet_state):
         assert planet.megacredits < planet_state[1] + dmegacredits
         assert planet.pythonium < planet_state[2] + dpythonium
 
-
     assert planet.clans > 0
     assert planet.happypoints > 0 and planet.happypoints <= 100
     assert planet.megacredits > 0
     assert planet.pythonium > 0
 
 
-@pytest.mark.parametrize('ships_args', [
+@pytest.mark.parametrize(
+    "ships_args",
     [
-        (1, 'war', (10, 10), 0, 0, 100),
-        (1, 'war', (10, 10), 0, 0, 100),
-        (1, 'war', (10, 10), 0, 0, 100),
-        (2, 'war', (10, 10), 0, 0, 100)
-    ], [
-        (1, 'war', (10, 10), 0, 0, 100),
-        (1, 'war', (10, 10), 0, 0, 100),
-        (2, 'war', (10, 10), 0, 0, 100),
-        (2, 'war', (10, 10), 0, 0, 100)
-    ], [
-        (1, 'war', (10, 10), 0, 0, 100),
-        (2, 'war', (10, 10), 0, 0, 100),
-        (2, 'war', (10, 10), 0, 0, 100),
-        (2, 'war', (10, 10), 0, 0, 100)
-    ], [
-        (1, 'war', (10, 10), 0, 0, 100),
-        (2, 'war', (10, 10), 0, 0, 100),
-        (3, 'war', (10, 10), 0, 0, 100),
-        (4, 'war', (10, 10), 0, 0, 100)
-    ]
-])
+        [
+            (1, "war", (10, 10), 0, 0, 100),
+            (1, "war", (10, 10), 0, 0, 100),
+            (1, "war", (10, 10), 0, 0, 100),
+            (2, "war", (10, 10), 0, 0, 100),
+        ],
+        [
+            (1, "war", (10, 10), 0, 0, 100),
+            (1, "war", (10, 10), 0, 0, 100),
+            (2, "war", (10, 10), 0, 0, 100),
+            (2, "war", (10, 10), 0, 0, 100),
+        ],
+        [
+            (1, "war", (10, 10), 0, 0, 100),
+            (2, "war", (10, 10), 0, 0, 100),
+            (2, "war", (10, 10), 0, 0, 100),
+            (2, "war", (10, 10), 0, 0, 100),
+        ],
+        [
+            (1, "war", (10, 10), 0, 0, 100),
+            (2, "war", (10, 10), 0, 0, 100),
+            (3, "war", (10, 10), 0, 0, 100),
+            (4, "war", (10, 10), 0, 0, 100),
+        ],
+    ],
+)
 def test_ship_to_ship_conflict(game, ships_args):
 
     ships = []
     for ship_args in ships_args:
         ship_type = game.gmode.ship_types.get(ship_args[1])
         ships.append(
-            Ship(player=ship_args[0],
-                 type=ship_type,
-                 position=ship_args[2],
-                 max_cargo=ship_type.max_cargo,
-                 max_mc=ship_type.max_mc,
-                 attack=ship_type.attack)
+            Ship(
+                player=ship_args[0],
+                type=ship_type,
+                position=ship_args[2],
+                max_cargo=ship_type.max_cargo,
+                max_mc=ship_type.max_mc,
+                attack=ship_type.attack,
+            )
         )
     game.galaxy.ships = ships
 
@@ -331,52 +434,92 @@ def test_ship_to_ship_conflict(game, ships_args):
     assert len({s.player for s in winner_ships}) == 1
 
 
-@pytest.mark.parametrize('planet_args, ships_args', [
+@pytest.mark.parametrize(
+    "planet_args, ships_args",
     [
-        (1000, (10, 10), 0, 0, 0, 0, Transfer(pythonium=10, megacredits=20), 1),
         [
-            (1, 'war', (10, 10), 0, 0, 100),
-        ]
-    ], [
-        (1000, (10, 10), 0, 0, 0, 0, Transfer(pythonium=10, megacredits=20), 1),
+            (
+                1000,
+                (10, 10),
+                0,
+                0,
+                0,
+                0,
+                Transfer(pythonium=10, megacredits=20),
+                1,
+            ),
+            [
+                (1, "war", (10, 10), 0, 0, 100),
+            ],
+        ],
         [
-            (1, 'war', (10, 10), 0, 0, 100),
-        ]
-    ], [
-        (1000, (10, 10), 0, 0, 0, 0, Transfer(pythonium=10, megacredits=20), 1),
+            (
+                1000,
+                (10, 10),
+                0,
+                0,
+                0,
+                0,
+                Transfer(pythonium=10, megacredits=20),
+                1,
+            ),
+            [
+                (1, "war", (10, 10), 0, 0, 100),
+            ],
+        ],
         [
-            (2, 'war', (10, 10), 0, 0, 100),
-            (2, 'war', (10, 10), 0, 0, 100)
-        ]
-    ], [
-        (1000, (10, 10), 0, 0, 0, 0, Transfer(pythonium=10, megacredits=20), 1),
+            (
+                1000,
+                (10, 10),
+                0,
+                0,
+                0,
+                0,
+                Transfer(pythonium=10, megacredits=20),
+                1,
+            ),
+            [(2, "war", (10, 10), 0, 0, 100), (2, "war", (10, 10), 0, 0, 100)],
+        ],
         [
-            (1, 'war', (10, 10), 0, 0, 100),
-            (4, 'war', (10, 10), 0, 0, 100)
-        ]
-    ]
-])
+            (
+                1000,
+                (10, 10),
+                0,
+                0,
+                0,
+                0,
+                Transfer(pythonium=10, megacredits=20),
+                1,
+            ),
+            [(1, "war", (10, 10), 0, 0, 100), (4, "war", (10, 10), 0, 0, 100)],
+        ],
+    ],
+)
 def test_planet_conflict(game, planet_args, ships_args):
 
     ships = []
     for ship_args in ships_args:
         ship_type = game.gmode.ship_types.get(ship_args[1])
         ships.append(
-            Ship(player=ship_args[0],
-                 type=ship_type,
-                 position=ship_args[2],
-                 max_cargo=ship_type.max_cargo,
-                 max_mc=ship_type.max_mc,
-                 attack=ship_type.attack)
+            Ship(
+                player=ship_args[0],
+                type=ship_type,
+                position=ship_args[2],
+                max_cargo=ship_type.max_cargo,
+                max_mc=ship_type.max_mc,
+                attack=ship_type.attack,
+            )
         )
 
-    planet = Planet(pid=planet_args[0],
-                    position=planet_args[1],
-                    temperature=planet_args[2],
-                    underground_pythonium=planet_args[3],
-                    concentration=planet_args[4],
-                    pythonium=planet_args[5],
-                    mine_cost=planet_args[6])
+    planet = Planet(
+        pid=planet_args[0],
+        position=planet_args[1],
+        temperature=planet_args[2],
+        underground_pythonium=planet_args[3],
+        concentration=planet_args[4],
+        pythonium=planet_args[5],
+        mine_cost=planet_args[6],
+    )
     original_player = planet_args[-1]
     game.galaxy.galaxy = ships
     game.galaxy.planets[planet.position] = planet
@@ -396,4 +539,3 @@ def test_planet_conflict(game, planet_args, ships_args):
         assert planet.player == original_player
     else:
         assert planet.player == enemy
-

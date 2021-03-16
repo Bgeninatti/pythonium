@@ -1,6 +1,6 @@
-
 import pytest
-from pythonium import AbstractPlayer, Transfer, Game, Planet, cfg
+
+from pythonium import AbstractPlayer, Game, Planet, Transfer, cfg
 from pythonium.logger import get_logger
 
 from .game_modes import SandboxGameMode
@@ -8,10 +8,11 @@ from .game_modes import SandboxGameMode
 
 class TestPlayer(AbstractPlayer):
 
-    name = 'Test Player'
+    name = "Test Player"
 
     def next_turn(self, galaxy, context):
         return galaxy
+
 
 @pytest.fixture
 def test_player():
@@ -20,6 +21,7 @@ def test_player():
     have a reference of `player.name`
     """
     return TestPlayer()
+
 
 @pytest.fixture
 def game():
@@ -30,6 +32,7 @@ def game():
     player = TestPlayer()
     logger = get_logger(__name__)
     return Game("test_sector", [player], game_mode, logger)
+
 
 @pytest.fixture
 def dummy_planet():

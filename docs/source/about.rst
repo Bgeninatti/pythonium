@@ -1,18 +1,18 @@
 About Pythonium
 ================
 
-Pythonium is a space turn-based strategy game where each player lead an alien race 
+Pythonium is a space turn-based strategy game where each player lead an alien race
 that aim to conquer the galaxy.
 
 You must explore planets to search and extract a valuable mineral: the `pythonium`.
-This precious material allows you to build cargo and combat spaceships, mines to get 
-more pythonium or defenses for your planets. 
+This precious material allows you to build cargo and combat spaceships, mines to get
+more pythonium or defenses for your planets.
 
-Manage the economy on your planets, and collect taxes to your people to found your 
-constructions, but be careful! Keep your clans happy if you want to avoid unrests 
+Manage the economy on your planets, and collect taxes to your people to found your
+constructions, but be careful! Keep your clans happy if you want to avoid unrests
 in your planets.
 
-Put your space helmet on, set your virtualenv, and start coding. 
+Put your space helmet on, set your virtualenv, and start coding.
 Battle for pythonium is waiting for you.
 
 Installation
@@ -42,7 +42,7 @@ Getting started
 ================
 
 Pythonium allows different game modes. The default is the **classic mode**, where each player starts with 1 planet and 2 carriers in a random galaxy of 300 planets.
-The first player in conquer 210 planets (70% of the total) wins. 
+The first player in conquer 210 planets (70% of the total) wins.
 
 Single player mode
 ==================
@@ -56,7 +56,7 @@ i.e: the ``standard_player`` bot.
 
 Once the command finishes you should have a ``<sector>.gif`` file and a ``<sector>.log``, where ``<sector>`` is a unique code generated for the game.
 
-* ``<sector>.gif``: This is an animation showing how the galaxy ownership changed along the game, 
+* ``<sector>.gif``: This is an animation showing how the galaxy ownership changed along the game,
   which planets belongs to each player, ships movements, combats and the score on each turn.
 
 * ``<sector>.log``: Contain the logs with all the relevant events during the game.
@@ -69,7 +69,7 @@ Here's an example of the gif
 Multiplayer mode
 =================
 
-Pythonium allows up to two players per game, and you can test it by providing two bots to the ``--players`` argument. 
+Pythonium allows up to two players per game, and you can test it by providing two bots to the ``--players`` argument.
 
 ::
 
@@ -81,7 +81,7 @@ The output will be similar to the single player mode: one ``.gif`` and one ``.lo
 Metrics
 =======
 
-Providing the ``--metrics`` arguments, pythonium creates a report with several metrics of the game. 
+Providing the ``--metrics`` arguments, pythonium creates a report with several metrics of the game.
 This is specially useful to evaluate the performance of your players, and know their strengths and wekenesses.
 
 ::

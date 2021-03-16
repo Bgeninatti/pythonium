@@ -1,12 +1,13 @@
 from itertools import groupby
-from typing import Dict, List, Tuple, Set
+from typing import Dict, List, Set, Tuple
 
 import numpy as np
 
 from . import cfg
+from .explosion import Explosion
 from .planet import Planet
 from .ship import Ship
-from .explosion import Explosion
+
 
 class Galaxy:
     """
@@ -19,11 +20,13 @@ class Galaxy:
     :param explosions: Known explosions in the galaxy
     """
 
-    def __init__(self,
-                 size: Tuple[int, int],
-                 planets: Dict[Tuple[int, int], Planet],
-                 ships: List[Ship],
-                 explosions: List[Explosion] = None):
+    def __init__(
+        self,
+        size: Tuple[int, int],
+        planets: Dict[Tuple[int, int], Planet],
+        ships: List[Ship],
+        explosions: List[Explosion] = None,
+    ):
         self.size = size
         """
         Width and height of the galaxy
@@ -51,8 +54,9 @@ class Galaxy:
         """
         List all the known races that own at least one ship or one planet.
         """
-        return {s.player for s in self.ships} \
-            .union({p.player for p in self.planets.values() if p.player is not None})
+        return {s.player for s in self.ships}.union(
+            {p.player for p in self.planets.values() if p.player is not None}
+        )
 
     @staticmethod
     def compute_distance(a: Tuple[int, int], b: Tuple[int, int]) -> float:
@@ -72,8 +76,9 @@ class Galaxy:
         self.ships.append(ship)
         self._next_ship_id += 1
 
-
-    def distances_to_planets(self, point: Tuple[int, int]) -> Dict[Tuple[int, int], float]:
+    def distances_to_planets(
+        self, point: Tuple[int, int]
+    ) -> Dict[Tuple[int, int], float]:
         """
         Compute the distance between the ``point`` and all the planets in the galaxy.
         """
@@ -81,23 +86,33 @@ class Galaxy:
             ((p, self.compute_distance(p, point)) for p in self.planets.keys())
         )
 
-    def nearby_planets(self, point: Tuple[int, int], turns: int = 1) -> List[Planet]:
+    def nearby_planets(
+        self, point: Tuple[int, int], turns: int = 1
+    ) -> List[Planet]:
         """
         Return all the planet that are ``turns`` away or less,
         traveling at a speed defined by ``cfg.ship speed``
         """
         distances = self.distances_to_planets(point)
         return list(
-            filter(lambda p: distances[p.position] <= cfg.ship_speed*turns,
-                   self.planets.values())
+            filter(
+                lambda p: distances[p.position] <= cfg.ship_speed * turns,
+                self.planets.values(),
+            )
         )
 
-    def get_player_planets(self, player_name: str) -> Dict[Tuple[int, int], Planet]:
+    def get_player_planets(
+        self, player_name: str
+    ) -> Dict[Tuple[int, int], Planet]:
         """
         Return all the known planets that belong to the player with the name ``player_name``
         """
         return dict(
-            ((pos, p) for pos, p in self.planets.items() if p.player == player_name)
+            (
+                (pos, p)
+                for pos, p in self.planets.items()
+                if p.player == player_name
+            )
         )
 
     def get_player_ships(self, player_name: str) -> List[Ship]:
@@ -110,8 +125,9 @@ class Galaxy:
         """
         Return a list with all the ships that are not located on a planet
         """
-        positions = {n.position for n in self.ships} \
-            .difference(set(self.planets.keys()))
+        positions = {n.position for n in self.ships}.difference(
+            set(self.planets.keys())
+        )
         return [n for n in self.ships if n.position in positions]
 
     def get_ships_in_position(self, position: Tuple[int, int]) -> List[Ship]:
@@ -132,8 +148,9 @@ class Galaxy:
         """
         Return the planet with ID ``nid`` if any
         """
-        match = [planet for planet in self.planets.values()
-                 if planet.pid == pid]
+        match = [
+            planet for planet in self.planets.values() if planet.pid == pid
+        ]
         if match:
             return match.pop()
 
@@ -142,9 +159,14 @@ class Galaxy:
         Returns a dict with ships ordered by position.
         Ships in the same positions are grouped in a list.
         """
-        return dict((
-            (position, list(ships))
-            for position, ships in groupby(self.ships, lambda s: s.position)))
+        return dict(
+            (
+                (position, list(ships))
+                for position, ships in groupby(
+                    self.ships, lambda s: s.position
+                )
+            )
+        )
 
     def get_ships_in_planets(self) -> List[Tuple[Planet, List[Ship]]]:
         """
@@ -165,19 +187,25 @@ class Galaxy:
         Return all the ships in conflict: Ships with, at last, one enemy ship
         in the same position
         """
-        ships_by_position = [list(ships) for pos, ships in
-                             groupby(self.ships, lambda s: s.position)]
+        ships_by_position = [
+            list(ships)
+            for pos, ships in groupby(self.ships, lambda s: s.position)
+        ]
         # keep only the groups with more than one player
         return list(
-            filter(lambda ships: len({s.player for s in ships if s.player}) > 1,
-                   ships_by_position)
+            filter(
+                lambda ships: len({s.player for s in ships if s.player}) > 1,
+                ships_by_position,
+            )
         )
 
     def get_ocuped_planets(self) -> List[Planet]:
         """
         Return all the planets colonized by any race
         """
-        return list(filter(lambda p: p.player is not None, self.planets.values()))
+        return list(
+            filter(lambda p: p.player is not None, self.planets.values())
+        )
 
     def get_planets_conflicts(self) -> List[Tuple[Planet, List[Ship]]]:
         """
@@ -188,9 +216,11 @@ class Galaxy:
         result = []
         for planet in self.get_ocuped_planets():
             ships = ships_by_position.get(planet.position)
-            if not ships or not any(s for s in ships
-                                    if s.player != planet.player \
-                                    and s not in destroyed_ships):
+            if not ships or not any(
+                s
+                for s in ships
+                if s.player != planet.player and s not in destroyed_ships
+            ):
                 continue
             result.append((planet, ships))
         return result
@@ -200,4 +230,6 @@ class Galaxy:
         Remove the destroyed ships from the list
         """
         explosions_ids = [e.ship.nid for e in self.explosions]
-        self.ships = list(filter(lambda s: s.nid not in explosions_ids, self.ships))
+        self.ships = list(
+            filter(lambda s: s.nid not in explosions_ids, self.ships)
+        )
