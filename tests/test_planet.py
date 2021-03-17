@@ -14,6 +14,11 @@ def is_monotonic_decreasing(sample):
 
 
 @pytest.fixture
+def planet():
+    return PlanetFactory.build_planet()
+
+
+@pytest.fixture
 def optimal_temperature_planet():
     return PlanetFactory.build_planet(temperature=cfg.optimal_temperature)
 
@@ -53,6 +58,15 @@ def planets_group_with_concentration(concentrations_range):
     for concentration in concentrations_range:
         planet = PlanetFactory.build_planet(mines=100)
         planet.concentration = concentration / 100
+        planets.append(planet)
+    return planets
+
+
+@pytest.fixture
+def planets_group_with_happypoints(happypoints_range):
+    planets = []
+    for happypoints in happypoints_range:
+        planet = PlanetFactory.build_planet(happypoints=happypoints, mines=100)
         planets.append(planet)
     return planets
 
@@ -122,3 +136,15 @@ class TestPlanet:
             planet.dpythonium for planet in planets_group_with_concentration
         ]
         assert is_monotonic_increasing(dpythonium_range)
+
+    @pytest.mark.parametrize("happypoints_range", (range(0, 100),))
+    def test_dpythonium_decreases_with_rioting_index(
+        self, planets_group_with_happypoints
+    ):
+        dpythonium_range = [
+            planet.dpythonium for planet in planets_group_with_happypoints
+        ]
+        assert is_monotonic_decreasing(dpythonium_range)
+
+    def test_dpythonium_is_int(self, planet):
+        assert type(planet.dpythonium) is int
