@@ -148,6 +148,11 @@ class Planet:
 
     See :attr:`dmegacredits`
     """
+    taxes_collection_factor: int = attr.ib(
+        default=cfg.taxes_collection_factor,
+        validator=[validators.is_valid_ratio],
+        init=False,
+    )
 
     def __attrs_post_init__(self):
         # `max_happypoints` will decay as long as `temperature` differ from
@@ -203,12 +208,12 @@ class Planet:
         * ``taxes``: Positive influence
         * ``rioting_index``: Negative influence,
         * ``clans``: Positive influence,
-        * ``cfg.taxes_collection_factor``: Positive influence
+        * ``taxes_collection_factor``: Positive influence
 
         Do not consider ``new_mines`` and ``new_ship`` cost, or ship transfers.
         """
         taxes = (
-            cfg.taxes_collection_factor
+            self.taxes_collection_factor
             * self.clans
             * self.taxes
             / 100
