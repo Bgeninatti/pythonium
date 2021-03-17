@@ -71,6 +71,35 @@ def planets_group_with_happypoints(happypoints_range):
     return planets
 
 
+@pytest.fixture
+def planets_group_with_collection_factor(taxes_collection_factor):
+    planets = []
+    for collection_factor in taxes_collection_factor:
+        planet = PlanetFactory.build_planet(clans=100)
+        planet.taxes = cfg.tolerable_taxes
+        planets.append(planet)
+    return planets
+
+
+@pytest.fixture
+def planets_group_with_clans(clans_range):
+    planets = []
+    for clans in clans_range:
+        planet = PlanetFactory.build_planet(clans=clans)
+        planets.append(planet)
+    return planets
+
+
+@pytest.fixture
+def planets_group_with_taxes(taxes_range):
+    planets = []
+    for taxes in taxes_range:
+        planet = PlanetFactory.build_planet()
+        planet.taxes = taxes
+        planets.append(planet)
+    return planets
+
+
 class TestPlanet:
     def test_max_hp_in_optimal_temperature(self, optimal_temperature_planet):
         assert optimal_temperature_planet.max_happypoints == 100
@@ -128,7 +157,7 @@ class TestPlanet:
         ]
         assert is_monotonic_increasing(dpythonium_range)
 
-    @pytest.mark.parametrize("concentrations_range", (range(0, 100, 5),))
+    @pytest.mark.parametrize("concentrations_range", (range(0, 100),))
     def test_dpythonium_increases_with_concentration(
         self, planets_group_with_concentration
     ):
@@ -148,3 +177,41 @@ class TestPlanet:
 
     def test_dpythonium_is_int(self, planet):
         assert type(planet.dpythonium) is int
+
+    @pytest.mark.parametrize("taxes_collection_factor", (range(0, 100),))
+    def test_dmegacredits_increases_with_taxes_collection_factor(
+        self, planets_group_with_collection_factor
+    ):
+        dmegacredits_range = [
+            planet.dmegacredits
+            for planet in planets_group_with_collection_factor
+        ]
+        assert is_monotonic_increasing(dmegacredits_range)
+
+    @pytest.mark.parametrize(
+        "clans_range", (range(0, cfg.max_clans_in_planet, 100),)
+    )
+    def test_dmegacredits_increases_with_clans(self, planets_group_with_clans):
+        dmegacredits_range = [
+            planet.dmegacredits for planet in planets_group_with_clans
+        ]
+        assert is_monotonic_increasing(dmegacredits_range)
+
+    @pytest.mark.parametrize("taxes_range", (range(0, cfg.tolerable_taxes),))
+    def test_dmegacredits_increases_with_taxes(self, planets_group_with_taxes):
+        dmegacredits_range = [
+            planet.dmegacredits for planet in planets_group_with_taxes
+        ]
+        assert is_monotonic_increasing(dmegacredits_range)
+
+    @pytest.mark.parametrize("happypoints_range", (range(0, 100),))
+    def test_dmegacredits_decreases_with_rioting_index(
+        self, planets_group_with_happypoints
+    ):
+        dmegacredits_range = [
+            planet.dmegacredits for planet in planets_group_with_happypoints
+        ]
+        assert is_monotonic_decreasing(dmegacredits_range)
+
+    def test_dmegacredits_is_int(self, planet):
+        assert type(planet.dmegacredits) is int
