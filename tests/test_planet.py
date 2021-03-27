@@ -215,3 +215,29 @@ class TestPlanet:
 
     def test_dmegacredits_is_int(self, planet):
         assert type(planet.dmegacredits) is int
+
+    @pytest.mark.parametrize("taxes_range", (range(0, cfg.tolerable_taxes),))
+    def test_dhappypoints_increases_with_taxes_less_than_tolerable(
+        self, planets_group_with_taxes
+    ):
+        dhappypoints_range = [
+            planet.dhappypoints for planet in planets_group_with_taxes
+        ]
+        assert is_monotonic_increasing(dhappypoints_range)
+
+    @pytest.mark.parametrize("taxes_range", (range(cfg.tolerable_taxes, 100),))
+    def test_dhappypoints_decreases_with_taxes_more_than_tolerable(
+        self, planets_group_with_taxes
+    ):
+        dhappypoints_range = [
+            planet.dhappypoints for planet in planets_group_with_taxes
+        ]
+        assert is_monotonic_decreasing(dhappypoints_range)
+
+    def test_dhappypoints_are_zero_when_hp_are_max(self, planet):
+        planet.taxes = 0
+        assert planet.happypoints == planet.max_happypoints
+        assert not planet.dhappypoints
+
+    def test_dhappypoints_is_int(self, planet):
+        assert type(planet.dhappypoints) is int
