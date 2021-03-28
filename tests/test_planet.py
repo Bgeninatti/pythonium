@@ -19,6 +19,15 @@ def planet():
 
 
 @pytest.fixture
+def colonized_planet(faker):
+    planet = PlanetFactory.build_planet()
+    planet.clans = faker.pyint()
+    planet.pythonium = faker.pyint()
+    planet.megacredits = faker.pyint()
+    return planet
+
+
+@pytest.fixture
 def optimal_temperature_planet():
     return PlanetFactory.build_planet(temperature=cfg.optimal_temperature)
 
@@ -183,21 +192,37 @@ class TestPlanetMines:
     def test_planet_max_mines_depends_on_config(self, planet_with_clans):
         assert planet_with_clans.max_mines == cfg.planet_max_mines
 
-    def test_can_build_mines_return_zero_if_max_mines(self, planet):
-        planet.mines = planet.max_mines
-        assert not planet.can_build_mines()
+    def test_can_build_mines_return_zero_if_max_mines(self, colonized_planet):
+        colonized_planet.pythonium = colonized_planet.mine_cost.pythonium
+        colonized_planet.megacredits = colonized_planet.mine_cost.megacredits
+        colonized_planet.mines = colonized_planet.max_mines
+        assert not colonized_planet.can_build_mines()
 
-    def test_can_build_mines_return_zero_if_no_mc(self, faker, planet):
-        planet.megacredits = 0
-        planet.pythonium = faker.pyint(min_value=planet.mine_cost.pythonium)
-        assert not planet.can_build_mines()
+    def test_can_build_mines_return_zero_if_no_mc(self, colonized_planet):
+        colonized_planet.megacredits = 0
+        assert not colonized_planet.can_build_mines()
 
-    def test_can_build_mines_return_zero_if_no_pythonium(self, faker, planet):
-        planet.pythonium = 0
-        planet.megacredits = faker.pyint(
-            min_value=planet.mine_cost.megacredits
+    def test_can_build_mines_return_zero_if_no_pythonium(
+        self, colonized_planet
+    ):
+        colonized_planet.pythonium = 0
+        assert not colonized_planet.can_build_mines()
+
+    def test_can_build_mines_depends_on_minimum_pythonium(
+        self, colonized_planet
+    ):
+        colonized_planet.pythonium = colonized_planet.mine_cost.pythonium
+        colonized_planet.megacredits = (
+            colonized_planet.mine_cost.megacredits * 2
         )
-        assert not planet.can_build_mines()
+        assert colonized_planet.can_build_mines() == 1
+
+    def test_can_build_mines_depends_on_minimum_megacredits(
+        self, colonized_planet
+    ):
+        colonized_planet.pythonium = colonized_planet.mine_cost.pythonium * 2
+        colonized_planet.megacredits = colonized_planet.mine_cost.megacredits
+        assert colonized_planet.can_build_mines() == 1
 
     def test_can_build_mines_is_int(self, planet):
         assert type(planet.can_build_mines()) is int
