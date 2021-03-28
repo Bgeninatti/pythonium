@@ -227,13 +227,13 @@ class Planet:
         """
         Absolute change on happypoints for the next turn
         """
-        return max(
-            min(
-                cfg.tolerable_taxes - self.taxes,
-                self.max_happypoints - self.happypoints,
-            ),
-            -self.happypoints,
-        )
+        unbounded_dhappypoints = cfg.tolerable_taxes - self.taxes
+        if unbounded_dhappypoints < 0:
+            return max(unbounded_dhappypoints, -self.happypoints)
+        else:
+            return min(
+                unbounded_dhappypoints, self.max_happypoints - self.happypoints
+            )
 
     @property
     def dclans(self) -> int:
