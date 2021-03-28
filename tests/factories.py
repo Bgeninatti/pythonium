@@ -29,7 +29,7 @@ class PlanetFactory:
             temperature=kwargs.get("temperature", cls.faker.pyint()),
             underground_pythonium=cls.faker.pyint(),
             concentration=kwargs.get(
-                "concentration", cls.faker.pyfloat(positive=True)
+                "concentration", cls.faker.pyfloat(min_value=0, max_value=1)
             ),
             pythonium=cls.faker.pyint(),
             mine_cost=mine_cost,
