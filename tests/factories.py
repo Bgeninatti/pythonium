@@ -11,8 +11,8 @@ class TransferVectorFactory:
     @classmethod
     def build_transfer_vector(cls):
         return Transfer(
-            megacredits=cls.faker.pyint(),
-            pythonium=cls.faker.pyint(),
+            megacredits=cls.faker.pyint(min_value=1),
+            pythonium=cls.faker.pyint(min_value=1),
         )
 
 
