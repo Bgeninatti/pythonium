@@ -212,6 +212,15 @@ class TestPlanetPythonium:
     def test_dpythonium_is_int(self, planet):
         assert type(planet.dpythonium) is int
 
+    def test_underground_dpythonium_is_int(self, planet):
+        assert type(planet.underground_pythonium) is int
+
+    def test_concentration_is_float(self, planet):
+        assert type(planet.concentration) is float
+
+    def test_concentration_is_ratio(self, planet):
+        assert 0 <= planet.concentration <= 1
+
 
 class TestPlanetMegacredits:
     @pytest.mark.parametrize("taxes_collection_factor", (range(0, 100),))
