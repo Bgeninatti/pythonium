@@ -2,7 +2,7 @@ import pytest
 
 from pythonium import Planet, Transfer, cfg
 
-from .factories import PlanetFactory
+from .factories import PlanetFactory, ShipTypeFactory
 
 
 def is_monotonic_increasing(sample):
@@ -16,6 +16,11 @@ def is_monotonic_decreasing(sample):
 @pytest.fixture
 def planet():
     return PlanetFactory.build_planet()
+
+
+@pytest.fixture
+def ship_type():
+    return ShipTypeFactory.build()
 
 
 @pytest.fixture
@@ -366,3 +371,45 @@ class TestPlanetClans:
     ):
         optimal_temperature_planet.clans = 100
         assert optimal_temperature_planet.dclans > 0
+
+
+class TestPlanetOrders:
+    def test_get_orders_return_list(self, colonized_planet):
+        assert isinstance(colonized_planet.get_orders(), list)
+
+    @pytest.mark.parametrize("taxes", range(0, 101))
+    def test_set_taxes_order(self, taxes, colonized_planet):
+        colonized_planet.taxes = taxes
+        orders = colonized_planet.get_orders()
+        taxes_order = next(o for o in orders if o[0] == "planet_set_taxes")
+        assert taxes_order[1] == colonized_planet.pid
+        assert taxes_order[2] == taxes
+
+    @pytest.mark.parametrize("new_mines", range(1, 101))
+    def test_build_mines_order(self, new_mines, colonized_planet):
+        colonized_planet.new_mines = new_mines
+        orders = colonized_planet.get_orders()
+        build_mines_order = next(
+            o for o in orders if o[0] == "planet_build_mines"
+        )
+        assert build_mines_order[1] == colonized_planet.pid
+        assert build_mines_order[2] == new_mines
+
+    def test_no_mines_order_if_new_mines_is_zero(self, colonized_planet):
+        orders = colonized_planet.get_orders()
+        order_names = [o[0] for o in orders]
+        assert "planet_build_mines" not in order_names
+
+    def test_build_ship_order(self, ship_type, colonized_planet):
+        colonized_planet.new_ship = ship_type
+        orders = colonized_planet.get_orders()
+        build_ship_order = next(
+            o for o in orders if o[0] == "planet_build_ship"
+        )
+        assert build_ship_order[1] == colonized_planet.pid
+        assert build_ship_order[2] is ship_type
+
+    def test_no_ship_order_if_new_ship_is_none(self, colonized_planet):
+        orders = colonized_planet.get_orders()
+        order_names = [o[0] for o in orders]
+        assert "planet_build_ship" not in order_names
