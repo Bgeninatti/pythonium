@@ -132,7 +132,7 @@ class TestPlanetHappyPoints:
             range(0, cfg.optimal_temperature),
         ),
     )
-    def test_max_hp_increases_with_temperature_from_optimal_to_100(
+    def test_max_hp_monotonicity_with_temperature(
         self, planets_group_with_temperature
     ):
         max_happypoints_range = [
@@ -147,23 +147,20 @@ class TestPlanetHappyPoints:
             == temperatured_planet.happypoints
         )
 
-    @pytest.mark.parametrize("taxes_range", (range(0, cfg.tolerable_taxes),))
-    def test_dhappypoints_increases_with_taxes_less_than_tolerable(
+    @pytest.mark.parametrize(
+        "taxes_range",
+        (
+            range(0, cfg.tolerable_taxes),
+            range(100, cfg.tolerable_taxes, -1),
+        ),
+    )
+    def test_dhappypoints_monotonicity_with_taxes(
         self, planets_group_with_taxes
     ):
         dhappypoints_range = [
             planet.dhappypoints for planet in planets_group_with_taxes
         ]
         assert is_monotonic_increasing(dhappypoints_range)
-
-    @pytest.mark.parametrize("taxes_range", (range(cfg.tolerable_taxes, 100),))
-    def test_dhappypoints_decreases_with_taxes_more_than_tolerable(
-        self, planets_group_with_taxes
-    ):
-        dhappypoints_range = [
-            planet.dhappypoints for planet in planets_group_with_taxes
-        ]
-        assert is_monotonic_decreasing(dhappypoints_range)
 
     def test_dhappypoints_are_zero_when_hp_are_max(self, planet):
         planet.taxes = 0
