@@ -312,6 +312,12 @@ class TestPlanetMegacredits:
     def test_dmegacredits_is_int(self, planet):
         assert type(planet.dmegacredits) is int
 
+    def test_megacredits_init_is_zero(self, planet):
+        assert not planet.megacredits
+
+    def test_taxes_init_is_zero(self, planet):
+        assert not planet.taxes
+
 
 class TestPlanetRiotingIndex:
     @pytest.mark.parametrize(
@@ -331,3 +337,32 @@ class TestPlanetRiotingIndex:
         self, planet_with_hp
     ):
         assert planet_with_hp.rioting_index == 1
+
+
+class TestPlanetClans:
+    @pytest.mark.parametrize("happypoints_range", (range(0, 100),))
+    def test_dclans_decreases_with_rioting_index(
+        self, planets_group_with_happypoints
+    ):
+        dclans_range = [
+            planet.dclans for planet in planets_group_with_happypoints
+        ]
+        assert is_monotonic_decreasing(dclans_range)
+
+    def test_dclans_is_int(self, planet):
+        assert type(planet.dclans) is int
+
+    def test_clans_init_is_zero(self, planet):
+        assert not planet.clans
+
+    def test_dclans_zero_on_max_clans_in_planet_is_reached(
+        self, optimal_temperature_planet
+    ):
+        optimal_temperature_planet.clans = cfg.max_clans_in_planet
+        assert not optimal_temperature_planet.dclans
+
+    def test_dclans_in_optimal_temperature_is_pisitive(
+        self, optimal_temperature_planet
+    ):
+        optimal_temperature_planet.clans = 100
+        assert optimal_temperature_planet.dclans > 0
