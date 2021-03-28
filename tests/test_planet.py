@@ -125,6 +125,11 @@ def planets_group_with_temperature(temperatures_range):
     return planets
 
 
+class TestPlanet:
+    def test_repr(self, planet):
+        assert str(planet) == f"Planet #{planet.pid} <player={planet.player}>"
+
+
 class TestPlanetHappyPoints:
     def test_max_hp_in_optimal_temperature(self, optimal_temperature_planet):
         assert optimal_temperature_planet.max_happypoints == 100
