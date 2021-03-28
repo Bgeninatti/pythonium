@@ -164,7 +164,7 @@ class Planet:
         )
         self.happypoints = self.max_happypoints
 
-    def __repr__(self):
+    def __str__(self):
         return f"Planet #{self.pid} <player={self.player}>"
 
     @property
