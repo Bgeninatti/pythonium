@@ -100,7 +100,7 @@ def planets_group_with_taxes(taxes_range):
     return planets
 
 
-class TestPlanet:
+class TestPlanetHappyPoints:
     def test_max_hp_in_optimal_temperature(self, optimal_temperature_planet):
         assert optimal_temperature_planet.max_happypoints == 100
 
@@ -121,6 +121,34 @@ class TestPlanet:
             == temperatured_planet.happypoints
         )
 
+    @pytest.mark.parametrize("taxes_range", (range(0, cfg.tolerable_taxes),))
+    def test_dhappypoints_increases_with_taxes_less_than_tolerable(
+        self, planets_group_with_taxes
+    ):
+        dhappypoints_range = [
+            planet.dhappypoints for planet in planets_group_with_taxes
+        ]
+        assert is_monotonic_increasing(dhappypoints_range)
+
+    @pytest.mark.parametrize("taxes_range", (range(cfg.tolerable_taxes, 100),))
+    def test_dhappypoints_decreases_with_taxes_more_than_tolerable(
+        self, planets_group_with_taxes
+    ):
+        dhappypoints_range = [
+            planet.dhappypoints for planet in planets_group_with_taxes
+        ]
+        assert is_monotonic_decreasing(dhappypoints_range)
+
+    def test_dhappypoints_are_zero_when_hp_are_max(self, planet):
+        planet.taxes = 0
+        assert planet.happypoints == planet.max_happypoints
+        assert not planet.dhappypoints
+
+    def test_dhappypoints_is_int(self, planet):
+        assert type(planet.dhappypoints) is int
+
+
+class TestPlanetMines:
     @pytest.mark.parametrize("clans", range(0, cfg.planet_max_mines))
     def test_max_mines_depends_on_clans(self, planet_with_clans):
         assert planet_with_clans.max_mines == planet_with_clans.clans
@@ -132,24 +160,8 @@ class TestPlanet:
     def test_planet_max_mines_depends_on_config(self, planet_with_clans):
         assert planet_with_clans.max_mines == cfg.planet_max_mines
 
-    @pytest.mark.parametrize(
-        "happypoints",
-        range(0, cfg.happypoints_tolerance),
-    )
-    def test_rioting_index_decrease_with_happypoints_below_tolerance(
-        self, planet_with_hp
-    ):
-        assert planet_with_hp.rioting_index < 1
 
-    @pytest.mark.parametrize(
-        "happypoints",
-        range(cfg.happypoints_tolerance, 100),
-    )
-    def test_rioting_index_no_effect_with_happypoints_above_tolerance(
-        self, planet_with_hp
-    ):
-        assert planet_with_hp.rioting_index == 1
-
+class TestPlanetPythonium:
     @pytest.mark.parametrize("mines_range", (range(0, cfg.planet_max_mines),))
     def test_dpythonium_increases_with_mines(self, planets_group_with_mines):
         dpythonium_range = [
@@ -178,6 +190,8 @@ class TestPlanet:
     def test_dpythonium_is_int(self, planet):
         assert type(planet.dpythonium) is int
 
+
+class TestPlanetMegacredits:
     @pytest.mark.parametrize("taxes_collection_factor", (range(0, 100),))
     def test_dmegacredits_increases_with_taxes_collection_factor(
         self, planets_group_with_collection_factor
@@ -216,28 +230,22 @@ class TestPlanet:
     def test_dmegacredits_is_int(self, planet):
         assert type(planet.dmegacredits) is int
 
-    @pytest.mark.parametrize("taxes_range", (range(0, cfg.tolerable_taxes),))
-    def test_dhappypoints_increases_with_taxes_less_than_tolerable(
-        self, planets_group_with_taxes
+
+class TestPlanetRiotingIndex:
+    @pytest.mark.parametrize(
+        "happypoints",
+        range(0, cfg.happypoints_tolerance),
+    )
+    def test_rioting_index_decrease_with_happypoints_below_tolerance(
+        self, planet_with_hp
     ):
-        dhappypoints_range = [
-            planet.dhappypoints for planet in planets_group_with_taxes
-        ]
-        assert is_monotonic_increasing(dhappypoints_range)
+        assert planet_with_hp.rioting_index < 1
 
-    @pytest.mark.parametrize("taxes_range", (range(cfg.tolerable_taxes, 100),))
-    def test_dhappypoints_decreases_with_taxes_more_than_tolerable(
-        self, planets_group_with_taxes
+    @pytest.mark.parametrize(
+        "happypoints",
+        range(cfg.happypoints_tolerance, 100),
+    )
+    def test_rioting_index_no_effect_with_happypoints_above_tolerance(
+        self, planet_with_hp
     ):
-        dhappypoints_range = [
-            planet.dhappypoints for planet in planets_group_with_taxes
-        ]
-        assert is_monotonic_decreasing(dhappypoints_range)
-
-    def test_dhappypoints_are_zero_when_hp_are_max(self, planet):
-        planet.taxes = 0
-        assert planet.happypoints == planet.max_happypoints
-        assert not planet.dhappypoints
-
-    def test_dhappypoints_is_int(self, planet):
-        assert type(planet.dhappypoints) is int
+        assert planet_with_hp.rioting_index == 1
