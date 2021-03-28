@@ -160,6 +160,28 @@ class TestPlanetMines:
     def test_planet_max_mines_depends_on_config(self, planet_with_clans):
         assert planet_with_clans.max_mines == cfg.planet_max_mines
 
+    def test_can_build_mines_return_zero_if_max_mines(self, planet):
+        planet.mines = planet.max_mines
+        assert not planet.can_build_mines()
+
+    def test_can_build_mines_return_zero_if_no_mc(self, faker, planet):
+        planet.megacredits = 0
+        planet.pythonium = faker.pyint(min_value=planet.mine_cost.pythonium)
+        assert not planet.can_build_mines()
+
+    def test_can_build_mines_return_zero_if_no_pythonium(self, faker, planet):
+        planet.pythonium = 0
+        planet.megacredits = faker.pyint(
+            min_value=planet.mine_cost.megacredits
+        )
+        assert not planet.can_build_mines()
+
+    def test_can_build_mines_is_int(self, planet):
+        assert type(planet.can_build_mines()) is int
+
+    def test_mine_cost_is_transfer(self, planet):
+        assert type(planet.mine_cost) is Transfer
+
 
 class TestPlanetPythonium:
     @pytest.mark.parametrize("mines_range", (range(0, cfg.planet_max_mines),))
