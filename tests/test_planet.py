@@ -94,8 +94,19 @@ def planets_group_with_clans(clans_range):
 def planets_group_with_taxes(taxes_range):
     planets = []
     for taxes in taxes_range:
-        planet = PlanetFactory.build_planet()
+        planet = PlanetFactory.build_planet(
+            temperature=cfg.optimal_temperature
+        )
         planet.taxes = taxes
+        planets.append(planet)
+    return planets
+
+
+@pytest.fixture
+def planets_group_with_temperature(temperatures_range):
+    planets = []
+    for temperature in temperatures_range:
+        planet = PlanetFactory.build_planet(temperature=temperature)
         planets.append(planet)
     return planets
 
@@ -113,6 +124,21 @@ class TestPlanetHappyPoints:
     )
     def test_max_hp_above_optimal_temperature(self, temperatured_planet):
         assert temperatured_planet.max_happypoints < 100
+
+    @pytest.mark.parametrize(
+        "temperatures_range",
+        (
+            range(100, cfg.optimal_temperature, -1),
+            range(0, cfg.optimal_temperature),
+        ),
+    )
+    def test_max_hp_increases_with_temperature_from_optimal_to_100(
+        self, planets_group_with_temperature
+    ):
+        max_happypoints_range = [
+            planet.max_happypoints for planet in planets_group_with_temperature
+        ]
+        assert is_monotonic_increasing(max_happypoints_range)
 
     @pytest.mark.parametrize("temperature", range(0, 101))
     def test_init_hp_are_max(self, temperatured_planet):
@@ -181,6 +207,9 @@ class TestPlanetMines:
 
     def test_mine_cost_is_transfer(self, planet):
         assert type(planet.mine_cost) is Transfer
+
+    def test_mines_init_is_zero(self, planet):
+        assert not planet.mines
 
 
 class TestPlanetPythonium:
