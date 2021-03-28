@@ -1,6 +1,7 @@
 from faker import Faker
 
 from pythonium import Planet
+from pythonium.ship_type import ShipType
 from pythonium.vectors import Transfer
 
 
@@ -13,6 +14,22 @@ class TransferVectorFactory:
         return Transfer(
             megacredits=cls.faker.pyint(min_value=1),
             pythonium=cls.faker.pyint(min_value=1),
+        )
+
+
+class ShipTypeFactory:
+
+    faker = Faker()
+
+    @classmethod
+    def build(cls, **kwargs):
+        ship_cost = TransferVectorFactory.build_transfer_vector()
+        return ShipType(
+            name=cls.faker.pystr(),
+            cost=ship_cost,
+            max_cargo=cls.faker.pyint(),
+            max_mc=cls.faker.pyint(),
+            attack=cls.faker.pyint(),
         )
 
 
