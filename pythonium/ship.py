@@ -60,6 +60,11 @@ class Ship:
     See :attr:`ShipType.attack`
     """
 
+    speed: int = attr.ib(converter=int)
+    """
+    Ship's speed in ly per turn
+    """
+
     # State in turn
     megacredits: int = attr.ib(converter=int, default=0, init=False)
     """

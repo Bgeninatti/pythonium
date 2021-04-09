@@ -322,7 +322,7 @@ def test_ship_move(game, initial_position, destination):
 
     game.action_ship_move(ship, destination)
 
-    if distance_to_target <= cfg.ship_speed:
+    if distance_to_target <= ship.speed:
         assert ship.position == destination
         assert ship.target is None
     else:
@@ -330,7 +330,7 @@ def test_ship_move(game, initial_position, destination):
             ship.position, initial_position
         )
         # TODO: Somehow also test the direction. Now only the traveled distance is tested
-        assert math.isclose(new_distance_to_origin, cfg.ship_speed, abs_tol=1)
+        assert math.isclose(new_distance_to_origin, ship.speed, abs_tol=1)
         assert ship.target == destination
 
 
@@ -422,6 +422,7 @@ def test_ship_to_ship_conflict(game, ships_args):
                 max_cargo=ship_type.max_cargo,
                 max_mc=ship_type.max_mc,
                 attack=ship_type.attack,
+                speed=ship_type.speed,
             )
         )
     game.galaxy.ships = ships
@@ -508,6 +509,7 @@ def test_planet_conflict(game, planet_args, ships_args):
                 max_cargo=ship_type.max_cargo,
                 max_mc=ship_type.max_mc,
                 attack=ship_type.attack,
+                speed=ship_type.speed,
             )
         )
 
