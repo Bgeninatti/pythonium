@@ -47,5 +47,10 @@ class ShipType:
     Attack of the ship. It will be used to resolve conflicts.
     """
 
+    speed: int = attr.ib(converter=int)
+    """
+    Ship's speed in ly per turn
+    """
+
     def __repr__(self):
         return self.name

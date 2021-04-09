@@ -16,6 +16,7 @@ CLASSIC_MODE_SHIPS = (
         max_cargo=1200,
         max_mc=10 ** 3,
         attack=0,
+        speed=cfg.ship_speed,
     ),
     ShipType(
         name="war",
@@ -23,6 +24,7 @@ CLASSIC_MODE_SHIPS = (
         max_cargo=100,
         max_mc=10 ** 3,
         attack=100,
+        speed=cfg.ship_speed,
     ),
 )
 
@@ -223,6 +225,7 @@ class ClassicMode(GameMode):
                         max_cargo=ship_type.max_cargo,
                         max_mc=ship_type.max_mc,
                         attack=ship_type.attack,
+                        speed=ship_type.speed,
                     )
                     galaxy.add_ship(ship)
         return galaxy
@@ -337,7 +340,6 @@ class ClassicMode(GameMode):
         # FIXME: Can the user change the ship types attribute?
         return {
             "ship_types": self.ship_types,
-            "ship_speed": cfg.ship_speed,
             "tolerable_taxes": cfg.tolerable_taxes,
             "happypoints_tolerance": cfg.happypoints_tolerance,
             "score": score,

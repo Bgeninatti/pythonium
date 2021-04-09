@@ -53,6 +53,7 @@ class SandboxGameMode(GameMode):
             max_cargo=ship_type.max_cargo,
             max_mc=ship_type.max_mc,
             attack=ship_type.attack,
+            speed=ship_type.speed,
         )
         galaxy.add_ship(ship)
 
