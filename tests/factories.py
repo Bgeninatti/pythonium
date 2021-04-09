@@ -30,6 +30,7 @@ class ShipTypeFactory:
             max_cargo=cls.faker.pyint(),
             max_mc=cls.faker.pyint(),
             attack=cls.faker.pyint(),
+            speed=cls.faker.pyint(),
         )
 
 

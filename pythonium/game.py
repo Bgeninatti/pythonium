@@ -492,7 +492,7 @@ class Game:
             ship.position, target
         )
 
-        if distance_to_target <= cfg.ship_speed:
+        if distance_to_target <= ship.speed:
             to = target
             target = None
         else:
@@ -502,8 +502,8 @@ class Game:
                 (target[1] - ship.position[1]) / distance_to_target,
             )
             to = (
-                int(ship.position[0] + direction[0] * cfg.ship_speed),
-                int(ship.position[1] + direction[1] * cfg.ship_speed),
+                int(ship.position[0] + direction[0] * ship.speed),
+                int(ship.position[1] + direction[1] * ship.speed),
             )
 
         ship.position = to
@@ -716,6 +716,7 @@ class Game:
             max_cargo=ship_type.max_cargo,
             max_mc=ship_type.max_mc,
             attack=ship_type.attack,
+            speed=ship_type.speed,
         )
 
         planet.megacredits -= ship_type.cost.megacredits
