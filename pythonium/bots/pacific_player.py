@@ -2,7 +2,6 @@ import random
 
 import attr
 
-from ..logger import get_logger
 from ..player import AbstractPlayer
 from ..ship import Ship
 from .standard_player import Player as StandardPlayer

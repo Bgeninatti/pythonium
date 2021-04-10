@@ -1,3 +1,4 @@
+import logging
 import os
 import random
 import string
@@ -10,9 +11,10 @@ import numpy as np
 
 from . import cfg
 from .explosion import Explosion
-from .logger import get_logger
 from .renderer import GifRenderer
 from .ship import Ship
+
+logger = logging.getLogger("game")
 
 
 class Game:
@@ -21,10 +23,8 @@ class Game:
         sector,
         players,
         gmode,
-        logger,
         *,
         renderer=GifRenderer,
-        verbose=False,
         raise_exceptions=False,
     ):
         """
@@ -51,14 +51,13 @@ class Game:
         sys.stdout.write(f"Running battle in Sector #{self.sector}\n")
         self.gmode = gmode
         self.players = players
-        self._logger = logger
         self.raise_exceptions = raise_exceptions
-        self._logger.info(
+        logger.info(
             "Initializing galaxy",
             extra={"players": len(self.players), "sector": self.sector},
         )
         self.galaxy = self.gmode.build_galaxy(self.players)
-        self._logger.info("Galaxy initialized")
+        logger.info("Galaxy initialized")
         self._renderer = renderer(self.galaxy, f"Sector #{self.sector}")
         self.turn = 0
 
@@ -86,7 +85,7 @@ class Game:
         orders = [
             o for orders in ships_orders + planets_orders for o in orders
         ]
-        self._logger.info(
+        logger.info(
             "Player orders computed",
             extra={
                 "turn": self.turn,
@@ -104,7 +103,7 @@ class Game:
             sys.stdout.write(f"\rPlaying game{'.' * int(self.turn/4)}")
             sys.stdout.flush()
 
-            self._logger.info("Turn started", extra={"turn": self.turn})
+            logger.info("Turn started", extra={"turn": self.turn})
             orders = defaultdict(lambda: [])
             context = self.gmode.get_context(
                 self.galaxy, self.players, self.turn
@@ -116,13 +115,13 @@ class Game:
 
             # log current score
             for player_score in context["score"]:
-                self._logger.info("Current score", extra=player_score)
+                logger.info("Current score", extra=player_score)
 
             for player in self.players:
                 # Filtra cosas que ve el player según las reglas del juego
                 galaxy = self.gmode.galaxy_for_player(self.galaxy, player)
                 try:
-                    self._logger.info(
+                    logger.info(
                         "Computing orders for player",
                         extra={"turn": self.turn, "player": player.name},
                     )
@@ -135,7 +134,7 @@ class Game:
                             orders[name].append((player, order[1:]))
 
                 except Exception as e:
-                    self._logger.error(
+                    logger.error(
                         "Player lost turn",
                         extra={
                             "turn": self.turn,
@@ -143,7 +142,7 @@ class Game:
                             "reason": str(e),
                         },
                     )
-                    self._logger.info(
+                    logger.info(
                         "Player orders computed",
                         extra={
                             "turn": self.turn,
@@ -157,13 +156,13 @@ class Game:
 
             if self.gmode.has_ended(self.galaxy, self.turn):
                 if self.gmode.winner:
-                    self._logger.info(
+                    logger.info(
                         "Winner!",
                         extra={"turn": self.turn, "winner": self.gmode.winner},
                     )
                     message = f"Player {self.gmode.winner} wins\n"
                 else:
-                    self._logger.info("Nobody won", extra={"turn": self.turn})
+                    logger.info("Nobody won", extra={"turn": self.turn})
                     message = "Nobody won\n"
 
                 sys.stdout.write("\n")
@@ -259,7 +258,7 @@ class Game:
         dhappypoints = planet.dhappypoints
         if dhappypoints:
             planet.happypoints += dhappypoints
-            self._logger.info(
+            logger.info(
                 "Happypoints change",
                 extra={
                     "turn": self.turn,
@@ -273,7 +272,7 @@ class Game:
         dmegacredits = planet.dmegacredits
         if dmegacredits:
             planet.megacredits += dmegacredits
-            self._logger.info(
+            logger.info(
                 "Megacredits change",
                 extra={
                     "turn": self.turn,
@@ -287,7 +286,7 @@ class Game:
         dpythonium = planet.dpythonium
         if dpythonium:
             planet.pythonium += dpythonium
-            self._logger.info(
+            logger.info(
                 "Pythonium change",
                 extra={
                     "turn": self.turn,
@@ -301,7 +300,7 @@ class Game:
         dclans = planet.dclans
         if dclans:
             planet.clans += dclans
-            self._logger.info(
+            logger.info(
                 "Population change",
                 extra={
                     "turn": self.turn,
@@ -328,7 +327,7 @@ class Game:
             scale = (1 - self.gmode.tenacity) ** attack_fraction
             score = np.random.gamma(shape, scale)
 
-            self._logger.info(
+            logger.info(
                 "Score in conflict",
                 extra={
                     "turn": self.turn,
@@ -342,7 +341,7 @@ class Game:
                 winner = player
                 max_score = score
 
-        self._logger.info(
+        logger.info(
             "Conflict resolved",
             extra={
                 "turn": self.turn,
@@ -357,7 +356,7 @@ class Game:
         for ship in ships:
             if ship.player == winner:
                 continue
-            self._logger.info(
+            logger.info(
                 "Explosion",
                 extra={
                     "turn": self.turn,
@@ -389,7 +388,7 @@ class Game:
 
         # If is not of his own, the winner conquer the planet.
         if planet.player != winner:
-            self._logger.info(
+            logger.info(
                 "Planet conquered by force",
                 extra={
                     "turn": self.turn,
@@ -425,7 +424,7 @@ class Game:
 
                 obj = self.galaxy.search_planet(pid)
             else:
-                self._logger.warning(
+                logger.warning(
                     "Unknown params",
                     extra={
                         "turn": self.turn,
@@ -436,7 +435,7 @@ class Game:
                 continue
 
             if not obj:
-                self._logger.warning(
+                logger.warning(
                     "Object not found",
                     extra={
                         "turn": self.turn,
@@ -448,7 +447,7 @@ class Game:
                 continue
 
             if obj.player != player.name:
-                self._logger.warning(
+                logger.warning(
                     "This is not yours",
                     extra={
                         "turn": self.turn,
@@ -459,7 +458,7 @@ class Game:
                 )
                 continue
 
-            self._logger.debug(
+            logger.debug(
                 "Running action for player",
                 extra={
                     "turn": self.turn,
@@ -473,7 +472,7 @@ class Game:
             try:
                 func(obj, *args)
             except Exception as e:
-                self._logger.error(
+                logger.error(
                     "Unexpected error running player params",
                     extra={
                         "turn": self.turn,
@@ -508,7 +507,7 @@ class Game:
 
         ship.position = to
         ship.target = target
-        self._logger.info(
+        logger.info(
             "Ship moved",
             extra={
                 "turn": self.turn,
@@ -524,7 +523,7 @@ class Game:
     def action_ship_transfer(self, ship, transfer):
         planet = self.galaxy.planets.get(ship.position)
 
-        self._logger.info(
+        logger.info(
             "Attempt to transfer",
             extra={
                 "ship": ship.nid,
@@ -535,14 +534,14 @@ class Game:
         )
 
         if not planet:
-            self._logger.warning(
+            logger.warning(
                 "Can not transfer in deep space",
                 extra={"turn": self.turn, "ship": ship.nid},
             )
             return
 
         if planet.player is not None and planet.player != ship.player:
-            self._logger.warning(
+            logger.warning(
                 "Can not transfer to an enemy planet",
                 extra={
                     "turn": self.turn,
@@ -585,7 +584,7 @@ class Game:
         ship.pythonium += transfer.pythonium
         ship.megacredits += transfer.megacredits
 
-        self._logger.info(
+        logger.info(
             "Ship transfer to planet",
             extra={
                 "turn": self.turn,
@@ -604,7 +603,7 @@ class Game:
         if not planet.clans:
             # If nobody stays in the planet the player doesn't own it anymore
             planet.player = None
-            self._logger.info(
+            logger.info(
                 "Planet abandoned",
                 extra={
                     "turn": self.turn,
@@ -616,7 +615,7 @@ class Game:
             # If nobody owns the planet and the ship download clans the player
             # conquer the planet
             planet.player = ship.player
-            self._logger.info(
+            logger.info(
                 "Planet conquered",
                 extra={
                     "turn": self.turn,
@@ -635,7 +634,7 @@ class Game:
         new_mines = int(min(new_mines, planet.can_build_mines()))
 
         if not new_mines:
-            self._logger.warning(
+            logger.warning(
                 "Can not build mines",
                 extra={
                     "turn": self.turn,
@@ -652,7 +651,7 @@ class Game:
         planet.megacredits -= new_mines * self.gmode.mine_cost.megacredits
         planet.pythonium -= new_mines * self.gmode.mine_cost.pythonium
 
-        self._logger.info(
+        logger.info(
             "New mines",
             extra={
                 "turn": self.turn,
@@ -666,7 +665,7 @@ class Game:
 
         ships_count = len(self.galaxy.get_player_ships(planet.player))
         if ships_count >= self.gmode.max_ships:
-            self._logger.warning(
+            logger.warning(
                 "Ships limit reached",
                 extra={
                     "turn": self.turn,
@@ -678,14 +677,14 @@ class Game:
 
         try:
             if not ship_type:
-                self._logger.error(
+                logger.error(
                     "Ship features not found",
                     extra={"turn": self.turn, "ship_type": ship_type.name},
                 )
                 return
 
         except KeyError:
-            self._logger.warning(
+            logger.warning(
                 "Unknown ship type",
                 extra={
                     "turn": self.turn,
@@ -697,7 +696,7 @@ class Game:
             return
 
         if not planet.can_build_ship(ship_type):
-            self._logger.warning(
+            logger.warning(
                 "Missing resources",
                 extra={
                     "turn": self.turn,
@@ -724,7 +723,7 @@ class Game:
 
         self.galaxy.add_ship(ship)
 
-        self._logger.info(
+        logger.info(
             "New ship built",
             extra={
                 "turn": self.turn,
@@ -739,7 +738,7 @@ class Game:
             return
 
         planet.taxes = min(max(0, taxes), 100)
-        self._logger.info(
+        logger.info(
             "Taxes updated",
             extra={
                 "turn": self.turn,

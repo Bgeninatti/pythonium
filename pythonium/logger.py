@@ -1,4 +1,5 @@
 import logging
+import logging.config
 import sys
 
 
@@ -10,25 +11,40 @@ class ContextLogger(logging.Logger):
         super()._log(level, msg, args, exc_info, extra)
 
 
-def get_logger(name, lvl=logging.INFO, filename=None, verbose=False):
+logging.setLoggerClass(ContextLogger)
 
-    formatter = logging.Formatter(
-        "%(asctime)s [%(levelname)s] %(module)s:%(funcName)s %(message)s"
-    )
 
-    logging.setLoggerClass(ContextLogger)
-    logger = logging.getLogger(name)
+def setup_logger(filename, lvl="info", verbose=False):
 
-    if filename:
-        handler = logging.FileHandler(filename)
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
+    LOGGING_CONFIG = {
+        "version": 1,
+        "disable_existing_loggers": True,
+        "formatters": {
+            "standard": {
+                "format": "%(asctime)s [%(levelname)s] %(module)s:%(funcName)s %(message)s"
+            },
+        },
+        "handlers": {
+            "default": {
+                "level": lvl.upper(),
+                "formatter": "standard",
+                "class": "logging.FileHandler",
+                "filename": filename,
+            },
+            "stream": {
+                "level": lvl.upper(),
+                "formatter": "standard",
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stdout",
+            },
+        },
+        "loggers": {
+            "game": {
+                "handlers": ["default", "file"] if verbose else ["default"],
+                "level": lvl.upper(),
+                "propagate": False,
+            },
+        },
+    }
 
-    if verbose or not filename:
-        stream_handler = logging.StreamHandler(sys.stdout)
-        stream_handler.setFormatter(formatter)
-        logger.addHandler(stream_handler)
-
-    logger.setLevel(lvl)
-
-    return logger
+    logging.config.dictConfig(LOGGING_CONFIG)
