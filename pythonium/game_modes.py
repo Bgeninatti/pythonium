@@ -343,5 +343,4 @@ class ClassicMode(GameMode):
             "tolerable_taxes": cfg.tolerable_taxes,
             "happypoints_tolerance": cfg.happypoints_tolerance,
             "score": score,
-            "turn": turn,
         }
