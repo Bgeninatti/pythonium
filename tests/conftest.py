@@ -1,7 +1,7 @@
 import pytest
 
 from pythonium import AbstractPlayer, Game, Planet, Transfer, cfg
-from pythonium.logger import get_logger
+from pythonium.logger import setup_logger
 
 from .game_modes import SandboxGameMode
 
@@ -12,6 +12,16 @@ class TestPlayer(AbstractPlayer):
 
     def next_turn(self, galaxy, context):
         return galaxy
+
+
+@pytest.fixture
+def logfile(tmp_path):
+    return tmp_path / "tests.log"
+
+
+@pytest.fixture(autouse=True)
+def logger_setup(logfile):
+    setup_logger(logfile)
 
 
 @pytest.fixture
@@ -30,8 +40,7 @@ def game():
     """
     game_mode = SandboxGameMode()
     player = TestPlayer()
-    logger = get_logger(__name__)
-    return Game("test_sector", [player], game_mode, logger)
+    return Game("test_sector", [player], game_mode)
 
 
 @pytest.fixture
