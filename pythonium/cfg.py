@@ -1,9 +1,8 @@
 import configparser
+import logging
 import os
 
-from .logger import get_logger
-
-LOGGER = get_logger(__name__)
+logger = logging.getLogger("game")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Move this settings to config.ini
@@ -24,7 +23,7 @@ def load_config(namespace="DEFAULT", base_dir=BASE_DIR):
     # This is for local deploy with a config file
     config = configparser.ConfigParser()
     config.read(config_file)
-    LOGGER.info(
+    logger.info(
         "Configuration loaded from config file", extra={"file": config_file}
     )
     return config[namespace]
