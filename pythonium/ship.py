@@ -62,7 +62,7 @@ class Ship(StellarThing):
     """
 
     # User controls
-    target: Position = attr.ib(default=None, init=False)
+    target: Position = attr.ib(converter=Position, default=None, init=False)
     """
     **Attribute that can be modified by the player**
 

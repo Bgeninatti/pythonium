@@ -11,6 +11,7 @@ import numpy as np
 
 from . import cfg
 from .explosion import Explosion
+from .orders.ship import ShipMoveOrder, ShipTransferOrder
 from .renderer import GifRenderer
 from .ship import Ship
 
@@ -489,146 +490,12 @@ class Game:
                 )
 
     def action_ship_move(self, ship, target):
-
-        _from = ship.position
-        distance_to_target = self.galaxy.compute_distance(
-            ship.position, target
-        )
-
-        if distance_to_target <= ship.speed:
-            to = target
-            target = None
-        else:
-
-            direction = (
-                (target[0] - ship.position[0]) / distance_to_target,
-                (target[1] - ship.position[1]) / distance_to_target,
-            )
-            to = (
-                int(ship.position[0] + direction[0] * ship.speed),
-                int(ship.position[1] + direction[1] * ship.speed),
-            )
-
-        ship.position = to
-        ship.target = target
-        logger.info(
-            "Ship moved",
-            extra={
-                "turn": self.galaxy.turn,
-                "player": ship.player,
-                "ship": ship.id,
-                "from": _from,
-                "to": ship.position,
-                "target": ship.target,
-            },
-        )
-        return
+        order = ShipMoveOrder(ship, target)
+        order.execute(self.galaxy)
 
     def action_ship_transfer(self, ship, transfer):
-        planet = self.galaxy.planets.get(ship.position)
-
-        logger.info(
-            "Attempt to transfer",
-            extra={
-                "ship": ship.id,
-                "clans": transfer.clans,
-                "pythonium": transfer.pythonium,
-                "megacredits": transfer.megacredits,
-            },
-        )
-
-        if not planet:
-            logger.warning(
-                "Can not transfer in deep space",
-                extra={"turn": self.galaxy.turn, "ship": ship.id},
-            )
-            return
-
-        if planet.player is not None and planet.player != ship.player:
-            logger.warning(
-                "Can not transfer to an enemy planet",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "ship": ship.id,
-                    "planet": planet.id,
-                },
-            )
-            return
-
-        # Check if transfers + existances are grather than capacity on clans and pythonium
-        available_cargo = ship.max_cargo - (ship.pythonium + ship.clans)
-
-        # Adjust transfers to real availability in planet and ship
-        transfer.clans = (
-            min(transfer.clans, planet.clans, available_cargo)
-            if transfer.clans > 0
-            else max(transfer.clans, -ship.clans)
-        )
-        transfer.pythonium = (
-            min(
-                transfer.pythonium,
-                planet.pythonium,
-                available_cargo - transfer.clans,
-            )
-            if transfer.pythonium > 0
-            else max(transfer.pythonium, -ship.pythonium)
-        )
-        transfer.megacredits = (
-            min(
-                transfer.megacredits,
-                planet.megacredits,
-                ship.max_mc - ship.megacredits,
-            )
-            if transfer.megacredits > 0
-            else max(transfer.megacredits, -ship.megacredits)
-        )
-
-        # Do transfers
-        ship.clans += transfer.clans
-        ship.pythonium += transfer.pythonium
-        ship.megacredits += transfer.megacredits
-
-        logger.info(
-            "Ship transfer to planet",
-            extra={
-                "turn": self.galaxy.turn,
-                "player": ship.player,
-                "ship": ship.id,
-                "clans": transfer.clans,
-                "pythonium": transfer.pythonium,
-                "megacredits": transfer.megacredits,
-            },
-        )
-
-        planet.clans -= transfer.clans
-        planet.pythonium -= transfer.pythonium
-        planet.megacredits -= transfer.megacredits
-
-        if not planet.clans:
-            # If nobody stays in the planet the player doesn't own it anymore
-            planet.player = None
-            logger.info(
-                "Planet abandoned",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "player": ship.player,
-                    "planet": planet.id,
-                },
-            )
-        elif planet.player is None and planet.clans > 0:
-            # If nobody owns the planet and the ship download clans the player
-            # conquer the planet
-            planet.player = ship.player
-            logger.info(
-                "Planet conquered",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "player": ship.player,
-                    "planet": planet.id,
-                },
-            )
-
-        return
+        order = ShipTransferOrder(ship, transfer)
+        order.execute(self.galaxy)
 
     def action_planet_build_mines(self, planet, new_mines):
         if new_mines <= 0:
