@@ -26,7 +26,13 @@ class Galaxy:
         planets: Dict[Tuple[int, int], Planet],
         ships: List[Ship],
         explosions: List[Explosion] = None,
+        turn: int = 0,
     ):
+        self.turn = turn
+        """
+        Turn or actual time in the galaxy
+        """
+
         self.size = size
         """
         Width and height of the galaxy
