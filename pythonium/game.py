@@ -59,7 +59,6 @@ class Game:
         self.galaxy = self.gmode.build_galaxy(self.players)
         logger.info("Galaxy initialized")
         self._renderer = renderer(self.galaxy, f"Sector #{self.sector}")
-        self.turn = 0
 
     def extract_player_orders(self, player, galaxy, context):
         player_galaxy = player.next_turn(galaxy, context)
@@ -88,7 +87,7 @@ class Game:
         logger.info(
             "Player orders computed",
             extra={
-                "turn": self.turn,
+                "turn": self.galaxy.turn,
                 "player": player.name,
                 "orders": len(orders),
             },
@@ -100,13 +99,13 @@ class Game:
     def play(self):
         while True:
 
-            sys.stdout.write(f"\rPlaying game{'.' * int(self.turn/4)}")
+            sys.stdout.write(f"\rPlaying game{'.' * int(self.galaxy.turn/4)}")
             sys.stdout.flush()
 
-            logger.info("Turn started", extra={"turn": self.turn})
+            logger.info("Turn started", extra={"turn": self.galaxy.turn})
             orders = defaultdict(lambda: [])
             context = self.gmode.get_context(
-                self.galaxy, self.players, self.turn
+                self.galaxy, self.players, self.galaxy.turn
             )
 
             # Should I record the state?
@@ -123,7 +122,10 @@ class Game:
                 try:
                     logger.info(
                         "Computing orders for player",
-                        extra={"turn": self.turn, "player": player.name},
+                        extra={
+                            "turn": self.galaxy.turn,
+                            "player": player.name,
+                        },
                     )
 
                     player_orders = self.extract_player_orders(
@@ -137,7 +139,7 @@ class Game:
                     logger.error(
                         "Player lost turn",
                         extra={
-                            "turn": self.turn,
+                            "turn": self.galaxy.turn,
                             "player": player.name,
                             "reason": str(e),
                         },
@@ -145,7 +147,7 @@ class Game:
                     logger.info(
                         "Player orders computed",
                         extra={
-                            "turn": self.turn,
+                            "turn": self.galaxy.turn,
                             "player": player.name,
                             "orders": 0,
                         },
@@ -154,15 +156,18 @@ class Game:
                         raise e
                     continue
 
-            if self.gmode.has_ended(self.galaxy, self.turn):
+            if self.gmode.has_ended(self.galaxy, self.galaxy.turn):
                 if self.gmode.winner:
                     logger.info(
                         "Winner!",
-                        extra={"turn": self.turn, "winner": self.gmode.winner},
+                        extra={
+                            "turn": self.galaxy.turn,
+                            "winner": self.gmode.winner,
+                        },
                     )
                     message = f"Player {self.gmode.winner} wins\n"
                 else:
-                    logger.info("Nobody won", extra={"turn": self.turn})
+                    logger.info("Nobody won", extra={"turn": self.galaxy.turn})
                     message = "Nobody won\n"
 
                 sys.stdout.write("\n")
@@ -171,7 +176,7 @@ class Game:
                 if self._renderer:
                     # Render last frame
                     context = self.gmode.get_context(
-                        self.galaxy, self.players, self.turn
+                        self.galaxy, self.players, self.galaxy.turn
                     )
                     self._renderer.render_frame(context)
                     # Save as gif
@@ -252,7 +257,7 @@ class Game:
         for planet in ocuped_planets:
             self.planet_produce_resources(planet)
 
-        self.turn += 1
+        self.galaxy.turn += 1
 
     def planet_produce_resources(self, planet):
         dhappypoints = planet.dhappypoints
@@ -261,7 +266,7 @@ class Game:
             logger.info(
                 "Happypoints change",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": planet.player,
                     "planet": planet.pid,
                     "dhappypoints": dhappypoints,
@@ -275,7 +280,7 @@ class Game:
             logger.info(
                 "Megacredits change",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": planet.player,
                     "planet": planet.pid,
                     "dmegacredits": dmegacredits,
@@ -289,7 +294,7 @@ class Game:
             logger.info(
                 "Pythonium change",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": planet.player,
                     "planet": planet.pid,
                     "dpythonium": dpythonium,
@@ -303,7 +308,7 @@ class Game:
             logger.info(
                 "Population change",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": planet.player,
                     "planet": planet.pid,
                     "dclans": dclans,
@@ -330,7 +335,7 @@ class Game:
             logger.info(
                 "Score in conflict",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": player,
                     "player_attack": player_attack,
                     "attack_fraction": attack_fraction,
@@ -344,7 +349,7 @@ class Game:
         logger.info(
             "Conflict resolved",
             extra={
-                "turn": self.turn,
+                "turn": self.galaxy.turn,
                 "winner": winner,
                 "max_score": max_score,
                 "total_attack": total_attack,
@@ -359,7 +364,7 @@ class Game:
             logger.info(
                 "Explosion",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": ship.player,
                     "ship": ship.nid,
                     "ship_type": ship.type.name,
@@ -391,7 +396,7 @@ class Game:
             logger.info(
                 "Planet conquered by force",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": winner,
                     "planet": planet.pid,
                     "clans": planet.clans,
@@ -427,7 +432,7 @@ class Game:
                 logger.warning(
                     "Unknown params",
                     extra={
-                        "turn": self.turn,
+                        "turn": self.galaxy.turn,
                         "player": player.name,
                         "params": params,
                     },
@@ -438,7 +443,7 @@ class Game:
                 logger.warning(
                     "Object not found",
                     extra={
-                        "turn": self.turn,
+                        "turn": self.galaxy.turn,
                         "player": player.name,
                         "params": params,
                         "name": name,
@@ -450,7 +455,7 @@ class Game:
                 logger.warning(
                     "This is not yours",
                     extra={
-                        "turn": self.turn,
+                        "turn": self.galaxy.turn,
                         "player": player.name,
                         "owner": obj.player,
                         "obj": type(obj),
@@ -461,7 +466,7 @@ class Game:
             logger.debug(
                 "Running action for player",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": obj.player,
                     "action": name,
                     "obj": type(obj),
@@ -475,7 +480,7 @@ class Game:
                 logger.error(
                     "Unexpected error running player params",
                     extra={
-                        "turn": self.turn,
+                        "turn": self.galaxy.turn,
                         "player": obj.player,
                         "action": name,
                         "obj": type(obj),
@@ -510,7 +515,7 @@ class Game:
         logger.info(
             "Ship moved",
             extra={
-                "turn": self.turn,
+                "turn": self.galaxy.turn,
                 "player": ship.player,
                 "ship": ship.nid,
                 "from": _from,
@@ -536,7 +541,7 @@ class Game:
         if not planet:
             logger.warning(
                 "Can not transfer in deep space",
-                extra={"turn": self.turn, "ship": ship.nid},
+                extra={"turn": self.galaxy.turn, "ship": ship.nid},
             )
             return
 
@@ -544,7 +549,7 @@ class Game:
             logger.warning(
                 "Can not transfer to an enemy planet",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "ship": ship.nid,
                     "planet": planet.pid,
                 },
@@ -587,7 +592,7 @@ class Game:
         logger.info(
             "Ship transfer to planet",
             extra={
-                "turn": self.turn,
+                "turn": self.galaxy.turn,
                 "player": ship.player,
                 "ship": ship.nid,
                 "clans": transfer.clans,
@@ -606,7 +611,7 @@ class Game:
             logger.info(
                 "Planet abandoned",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": ship.player,
                     "planet": planet.pid,
                 },
@@ -618,7 +623,7 @@ class Game:
             logger.info(
                 "Planet conquered",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": ship.player,
                     "planet": planet.pid,
                 },
@@ -637,7 +642,7 @@ class Game:
             logger.warning(
                 "Can not build mines",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "planet": planet.pid,
                     "pythonium": planet.pythonium,
                     "megacredits": planet.megacredits,
@@ -654,7 +659,7 @@ class Game:
         logger.info(
             "New mines",
             extra={
-                "turn": self.turn,
+                "turn": self.galaxy.turn,
                 "player": planet.player,
                 "planet": planet.pid,
                 "new_mines": new_mines,
@@ -668,7 +673,7 @@ class Game:
             logger.warning(
                 "Ships limit reached",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": planet.player,
                     "ships_count": ships_count,
                 },
@@ -679,7 +684,10 @@ class Game:
             if not ship_type:
                 logger.error(
                     "Ship features not found",
-                    extra={"turn": self.turn, "ship_type": ship_type.name},
+                    extra={
+                        "turn": self.galaxy.turn,
+                        "ship_type": ship_type.name,
+                    },
                 )
                 return
 
@@ -687,7 +695,7 @@ class Game:
             logger.warning(
                 "Unknown ship type",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "player": planet.player,
                     "planet": planet.pid,
                     "ship_type": ship_type.name,
@@ -699,7 +707,7 @@ class Game:
             logger.warning(
                 "Missing resources",
                 extra={
-                    "turn": self.turn,
+                    "turn": self.galaxy.turn,
                     "planet": planet.pid,
                     "ship_type": ship_type.name,
                     "megacredits": planet.megacredits,
@@ -726,7 +734,7 @@ class Game:
         logger.info(
             "New ship built",
             extra={
-                "turn": self.turn,
+                "turn": self.galaxy.turn,
                 "player": planet.player,
                 "planet": planet.pid,
                 "ship_type": ship_type.name,
@@ -741,7 +749,7 @@ class Game:
         logger.info(
             "Taxes updated",
             extra={
-                "turn": self.turn,
+                "turn": self.galaxy.turn,
                 "player": planet.player,
                 "planet": planet.pid,
                 "taxes": taxes,

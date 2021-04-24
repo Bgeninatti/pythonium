@@ -80,7 +80,7 @@ class GifRenderer:
         # TODO: Fix this insanity of column and rows coordinates for text
         draw.text(
             (self.margin, self.margin + 50),
-            f"Turn {context['turn']}",
+            f"Turn {self.galaxy.turn}",
             font=self._score_font,
         )
 
