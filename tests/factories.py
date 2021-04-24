@@ -8,6 +8,7 @@ from pythonium.ship_type import ShipType
 from pythonium.vectors import Transfer
 
 fake = Faker._get_faker()
+MAP_SIZE = (fake.pyint(min_value=10), fake.pyint(min_value=10))
 
 
 def fake_position(map_size: Tuple[int, int]):
@@ -52,7 +53,7 @@ class ShipTypeFactory(Factory):
         model = ShipType
 
     name = Faker("word")
-    cost = SubFactory(PositiveTransferVectorFactory)
+    cost = SubFactory(PositiveTransferVectorFactory, clans=0)
     max_cargo = Faker("pyint", min_value=0)
     max_mc = Faker("pyint", min_value=0)
     attack = Faker("pyint", min_value=0)
@@ -74,7 +75,7 @@ class PlanetFactory(Factory):
     class Meta:
         model = Planet
 
-    position = (Faker("pyint", min_value=0), Faker("pyint", min_value=0))
+    position = fake_position(MAP_SIZE)
     temperature = Faker("pyint", min_value=0, max_value=100)
     underground_pythonium = Faker("pyint", min_value=0)
     concentration = Faker("pyfloat", min_value=0, max_value=1)
@@ -89,9 +90,6 @@ class ExplosionFactory(Factory):
     ship = SubFactory(ShipFactory)
     ships_involved = Faker("pyint", min_value=2)
     total_attack = Faker("pyint", min_value=100)
-
-
-MAP_SIZE = (fake.pyint(min_value=10), fake.pyint(min_value=10))
 
 
 class GalaxyFactory(Factory):

@@ -1,19 +1,15 @@
 import logging
-import os
-import random
-import string
 import sys
 from collections import defaultdict
 from itertools import groupby
 
-import attr
 import numpy as np
 
 from . import cfg
 from .explosion import Explosion
-from .orders.ship import ShipMoveOrder, ShipTransferOrder
+from .orders import planet as planet_orders
+from .orders import ship as ship_orders
 from .renderer import GifRenderer
-from .ship import Ship
 
 logger = logging.getLogger("game")
 
@@ -36,10 +32,7 @@ class Game:
             from :class:`AbstractPlayer`
         :param gmode: Class that define some game rules
         :type gmode: :class:GameMode
-        :param logger: Logger for the game
         :param renderer: Instance that renders the game on each turn
-        :param verbose: If ``True`` print the logs in stdout
-        :type verbose: bool
         :param raise_exceptions: If ``True`` stop the game if an exception is raised when
             computing player actions. Useful for debuging players.
         :type raise_exceptions: bool
@@ -411,13 +404,12 @@ class Game:
         """
         :param name: name del player que ejecuta la params
         :type name: str
-        :param params: Una tupla que indica la params a ejecutar y los parámetros
+        :param orders: Una tupla que indica la params a ejecutar y los parámetros
             de la misma. ('name', *params)
-        :type params: tuple
+        :type orders: tuple
         """
         func = getattr(self, f"action_{name}", None)
         for player, params in orders:
-            obj = None
             if name.startswith("ship"):
                 nid = params[0]
                 args = params[1:]
@@ -490,47 +482,16 @@ class Game:
                 )
 
     def action_ship_move(self, ship, target):
-        order = ShipMoveOrder(ship, target)
+        order = ship_orders.ShipMoveOrder(ship, target)
         order.execute(self.galaxy)
 
     def action_ship_transfer(self, ship, transfer):
-        order = ShipTransferOrder(ship, transfer)
+        order = ship_orders.ShipTransferOrder(ship, transfer)
         order.execute(self.galaxy)
 
     def action_planet_build_mines(self, planet, new_mines):
-        if new_mines <= 0:
-            # Nada que hacer
-            return
-
-        new_mines = int(min(new_mines, planet.can_build_mines()))
-
-        if not new_mines:
-            logger.warning(
-                "Can not build mines",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "planet": planet.id,
-                    "pythonium": planet.pythonium,
-                    "megacredits": planet.megacredits,
-                    "mines": planet.mines,
-                    "max_mines": planet.max_mines,
-                },
-            )
-            return
-
-        planet.mines += new_mines
-        planet.megacredits -= new_mines * self.gmode.mine_cost.megacredits
-        planet.pythonium -= new_mines * self.gmode.mine_cost.pythonium
-
-        logger.info(
-            "New mines",
-            extra={
-                "turn": self.galaxy.turn,
-                "player": planet.player,
-                "planet": planet.id,
-                "new_mines": new_mines,
-            },
-        )
+        order = planet_orders.PlanetBuildMinesOrder(planet, new_mines)
+        order.execute(self.galaxy)
 
     def action_planet_build_ship(self, planet, ship_type):
 
@@ -545,79 +506,9 @@ class Game:
                 },
             )
             return
-
-        try:
-            if not ship_type:
-                logger.error(
-                    "Ship features not found",
-                    extra={
-                        "turn": self.galaxy.turn,
-                        "ship_type": ship_type.name,
-                    },
-                )
-                return
-
-        except KeyError:
-            logger.warning(
-                "Unknown ship type",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "player": planet.player,
-                    "planet": planet.id,
-                    "ship_type": ship_type.name,
-                },
-            )
-            return
-
-        if not planet.can_build_ship(ship_type):
-            logger.warning(
-                "Missing resources",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "planet": planet.id,
-                    "ship_type": ship_type.name,
-                    "megacredits": planet.megacredits,
-                    "pythonium": planet.pythonium,
-                },
-            )
-            return
-
-        ship = Ship(
-            player=planet.player,
-            type=ship_type,
-            position=planet.position,
-            max_cargo=ship_type.max_cargo,
-            max_mc=ship_type.max_mc,
-            attack=ship_type.attack,
-            speed=ship_type.speed,
-        )
-
-        planet.megacredits -= ship_type.cost.megacredits
-        planet.pythonium -= ship_type.cost.pythonium
-
-        self.galaxy.add_ship(ship)
-
-        logger.info(
-            "New ship built",
-            extra={
-                "turn": self.galaxy.turn,
-                "player": planet.player,
-                "planet": planet.id,
-                "ship_type": ship_type.name,
-            },
-        )
+        order = planet_orders.PlanetBuildShipOrder(planet, ship_type)
+        order.execute(self.galaxy)
 
     def action_planet_set_taxes(self, planet, taxes):
-        if planet.taxes == taxes:
-            return
-
-        planet.taxes = min(max(0, taxes), 100)
-        logger.info(
-            "Taxes updated",
-            extra={
-                "turn": self.galaxy.turn,
-                "player": planet.player,
-                "planet": planet.id,
-                "taxes": taxes,
-            },
-        )
+        order = planet_orders.PlanetSetTaxesOrder(planet, taxes)
+        order.execute(self.galaxy)

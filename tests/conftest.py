@@ -1,3 +1,4 @@
+import math
 import random
 import uuid
 
@@ -131,6 +132,12 @@ def random_ship(ships):
 @pytest.fixture
 def random_planet(planets):
     return random.choice(planets)
+
+
+@pytest.fixture
+def random_direction(planets):
+    angle = random.random() * math.pi
+    yield math.cos(angle), math.sin(angle)
 
 
 #  fixtures for test_run_turn
