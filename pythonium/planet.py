@@ -74,17 +74,17 @@ class Planet:
     The owner of the planet or ``None`` if no one owns it.
     """
 
-    megacredits: int = attr.ib(converter=int, default=0, init=False)
+    megacredits: int = attr.ib(converter=int, default=0)
     """
     Amount of megacredits on the planet
     """
 
-    clans: int = attr.ib(converter=int, default=0, init=False)
+    clans: int = attr.ib(converter=int, default=0)
     """
     Amount of clans on the planet
     """
 
-    mines: int = attr.ib(converter=int, default=0, init=False)
+    mines: int = attr.ib(converter=int, default=0)
     """
     Amount of mines on the planet
     """
@@ -108,7 +108,7 @@ class Planet:
 
     # User controls
     new_mines: int = attr.ib(
-        validator=[attr.validators.instance_of(int)], default=0, init=False
+        validator=[attr.validators.instance_of(int)], default=0
     )
     """
     **Attribute that can be modified by the player**
@@ -120,7 +120,6 @@ class Planet:
     new_ship: ShipType = attr.ib(
         default=None,
         validator=[attr.validators.instance_of((ShipType, None.__class__))],
-        init=False,
     )
     """
     **Attribute that can be modified by the player**
@@ -134,7 +133,6 @@ class Planet:
         converter=int,
         default=0,
         validator=[validators.is_valid_ratio],
-        init=False,
     )
     """
     **Attribute that can be modified by the player**
