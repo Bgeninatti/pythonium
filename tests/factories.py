@@ -1,54 +1,57 @@
-from faker import Faker
+from factory import Factory, Faker, SubFactory
 
 from pythonium import Planet
 from pythonium.ship_type import ShipType
 from pythonium.vectors import Transfer
 
 
-class TransferVectorFactory:
+class TransferFectorFactory(Factory):
+    class Meta:
+        model = Transfer
 
-    faker = Faker()
-
-    @classmethod
-    def build_transfer_vector(cls):
-        return Transfer(
-            megacredits=cls.faker.pyint(min_value=1),
-            pythonium=cls.faker.pyint(min_value=1),
-        )
+    megacredits = Faker("pyint")
+    pythonium = Faker("pyint")
+    clans = Faker("pyint")
 
 
-class ShipTypeFactory:
+class PositiveTransferVectorFactory(Factory):
+    class Meta:
+        model = Transfer
 
-    faker = Faker()
-
-    @classmethod
-    def build(cls, **kwargs):
-        ship_cost = TransferVectorFactory.build_transfer_vector()
-        return ShipType(
-            name=cls.faker.pystr(),
-            cost=ship_cost,
-            max_cargo=cls.faker.pyint(),
-            max_mc=cls.faker.pyint(),
-            attack=cls.faker.pyint(),
-            speed=cls.faker.pyint(),
-        )
+    megacredits = Faker("pyint", min_value=0)
+    pythonium = Faker("pyint", min_value=0)
+    clans = Faker("pyint", min_value=0)
 
 
-class PlanetFactory:
+class NegativeTransferVectorFactory(Factory):
+    class Meta:
+        model = Transfer
 
-    faker = Faker()
+    megacredits = Faker("pyint", max_value=0)
+    pythonium = Faker("pyint", max_value=0)
+    clans = Faker("pyint", max_value=0)
 
-    @classmethod
-    def build_planet(cls, **kwargs):
-        mine_cost = TransferVectorFactory.build_transfer_vector()
-        return Planet(
-            pid=cls.faker.pyint(),
-            position=(cls.faker.pyint(), cls.faker.pyint()),
-            temperature=kwargs.get("temperature", cls.faker.pyint()),
-            underground_pythonium=cls.faker.pyint(),
-            concentration=kwargs.get(
-                "concentration", cls.faker.pyfloat(min_value=0, max_value=1)
-            ),
-            pythonium=cls.faker.pyint(),
-            mine_cost=mine_cost,
-        )
+
+class ShipTypeFactory(Factory):
+    class Meta:
+        model = ShipType
+
+    name = Faker("word")
+    cost = SubFactory(PositiveTransferVectorFactory)
+    max_cargo = Faker("pyint", min_value=0)
+    max_mc = Faker("pyint", min_value=0)
+    attack = Faker("pyint", min_value=0)
+    speed = Faker("pyint", min_value=0)
+
+
+class PlanetFactory(Factory):
+    class Meta:
+        model = Planet
+
+    pid = Faker("pyint")
+    position = (Faker("pyint", min_value=0), Faker("pyint", min_value=0))
+    temperature = Faker("pyint", min_value=0, max_value=100)
+    underground_pythonium = Faker("pyint", min_value=0)
+    concentration = Faker("pyfloat", min_value=0, max_value=1)
+    pythonium = Faker("pyint", min_value=0)
+    mine_cost = SubFactory(PositiveTransferVectorFactory)
