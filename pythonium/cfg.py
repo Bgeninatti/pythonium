@@ -6,7 +6,7 @@ logger = logging.getLogger("game")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Move this settings to config.ini
-tenacity = 0.25
+tenacity = 25
 happypoints_tolerance = 40
 optimal_temperature = 50
 max_population_rate = 0.1

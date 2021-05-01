@@ -7,6 +7,7 @@ import numpy as np
 
 from . import cfg
 from .explosion import Explosion
+from .orders import galaxy as galaxy_orders
 from .orders import planet as planet_orders
 from .orders import ship as ship_orders
 from .renderer import GifRenderer
@@ -181,7 +182,7 @@ class Game:
 
             # Sort orders by object id
             for o in orders.values():
-                o.sort(key=lambda o: o[1][0])
+                o.sort(key=lambda x: x[1][0])
 
             self.run_turn(orders)
 
@@ -220,22 +221,11 @@ class Game:
         # 5. Ship movements
         self.run_player_action("ship_move", orders.get("ship_move", []))
 
-        if cfg.tenacity:
-            # 6. Resolve ship to ship combats
-            ships_in_conflict = self.galaxy.get_ships_conflicts()
-            for ships in ships_in_conflict:
-                if not any((s.attack for s in ships)):
-                    continue
-                self.resolve_ships_to_ship_conflict(ships)
+        # 6. Resolve ship to ship combats
+        self.resolve_ships_conflicts()
 
-            self.galaxy.remove_destroyed_ships()
-
-            # 7. Resolve ship to planet combats
-            planets_in_conflict = self.galaxy.get_planets_conflicts()
-            for planet, ships in planets_in_conflict:
-                if not any((s.attack for s in ships)):
-                    continue
-                self.resolve_planet_conflict(planet, ships)
+        # 7. Resolve ship to planet combats
+        self.resolve_planets_conflicts()
 
         # 8. Ship construction
         self.run_player_action(
@@ -246,159 +236,21 @@ class Game:
         # 10. Happypoints changes
         # 11. Taxes recollection
         # 12. Pythonium extraction
-        ocuped_planets = self.galaxy.get_ocuped_planets()
-        for planet in ocuped_planets:
-            self.planet_produce_resources(planet)
+        self.produce_resources()
 
         self.galaxy.turn += 1
 
-    def planet_produce_resources(self, planet):
-        dhappypoints = planet.dhappypoints
-        if dhappypoints:
-            planet.happypoints += dhappypoints
-            logger.info(
-                "Happypoints change",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "player": planet.player,
-                    "planet": planet.id,
-                    "dhappypoints": dhappypoints,
-                    "happypoints": planet.happypoints,
-                },
-            )
+    def produce_resources(self):
+        order = galaxy_orders.ProduceResources(self.galaxy)
+        order.execute()
 
-        dmegacredits = planet.dmegacredits
-        if dmegacredits:
-            planet.megacredits += dmegacredits
-            logger.info(
-                "Megacredits change",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "player": planet.player,
-                    "planet": planet.id,
-                    "dmegacredits": dmegacredits,
-                    "megacredits": planet.megacredits,
-                },
-            )
+    def resolve_ships_conflicts(self):
+        order = galaxy_orders.ResolveShipsConflicts(self.galaxy, cfg.tenacity)
+        order.execute()
 
-        dpythonium = planet.dpythonium
-        if dpythonium:
-            planet.pythonium += dpythonium
-            logger.info(
-                "Pythonium change",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "player": planet.player,
-                    "planet": planet.id,
-                    "dpythonium": dpythonium,
-                    "pythonium": planet.pythonium,
-                },
-            )
-
-        dclans = planet.dclans
-        if dclans:
-            planet.clans += dclans
-            logger.info(
-                "Population change",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "player": planet.player,
-                    "planet": planet.id,
-                    "dclans": dclans,
-                    "clans": planet.clans,
-                },
-            )
-
-    def resolve_ships_to_ship_conflict(self, ships):
-
-        total_attack = sum(s.attack for s in ships)
-        groups = groupby(ships, lambda s: s.player)
-
-        max_score = 0
-        winner = None
-        for player, player_ships in groups:
-            player_attack = sum((s.attack for s in player_ships))
-            attack_fraction = player_attack / total_attack
-
-            # Compute score probability distribution
-            shape = 10 * attack_fraction
-            scale = (1 - self.gmode.tenacity) ** attack_fraction
-            score = np.random.gamma(shape, scale)
-
-            logger.info(
-                "Score in conflict",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "player": player,
-                    "player_attack": player_attack,
-                    "attack_fraction": attack_fraction,
-                    "score": score,
-                },
-            )
-            if score > max_score:
-                winner = player
-                max_score = score
-
-        logger.info(
-            "Conflict resolved",
-            extra={
-                "turn": self.galaxy.turn,
-                "winner": winner,
-                "max_score": max_score,
-                "total_attack": total_attack,
-                "total_ships": len(ships),
-            },
-        )
-
-        # Destroy defeated ships
-        for ship in ships:
-            if ship.player == winner:
-                continue
-            logger.info(
-                "Explosion",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "player": ship.player,
-                    "ship": ship.id,
-                    "ship_type": ship.type.name,
-                    "position": ship.position,
-                },
-            )
-            self.galaxy.explosions.append(
-                Explosion(ship, len(ships), total_attack)
-            )
-
-    def resolve_planet_conflict(self, planet, ships):
-
-        enemies = {s.player for s in ships if s.player != planet.player}
-
-        if not enemies:
-            raise ValueError(
-                "Ok, I don't know what's going on. This is not a conflict."
-            )
-
-        if len(enemies) != 1:
-            raise ValueError(
-                "Run :meth:`resolve_ships_to_ship_conflict` first"
-            )
-
-        winner = enemies.pop()
-
-        # If is not of his own, the winner conquer the planet.
-        if planet.player != winner:
-            logger.info(
-                "Planet conquered by force",
-                extra={
-                    "turn": self.galaxy.turn,
-                    "player": winner,
-                    "planet": planet.id,
-                    "clans": planet.clans,
-                },
-            )
-            planet.player = winner
-            planet.clans = 1
-            planet.mines = 0
-            planet.taxes = 0
+    def resolve_planets_conflicts(self):
+        order = galaxy_orders.ResolvePlanetsConflicts(self.galaxy)
+        order.execute()
 
     def run_player_action(self, name, orders):
         """
