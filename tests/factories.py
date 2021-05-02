@@ -1,11 +1,26 @@
+from typing import List, Tuple
+
 from factory import Factory, Faker, SubFactory
 
-from pythonium import Planet
+from pythonium import Explosion, Galaxy, Planet, Ship
+from pythonium.core import Position
 from pythonium.ship_type import ShipType
 from pythonium.vectors import Transfer
 
+fake = Faker._get_faker()
 
-class TransferFectorFactory(Factory):
+
+def fake_position(map_size: Tuple[int, int]):
+    max_x, max_y = map_size
+    return Position(
+        (
+            fake.pyint(min_value=0, max_value=max_x),
+            fake.pyint(min_value=0, max_value=max_y),
+        )
+    )
+
+
+class TransferVectorFactory(Factory):
     class Meta:
         model = Transfer
 
@@ -44,6 +59,17 @@ class ShipTypeFactory(Factory):
     speed = Faker("pyint", min_value=0)
 
 
+class ShipFactory(Factory):
+    class Meta:
+        model = Ship
+
+    type = SubFactory(ShipTypeFactory)
+    max_cargo = Faker("pyint", min_value=0)
+    max_mc = Faker("pyint", min_value=0)
+    attack = Faker("pyint", min_value=0)
+    speed = Faker("pyint", min_value=0)
+
+
 class PlanetFactory(Factory):
     class Meta:
         model = Planet
@@ -54,3 +80,25 @@ class PlanetFactory(Factory):
     concentration = Faker("pyfloat", min_value=0, max_value=1)
     pythonium = Faker("pyint", min_value=0)
     mine_cost = SubFactory(PositiveTransferVectorFactory)
+
+
+class ExplosionFactory(Factory):
+    class Meta:
+        model = Explosion
+
+    ship = SubFactory(ShipFactory)
+    ships_involved = Faker("pyint", min_value=2)
+    total_attack = Faker("pyint", min_value=100)
+
+
+MAP_SIZE = (fake.pyint(min_value=10), fake.pyint(min_value=10))
+
+
+class GalaxyFactory(Factory):
+    class Meta:
+        model = Galaxy
+
+    size = MAP_SIZE
+    things = [
+        PlanetFactory(position=fake_position(MAP_SIZE)) for _ in range(10)
+    ]

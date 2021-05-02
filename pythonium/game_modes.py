@@ -158,7 +158,7 @@ class ClassicMode(GameMode):
             round(random.random() * 100) for i in range(self.planets_count)
         )
 
-        planets = {}
+        things = []
         for (
             position,
             pythonium,
@@ -181,9 +181,9 @@ class ClassicMode(GameMode):
                 pythonium=pythonium,
                 mine_cost=self.mine_cost,
             )
-            planets[planet.position] = planet
+            things.append(planet)
 
-        galaxy = Galaxy(self.map_size, planets, [])
+        galaxy = Galaxy(size=self.map_size, things=things)
 
         galaxy = self.init_players(players, galaxy)
 
@@ -285,7 +285,11 @@ class ClassicMode(GameMode):
             planet.new_ship = None
             planet.taxes = None
 
-        return Galaxy(galaxy.size, planets, ships, galaxy.explosions)
+        return Galaxy(
+            size=galaxy.size,
+            things=list(planets.values()) + ships,
+            explosions=galaxy.explosions,
+        )
 
     def has_ended(self, galaxy, t):
         if t >= self.max_turn:

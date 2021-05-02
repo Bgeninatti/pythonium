@@ -25,7 +25,7 @@ class SandboxGameMode(GameMode):
             (234, 10),
         )
 
-        planets = {}
+        things = []
         for position in planets_positions:
             planet = Planet(
                 position=core.Position(position),
@@ -35,8 +35,8 @@ class SandboxGameMode(GameMode):
                 pythonium=100,
                 mine_cost=self.mine_cost,
             )
-            planets[position] = planet
-        galaxy = Galaxy(map_size, planets, [])
+            things.append(planet)
+        galaxy = Galaxy(size=map_size, things=things)
 
         homeworld = galaxy.planets[(10, 10)]
         homeworld.player = player.name

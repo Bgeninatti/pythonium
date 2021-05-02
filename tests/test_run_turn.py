@@ -234,9 +234,7 @@ def test_planet_build_ship(test_player, game, planet_state, ship_type_name):
 
     game.action_planet_build_ship(planet, ship_type)
 
-    last_ship = [
-        s for s in game.galaxy.ships if s.id == game.galaxy._next_ship_id - 1
-    ][0]
+    last_ship = game.galaxy.ships[-1]
     actual_ships_in_planet = game.galaxy.get_ships_in_position(planet.position)
 
     if can_build_ship:
@@ -425,7 +423,14 @@ def test_ship_to_ship_conflict(game, ships_args):
                 speed=ship_type.speed,
             )
         )
-    game.galaxy.ships = ships
+    other_things = [
+        thing
+        for thing in game.galaxy.stellar_things
+        if not isinstance(thing, Ship)
+    ]
+    game.galaxy.stellar_things = other_things + ships
+    game.galaxy._ships = []
+    game.galaxy._planets = {}
 
     game.resolve_ships_to_ship_conflict(ships)
 
