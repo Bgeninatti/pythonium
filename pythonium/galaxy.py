@@ -53,7 +53,7 @@ class Galaxy:
         A list with all the recent :class:`Explosion`.
         """
 
-        self._next_ship_id = max(s.nid for s in ships) + 1 if ships else 0
+        self._next_ship_id = max(s.id for s in ships) + 1 if ships else 0
 
     @property
     def known_races(self) -> Set[str]:
@@ -78,7 +78,7 @@ class Galaxy:
         """
         Add a new ship to the known ships in the galaxy and assign an Id to it.
         """
-        ship.nid = self._next_ship_id
+        ship.id = self._next_ship_id
         self.ships.append(ship)
         self._next_ship_id += 1
 
@@ -149,7 +149,7 @@ class Galaxy:
         """
         Return the ship with ID ``nid`` if any and is known
         """
-        match = [ship for ship in self.ships if ship.nid == nid]
+        match = [ship for ship in self.ships if ship.id == nid]
         if match:
             return match.pop()
 
@@ -238,7 +238,7 @@ class Galaxy:
         """
         Remove the destroyed ships from the list
         """
-        explosions_ids = [e.ship.nid for e in self.explosions]
+        explosions_ids = [e.ship.id for e in self.explosions]
         self.ships = list(
-            filter(lambda s: s.nid not in explosions_ids, self.ships)
+            filter(lambda s: s.id not in explosions_ids, self.ships)
         )

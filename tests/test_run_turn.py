@@ -235,7 +235,7 @@ def test_planet_build_ship(test_player, game, planet_state, ship_type_name):
     game.action_planet_build_ship(planet, ship_type)
 
     last_ship = [
-        s for s in game.galaxy.ships if s.nid == game.galaxy._next_ship_id - 1
+        s for s in game.galaxy.ships if s.id == game.galaxy._next_ship_id - 1
     ][0]
     actual_ships_in_planet = game.galaxy.get_ships_in_position(planet.position)
 

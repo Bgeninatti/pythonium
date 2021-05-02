@@ -366,7 +366,7 @@ class Game:
                 extra={
                     "turn": self.galaxy.turn,
                     "player": ship.player,
-                    "ship": ship.nid,
+                    "ship": ship.id,
                     "ship_type": ship.type.name,
                     "position": ship.position,
                 },
@@ -517,7 +517,7 @@ class Game:
             extra={
                 "turn": self.galaxy.turn,
                 "player": ship.player,
-                "ship": ship.nid,
+                "ship": ship.id,
                 "from": _from,
                 "to": ship.position,
                 "target": ship.target,
@@ -531,7 +531,7 @@ class Game:
         logger.info(
             "Attempt to transfer",
             extra={
-                "ship": ship.nid,
+                "ship": ship.id,
                 "clans": transfer.clans,
                 "pythonium": transfer.pythonium,
                 "megacredits": transfer.megacredits,
@@ -541,7 +541,7 @@ class Game:
         if not planet:
             logger.warning(
                 "Can not transfer in deep space",
-                extra={"turn": self.galaxy.turn, "ship": ship.nid},
+                extra={"turn": self.galaxy.turn, "ship": ship.id},
             )
             return
 
@@ -550,7 +550,7 @@ class Game:
                 "Can not transfer to an enemy planet",
                 extra={
                     "turn": self.galaxy.turn,
-                    "ship": ship.nid,
+                    "ship": ship.id,
                     "planet": planet.pid,
                 },
             )
@@ -594,7 +594,7 @@ class Game:
             extra={
                 "turn": self.galaxy.turn,
                 "player": ship.player,
-                "ship": ship.nid,
+                "ship": ship.id,
                 "clans": transfer.clans,
                 "pythonium": transfer.pythonium,
                 "megacredits": transfer.megacredits,
