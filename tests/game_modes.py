@@ -1,4 +1,4 @@
-from pythonium import Galaxy, GameMode, Planet, Ship
+from pythonium import Galaxy, GameMode, Planet, Ship, core
 
 
 class SandboxGameMode(GameMode):
@@ -26,10 +26,9 @@ class SandboxGameMode(GameMode):
         )
 
         planets = {}
-        for i, position in enumerate(planets_positions):
+        for position in planets_positions:
             planet = Planet(
-                pid=i + 1,
-                position=position,
+                position=core.Position(position),
                 temperature=50,
                 underground_pythonium=1000,
                 concentration=1,

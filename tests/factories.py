@@ -48,7 +48,6 @@ class PlanetFactory(Factory):
     class Meta:
         model = Planet
 
-    pid = Faker("pyint")
     position = (Faker("pyint", min_value=0), Faker("pyint", min_value=0))
     temperature = Faker("pyint", min_value=0, max_value=100)
     underground_pythonium = Faker("pyint", min_value=0)

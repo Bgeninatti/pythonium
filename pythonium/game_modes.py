@@ -160,14 +160,12 @@ class ClassicMode(GameMode):
 
         planets = {}
         for (
-            pid,
             position,
             pythonium,
             underground_pythonium,
             concentration,
             temperature,
         ) in zip(
-            range(self.planets_count),
             positions,
             pythonium,
             underground_pythonium,
@@ -176,7 +174,6 @@ class ClassicMode(GameMode):
         ):
 
             planet = Planet(
-                pid=pid,
                 position=position,
                 temperature=temperature,
                 underground_pythonium=underground_pythonium,

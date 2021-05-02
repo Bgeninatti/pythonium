@@ -119,7 +119,7 @@ def planets_group_with_temperature(temperatures_range):
 
 class TestPlanet:
     def test_repr(self, planet):
-        assert str(planet) == f"Planet #{planet.pid} <player={planet.player}>"
+        assert str(planet) == f"Planet #{planet.id} <player={planet.player}>"
 
 
 class TestPlanetHappyPoints:
@@ -381,7 +381,7 @@ class TestPlanetOrders:
         colonized_planet.taxes = taxes
         orders = colonized_planet.get_orders()
         taxes_order = next(o for o in orders if o[0] == "planet_set_taxes")
-        assert taxes_order[1] == colonized_planet.pid
+        assert taxes_order[1] == colonized_planet.id
         assert taxes_order[2] == taxes
 
     @pytest.mark.parametrize("new_mines", range(1, 101))
@@ -391,7 +391,7 @@ class TestPlanetOrders:
         build_mines_order = next(
             o for o in orders if o[0] == "planet_build_mines"
         )
-        assert build_mines_order[1] == colonized_planet.pid
+        assert build_mines_order[1] == colonized_planet.id
         assert build_mines_order[2] == new_mines
 
     def test_no_mines_order_if_new_mines_is_zero(self, colonized_planet):
@@ -405,7 +405,7 @@ class TestPlanetOrders:
         build_ship_order = next(
             o for o in orders if o[0] == "planet_build_ship"
         )
-        assert build_ship_order[1] == colonized_planet.pid
+        assert build_ship_order[1] == colonized_planet.id
         assert build_ship_order[2] is ship_type
 
     def test_no_ship_order_if_new_ship_is_none(self, colonized_planet):

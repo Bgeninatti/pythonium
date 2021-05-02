@@ -158,7 +158,7 @@ class Galaxy:
         Return the planet with ID ``nid`` if any
         """
         match = [
-            planet for planet in self.planets.values() if planet.pid == pid
+            planet for planet in self.planets.values() if planet.id == pid
         ]
         if match:
             return match.pop()

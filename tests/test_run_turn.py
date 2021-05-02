@@ -440,7 +440,6 @@ def test_ship_to_ship_conflict(game, ships_args):
     [
         [
             (
-                1000,
                 (10, 10),
                 0,
                 0,
@@ -455,7 +454,6 @@ def test_ship_to_ship_conflict(game, ships_args):
         ],
         [
             (
-                1000,
                 (10, 10),
                 0,
                 0,
@@ -470,7 +468,6 @@ def test_ship_to_ship_conflict(game, ships_args):
         ],
         [
             (
-                1000,
                 (10, 10),
                 0,
                 0,
@@ -483,7 +480,6 @@ def test_ship_to_ship_conflict(game, ships_args):
         ],
         [
             (
-                1000,
                 (10, 10),
                 0,
                 0,
@@ -514,13 +510,12 @@ def test_planet_conflict(game, planet_args, ships_args):
         )
 
     planet = Planet(
-        pid=planet_args[0],
-        position=planet_args[1],
-        temperature=planet_args[2],
-        underground_pythonium=planet_args[3],
-        concentration=planet_args[4],
-        pythonium=planet_args[5],
-        mine_cost=planet_args[6],
+        position=planet_args[0],
+        temperature=planet_args[1],
+        underground_pythonium=planet_args[2],
+        concentration=planet_args[3],
+        pythonium=planet_args[4],
+        mine_cost=planet_args[5],
     )
     original_player = planet_args[-1]
     game.galaxy.galaxy = ships

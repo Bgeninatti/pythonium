@@ -65,7 +65,7 @@ class Player(AbstractPlayer):
                 unknown_nearby_planets = [
                     p
                     for p in nearby_planets
-                    if not p.player and p.pid not in visited_planets
+                    if not p.player and p.id not in visited_planets
                 ]
                 if unknown_nearby_planets:
                     destination = random.choice(unknown_nearby_planets)
