@@ -1,13 +1,13 @@
 import attr
 
 from . import cfg, validators
-from .ship import Ship
+from .core import Position, StellarThing
 from .ship_type import ShipType
 from .vectors import Transfer
 
 
 @attr.s(auto_attribs=True)
-class Planet:
+class Planet(StellarThing):
     """
     A planet that belongs to a :class:`Galaxy`
 
@@ -28,68 +28,64 @@ class Planet:
     (in proportion of ``rioting_index``).
     """
 
-    pid: int = attr.ib()
-    """
-    Unique identifier for the planet.
-    """
-
-    position: tuple = attr.ib(validator=[validators.is_valid_position])
-    """
-    Position of the planet in (x, y) coordinates.
-    """
-
-    temperature: int = attr.ib(validator=validators.number_between_zero_100)
+    temperature: int = attr.ib(
+        validator=validators.number_between_zero_100, kw_only=True
+    )
     """
     The temperature of the planet. It is always between zero and 100.
     """
 
     underground_pythonium: int = attr.ib(
-        validator=[attr.validators.instance_of(int)]
+        validator=[attr.validators.instance_of(int)], kw_only=True
     )
     """
     Amount of pythonium under the surface of the planet, that needs to be extracted with
     mines.
     """
 
-    concentration: float = attr.ib(validator=[validators.is_valid_ratio])
+    concentration: float = attr.ib(
+        validator=[validators.is_valid_ratio], kw_only=True
+    )
     """
     Indicates how much pythonium extract one mine. It is always between zero and 1.
     """
 
-    pythonium: int = attr.ib(validator=[attr.validators.instance_of(int)])
+    pythonium: int = attr.ib(
+        validator=[attr.validators.instance_of(int)], kw_only=True
+    )
     """
     Pythonium in the surface of the planet. The available resource to build things.
     """
 
     mine_cost: Transfer = attr.ib(
-        validator=[attr.validators.instance_of(Transfer)]
+        validator=[attr.validators.instance_of(Transfer)], kw_only=True
     )
     """
     Indicates the cost of building one mine.
     """
 
     # State in turn
-    player: str = attr.ib(default=None)
+    player: str = attr.ib(default=None, kw_only=True)
     """
     The owner of the planet or ``None`` if no one owns it.
     """
 
-    megacredits: int = attr.ib(converter=int, default=0)
+    megacredits: int = attr.ib(converter=int, default=0, kw_only=True)
     """
     Amount of megacredits on the planet
     """
 
-    clans: int = attr.ib(converter=int, default=0)
+    clans: int = attr.ib(converter=int, default=0, kw_only=True)
     """
     Amount of clans on the planet
     """
 
-    mines: int = attr.ib(converter=int, default=0)
+    mines: int = attr.ib(converter=int, default=0, kw_only=True)
     """
     Amount of mines on the planet
     """
 
-    max_happypoints: int = attr.ib(converter=int, init=False)
+    max_happypoints: int = attr.ib(converter=int, init=False, kw_only=True)
     """
     The maximum level of happypoints that the population of this planet can reach.
 
@@ -99,7 +95,7 @@ class Planet:
     to ``cfg.optimal_temperature``
     """
 
-    happypoints: int = attr.ib(converter=int, init=False)
+    happypoints: int = attr.ib(converter=int, init=False, kw_only=True)
     """
     The level of happyness on the planet.
 
@@ -108,7 +104,7 @@ class Planet:
 
     # User controls
     new_mines: int = attr.ib(
-        validator=[attr.validators.instance_of(int)], default=0
+        validator=[attr.validators.instance_of(int)], default=0, kw_only=True
     )
     """
     **Attribute that can be modified by the player**
@@ -119,7 +115,8 @@ class Planet:
 
     new_ship: ShipType = attr.ib(
         default=None,
-        validator=[attr.validators.instance_of((ShipType, None.__class__))],
+        validator=[attr.validators.instance_of((ShipType, type(None)))],
+        kw_only=True,
     )
     """
     **Attribute that can be modified by the player**
@@ -133,6 +130,7 @@ class Planet:
         converter=int,
         default=0,
         validator=[validators.is_valid_ratio],
+        kw_only=True,
     )
     """
     **Attribute that can be modified by the player**
@@ -163,7 +161,7 @@ class Planet:
         self.happypoints = self.max_happypoints
 
     def __str__(self):
-        return f"Planet #{self.pid} <player={self.player}>"
+        return f"Planet #{self.id} <player={self.player}>"
 
     @property
     def max_mines(self) -> int:
@@ -255,13 +253,13 @@ class Planet:
         Compute orders based on player control attributes: ``new_mines``, \
         ``new_ship`` and ``taxes``
         """
-        orders = [("planet_set_taxes", self.pid, self.taxes)]
+        orders = [("planet_set_taxes", self.id, self.taxes)]
 
         if self.new_ship is not None:
-            orders.append(("planet_build_ship", self.pid, self.new_ship))
+            orders.append(("planet_build_ship", self.id, self.new_ship))
 
         if self.new_mines > 0:
-            orders.append(("planet_build_mines", self.pid, self.new_mines))
+            orders.append(("planet_build_mines", self.id, self.new_mines))
 
         return orders
 
@@ -287,3 +285,6 @@ class Planet:
             self.megacredits >= ship_type.cost.megacredits
             and self.pythonium >= ship_type.cost.pythonium
         )
+
+    def move(self, position: Position) -> None:
+        return

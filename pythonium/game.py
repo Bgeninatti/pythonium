@@ -268,7 +268,7 @@ class Game:
                 extra={
                     "turn": self.galaxy.turn,
                     "player": planet.player,
-                    "planet": planet.pid,
+                    "planet": planet.id,
                     "dhappypoints": dhappypoints,
                     "happypoints": planet.happypoints,
                 },
@@ -282,7 +282,7 @@ class Game:
                 extra={
                     "turn": self.galaxy.turn,
                     "player": planet.player,
-                    "planet": planet.pid,
+                    "planet": planet.id,
                     "dmegacredits": dmegacredits,
                     "megacredits": planet.megacredits,
                 },
@@ -296,7 +296,7 @@ class Game:
                 extra={
                     "turn": self.galaxy.turn,
                     "player": planet.player,
-                    "planet": planet.pid,
+                    "planet": planet.id,
                     "dpythonium": dpythonium,
                     "pythonium": planet.pythonium,
                 },
@@ -310,7 +310,7 @@ class Game:
                 extra={
                     "turn": self.galaxy.turn,
                     "player": planet.player,
-                    "planet": planet.pid,
+                    "planet": planet.id,
                     "dclans": dclans,
                     "clans": planet.clans,
                 },
@@ -366,7 +366,7 @@ class Game:
                 extra={
                     "turn": self.galaxy.turn,
                     "player": ship.player,
-                    "ship": ship.nid,
+                    "ship": ship.id,
                     "ship_type": ship.type.name,
                     "position": ship.position,
                 },
@@ -398,7 +398,7 @@ class Game:
                 extra={
                     "turn": self.galaxy.turn,
                     "player": winner,
-                    "planet": planet.pid,
+                    "planet": planet.id,
                     "clans": planet.clans,
                 },
             )
@@ -517,7 +517,7 @@ class Game:
             extra={
                 "turn": self.galaxy.turn,
                 "player": ship.player,
-                "ship": ship.nid,
+                "ship": ship.id,
                 "from": _from,
                 "to": ship.position,
                 "target": ship.target,
@@ -531,7 +531,7 @@ class Game:
         logger.info(
             "Attempt to transfer",
             extra={
-                "ship": ship.nid,
+                "ship": ship.id,
                 "clans": transfer.clans,
                 "pythonium": transfer.pythonium,
                 "megacredits": transfer.megacredits,
@@ -541,7 +541,7 @@ class Game:
         if not planet:
             logger.warning(
                 "Can not transfer in deep space",
-                extra={"turn": self.galaxy.turn, "ship": ship.nid},
+                extra={"turn": self.galaxy.turn, "ship": ship.id},
             )
             return
 
@@ -550,8 +550,8 @@ class Game:
                 "Can not transfer to an enemy planet",
                 extra={
                     "turn": self.galaxy.turn,
-                    "ship": ship.nid,
-                    "planet": planet.pid,
+                    "ship": ship.id,
+                    "planet": planet.id,
                 },
             )
             return
@@ -594,7 +594,7 @@ class Game:
             extra={
                 "turn": self.galaxy.turn,
                 "player": ship.player,
-                "ship": ship.nid,
+                "ship": ship.id,
                 "clans": transfer.clans,
                 "pythonium": transfer.pythonium,
                 "megacredits": transfer.megacredits,
@@ -613,7 +613,7 @@ class Game:
                 extra={
                     "turn": self.galaxy.turn,
                     "player": ship.player,
-                    "planet": planet.pid,
+                    "planet": planet.id,
                 },
             )
         elif planet.player is None and planet.clans > 0:
@@ -625,7 +625,7 @@ class Game:
                 extra={
                     "turn": self.galaxy.turn,
                     "player": ship.player,
-                    "planet": planet.pid,
+                    "planet": planet.id,
                 },
             )
 
@@ -643,7 +643,7 @@ class Game:
                 "Can not build mines",
                 extra={
                     "turn": self.galaxy.turn,
-                    "planet": planet.pid,
+                    "planet": planet.id,
                     "pythonium": planet.pythonium,
                     "megacredits": planet.megacredits,
                     "mines": planet.mines,
@@ -661,7 +661,7 @@ class Game:
             extra={
                 "turn": self.galaxy.turn,
                 "player": planet.player,
-                "planet": planet.pid,
+                "planet": planet.id,
                 "new_mines": new_mines,
             },
         )
@@ -697,7 +697,7 @@ class Game:
                 extra={
                     "turn": self.galaxy.turn,
                     "player": planet.player,
-                    "planet": planet.pid,
+                    "planet": planet.id,
                     "ship_type": ship_type.name,
                 },
             )
@@ -708,7 +708,7 @@ class Game:
                 "Missing resources",
                 extra={
                     "turn": self.galaxy.turn,
-                    "planet": planet.pid,
+                    "planet": planet.id,
                     "ship_type": ship_type.name,
                     "megacredits": planet.megacredits,
                     "pythonium": planet.pythonium,
@@ -736,7 +736,7 @@ class Game:
             extra={
                 "turn": self.galaxy.turn,
                 "player": planet.player,
-                "planet": planet.pid,
+                "planet": planet.id,
                 "ship_type": ship_type.name,
             },
         )
@@ -751,7 +751,7 @@ class Game:
             extra={
                 "turn": self.galaxy.turn,
                 "player": planet.player,
-                "planet": planet.pid,
+                "planet": planet.id,
                 "taxes": taxes,
             },
         )

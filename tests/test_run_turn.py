@@ -234,9 +234,7 @@ def test_planet_build_ship(test_player, game, planet_state, ship_type_name):
 
     game.action_planet_build_ship(planet, ship_type)
 
-    last_ship = [
-        s for s in game.galaxy.ships if s.nid == game.galaxy._next_ship_id - 1
-    ][0]
+    last_ship = game.galaxy.ships[-1]
     actual_ships_in_planet = game.galaxy.get_ships_in_position(planet.position)
 
     if can_build_ship:
@@ -425,7 +423,14 @@ def test_ship_to_ship_conflict(game, ships_args):
                 speed=ship_type.speed,
             )
         )
-    game.galaxy.ships = ships
+    other_things = [
+        thing
+        for thing in game.galaxy.stellar_things
+        if not isinstance(thing, Ship)
+    ]
+    game.galaxy.stellar_things = other_things + ships
+    game.galaxy._ships = []
+    game.galaxy._planets = {}
 
     game.resolve_ships_to_ship_conflict(ships)
 
@@ -440,7 +445,6 @@ def test_ship_to_ship_conflict(game, ships_args):
     [
         [
             (
-                1000,
                 (10, 10),
                 0,
                 0,
@@ -455,7 +459,6 @@ def test_ship_to_ship_conflict(game, ships_args):
         ],
         [
             (
-                1000,
                 (10, 10),
                 0,
                 0,
@@ -470,7 +473,6 @@ def test_ship_to_ship_conflict(game, ships_args):
         ],
         [
             (
-                1000,
                 (10, 10),
                 0,
                 0,
@@ -483,7 +485,6 @@ def test_ship_to_ship_conflict(game, ships_args):
         ],
         [
             (
-                1000,
                 (10, 10),
                 0,
                 0,
@@ -514,13 +515,12 @@ def test_planet_conflict(game, planet_args, ships_args):
         )
 
     planet = Planet(
-        pid=planet_args[0],
-        position=planet_args[1],
-        temperature=planet_args[2],
-        underground_pythonium=planet_args[3],
-        concentration=planet_args[4],
-        pythonium=planet_args[5],
-        mine_cost=planet_args[6],
+        position=planet_args[0],
+        temperature=planet_args[1],
+        underground_pythonium=planet_args[2],
+        concentration=planet_args[3],
+        pythonium=planet_args[4],
+        mine_cost=planet_args[5],
     )
     original_player = planet_args[-1]
     game.galaxy.galaxy = ships

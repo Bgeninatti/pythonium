@@ -1,4 +1,4 @@
-from pythonium import Galaxy, GameMode, Planet, Ship
+from pythonium import Galaxy, GameMode, Planet, Ship, core
 
 
 class SandboxGameMode(GameMode):
@@ -25,19 +25,18 @@ class SandboxGameMode(GameMode):
             (234, 10),
         )
 
-        planets = {}
-        for i, position in enumerate(planets_positions):
+        things = []
+        for position in planets_positions:
             planet = Planet(
-                pid=i + 1,
-                position=position,
+                position=core.Position(position),
                 temperature=50,
                 underground_pythonium=1000,
                 concentration=1,
                 pythonium=100,
                 mine_cost=self.mine_cost,
             )
-            planets[position] = planet
-        galaxy = Galaxy(map_size, planets, [])
+            things.append(planet)
+        galaxy = Galaxy(size=map_size, things=things)
 
         homeworld = galaxy.planets[(10, 10)]
         homeworld.player = player.name

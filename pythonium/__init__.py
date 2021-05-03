@@ -1,4 +1,4 @@
-from . import bots, logger
+from . import bots, core, logger
 from .explosion import Explosion
 from .galaxy import Galaxy
 from .game import Game
@@ -11,6 +11,7 @@ from .ship_type import ShipType
 from .vectors import Transfer
 
 __all__ = [
+    "core",
     "Planet",
     "Galaxy",
     "Ship",
