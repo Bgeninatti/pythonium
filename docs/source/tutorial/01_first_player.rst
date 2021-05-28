@@ -16,13 +16,14 @@ for you, and all your strategy needs to be implemented on that player.
 
 This is a turn-based game, which means the player will receive a set of information (or state of the game)
 at the beginning of turn 0, and it will make decisions based on that information to influence the state of
-the game at turn 1. This process will be repeated again and again in an iterative process until the
+the game at turn 1. This sequence will be repeated again and again in an iterative process until the
 game finishes.
 
-Your player then is not more than a python class implementing a method that is executed every turn.
+Your player then is not more than a [python class](https://docs.python.org/3/tutorial/classes.html) implementing a
+[method](https://docs.python.org/3/tutorial/classes.html#method-objects) that is executed every turn.
 This method receives as parameters the state of the ``galaxy``, and some other ``context`` about the state of the game
 (i.e, the scoreboard and other useful data), and it must return the same ``galaxy`` instance with some changes reflecting
-the player's desitions.
+the player's decisions.
 
 Let's stop divagating and start coding.
 
@@ -46,7 +47,7 @@ In the first place, the ``Player`` class inherits from an ``AbstractPlayer``.
 Second, there is one attribute and one method that needs to be defined in the player class.
 
 * ``name``: This is the name of your player. Try to make it short or your reports and gif will look buggy.
-* ``next_turn``: A method that will be executed every turn. *Where the magic happens*.
+* ``next_turn``: A method that will be executed every turn. This is where your strategy will be implemented.
 
 Let's save now this file as ``my_player.py`` and execute the following command:
 
@@ -65,7 +66,7 @@ self-explained information.
 Once the command finishes, you will find in your working directory two files:
 
 * ``PBA5V2.gif``: A visual representation of the game. The closest thing to a UI that you will find in Pythonium.
-* ``PBA5V2.log``: This contains all the information related to the game execution. Every change on the galaxy state (influenced by the player or not) is logged on this file.
+* ``PBA5V2.log``: A plain-text file containing all the information related to the game execution. Every change on the galaxy state (influenced by the player or not) is logged on this file.
 
 .. note::
 
@@ -77,6 +78,20 @@ As a gif you will see something similar to this:
 .. image:: https://ik.imagekit.io/jmpdcmsvqee/first_player_tT9jZvrre.gif
    :target: https://ik.imagekit.io/jmpdcmsvqee/first_player_tT9jZvrre.gif
    :width: 300pt
+
+Reading from the top to the bottom:
+
+* You are in sector `#PBA5V2`
+* You are Han Solo (your player's name)
+* The turn at each frame is displayed at the left of the player name
+* You have one planet and two ships
+* Your planet and ships are in the blue dot. The rest of the dots are the others 299 planets in the sector.
+
+.. note::
+
+    The blue dot is bigger than the white ones. The reason for this is that planets with any ship on their orbits are
+    represented with bigger dots. This means your two ships are placed on your only planet.
+
 
 Do you see it? Nothing happens. You just stay on your planet and do nothing for all eternity.
 If you check again on the player's code, this is precisely what it does: returns the galaxy without changing anything.
