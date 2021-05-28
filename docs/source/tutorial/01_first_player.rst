@@ -92,6 +92,7 @@ Reading from the top to the bottom:
     The blue dot is bigger than the white ones. The reason for this is that planets with any ship on their orbits are
     represented with bigger dots. This means your two ships are placed on your only planet.
 
+
 Do you see it? Nothing happens. You just stay on your planet and do nothing for all eternity.
 If you check again on the player's code, this is precisely what it does: returns the galaxy without changing anything.
 

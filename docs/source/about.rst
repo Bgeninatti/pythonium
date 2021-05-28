@@ -63,7 +63,8 @@ Once the command finishes you should have a ``<sector>.gif`` file and a ``<secto
 
 Here's an example of the gif
 
-.. image:: single_player.gif
+.. image:: https://ik.imagekit.io/jmpdcmsvqee/single_player_ywFgXK732.gif
+   :target: https://ik.imagekit.io/jmpdcmsvqee/single_player_ywFgXK732.gif
    :width: 300pt
 
 Multiplayer mode
