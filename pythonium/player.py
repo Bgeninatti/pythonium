@@ -20,9 +20,7 @@ class AbstractPlayer:
         :param galaxy: The state of the Galaxy known by the player.
         :param context: Aditional information about the game.
 
-        ``galaxy`` and ``context`` are defined by the game mode. For now, Pythonium \
-        includes only one game mode: the **Classic Mode**.
-        In this game, mode the players can see the following
+        Players can see the following
 
         On one hand, each player sees a different part of the galaxy, and the ``galaxy`` \
         known by a player contains:
@@ -37,28 +35,15 @@ class AbstractPlayer:
 
         The player won't know the attributes of enemy ships or planets but the position.
 
-        On the other hand the Classic Mode's ``context`` has the following keys:
+        ``context`` has the following keys:
 
           * ``ship_types``: A dictionary with all the ship types that the player can \
             build. See: :class:`ShipType`
           * ``tolerable_taxes``: The level of taxes from where ``happypoints`` start \
             to decay.
           * ``happypoints_tolerance``: The level of happypoints from where \
-            ``rioting_index`` affects the planet's economy.
           * ``score``: A list with the score for each player.
-          * ``turn``: Number of the current turn. There is one dictionary for each \
-            player. Each dictionary has the following structure:
-
-        .. code-block:: json
-
-            {
-                'turn': str # Turn number,
-                'player': str # Player's name,
-                'planets': int # Amount of planets that the player owns,
-                'ship_<ship_type>': int, # Amount of <ship_type> own by player,
-                'total_ships': int # Total amount of ships that the player owns.
-            }
-
+          * ``turn``: Number of the current turn.
         """
         raise NotImplementedError(
             "You must implement the ``next_turn`` method in your ``Player`` class"

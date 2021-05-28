@@ -19,8 +19,8 @@ at the beginning of turn 0, and it will make decisions based on that information
 the game at turn 1. This sequence will be repeated again and again in an iterative process until the
 game finishes.
 
-Your player then is not more than a [python class](https://docs.python.org/3/tutorial/classes.html) implementing a
-[method](https://docs.python.org/3/tutorial/classes.html#method-objects) that is executed every turn.
+Your player then is not more than a `python class <https://docs.python.org/3/tutorial/classes.html>`_ implementing a
+`method <https://docs.python.org/3/tutorial/classes.html#method-objects>`_ that is executed every turn.
 This method receives as parameters the state of the ``galaxy``, and some other ``context`` about the state of the game
 (i.e, the scoreboard and other useful data), and it must return the same ``galaxy`` instance with some changes reflecting
 the player's decisions.
