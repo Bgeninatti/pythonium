@@ -87,6 +87,9 @@ class Galaxy:
     def __repr__(self):
         return self.__str__()
 
+    def __repr__(self):
+        return f"Galaxy<size={self.size}, planets={len(self.planets)}>"
+
     @property
     def known_races(self) -> Set[str]:
         """
