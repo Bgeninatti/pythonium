@@ -9,6 +9,10 @@ from tests.factories import ExplosionFactory, ShipFactory, fake_position
 
 class TestGalaxyBasics:
     @pytest.fixture
+    def expected_repr(self, galaxy):
+        return f"Galaxy<size={galaxy.size}, planets={len(galaxy.planets)}>"
+
+    @pytest.fixture
     def another_random_position(self, galaxy_size):
         return fake_position(galaxy_size)
 
@@ -19,6 +23,10 @@ class TestGalaxyBasics:
         a = random_position[0] - another_random_position[0]
         b = random_position[1] - another_random_position[1]
         return math.sqrt(a ** 2 + b ** 2)
+
+    def test_repr(self, galaxy, expected_repr):
+        assert str(galaxy) == expected_repr
+        assert str(galaxy) == galaxy.__repr__()
 
     def test_planet_index(self, planets, galaxy):
         for planet in planets:

@@ -6,7 +6,7 @@ from .ship_type import ShipType
 from .vectors import Transfer
 
 
-@attr.s(auto_attribs=True)
+@attr.s(auto_attribs=True, repr=False)
 class Planet(StellarThing):
     """
     A planet that belongs to a :class:`Galaxy`
@@ -161,7 +161,10 @@ class Planet(StellarThing):
         self.happypoints = self.max_happypoints
 
     def __str__(self):
-        return f"Planet #{self.id} <player={self.player}>"
+        return f"Planet<id={self.id}, position={self.position}, player={self.player}>"
+
+    def __repr__(self):
+        return self.__str__()
 
     @property
     def max_mines(self) -> int:

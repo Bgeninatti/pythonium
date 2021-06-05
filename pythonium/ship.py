@@ -5,7 +5,7 @@ from .ship_type import ShipType
 from .vectors import Transfer
 
 
-@attr.s
+@attr.s(auto_attribs=True, repr=False)
 class Ship(StellarThing):
     """
     A ship that belongs to a race.
@@ -80,8 +80,11 @@ class Ship(StellarThing):
     See :class:`Transfer` bool conversion.
     """
 
+    def __str__(self):
+        return f"Ship<id={self.id}, position={self.position}, player={self.player}>"
+
     def __repr__(self):
-        return f"Ship #{self.id} <player={self.player}>"
+        return self.__str__()
 
     def move(self, position: Position) -> None:
         self.target = position
