@@ -23,11 +23,17 @@ class Galaxy:
 
     def __init__(
         self,
+        name: str,
         size: Position,
         things: List[StellarThing],
         explosions: List[Explosion] = None,
         turn: int = 0,
     ):
+        self.name = name
+        """
+        Galaxxy name.
+        """
+
         self.turn: int = turn
         """
         Turn or actual time in the galaxy

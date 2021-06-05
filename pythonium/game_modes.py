@@ -46,7 +46,7 @@ class GameMode:
         self.mine_cost = mine_cost
         self.tenacity = tenacity
 
-    def build_galaxy(self, players):
+    def build_galaxy(self, name, players):
         """
         Fabrica la galaxy
 
@@ -112,7 +112,7 @@ class ClassicMode(GameMode):
         self.max_ships = max_ships
         self.winner = None
 
-    def build_galaxy(self, players):
+    def build_galaxy(self, name, players):
         """
         Representa el conjunto de planets en el que se desenvolverá el juego.
 
@@ -183,7 +183,7 @@ class ClassicMode(GameMode):
             )
             things.append(planet)
 
-        galaxy = Galaxy(size=self.map_size, things=things)
+        galaxy = Galaxy(name=name, size=self.map_size, things=things)
 
         galaxy = self.init_players(players, galaxy)
 
@@ -286,6 +286,7 @@ class ClassicMode(GameMode):
             planet.taxes = None
 
         return Galaxy(
+            name=galaxy.name,
             size=galaxy.size,
             things=list(planets.values()) + ships,
             explosions=galaxy.explosions,

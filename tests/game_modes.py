@@ -6,7 +6,7 @@ class SandboxGameMode(GameMode):
         super().__init__(*args, **kwargs)
         self.max_ships = max_ships
 
-    def build_galaxy(self, players):
+    def build_galaxy(self, name, players):
 
         if len(players) != 1:
             raise ValueError("SandboxGameMode only allows one player")
@@ -36,7 +36,7 @@ class SandboxGameMode(GameMode):
                 mine_cost=self.mine_cost,
             )
             things.append(planet)
-        galaxy = Galaxy(size=map_size, things=things)
+        galaxy = Galaxy(name=name, size=map_size, things=things)
 
         homeworld = galaxy.planets[(10, 10)]
         homeworld.player = player.name
