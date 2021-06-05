@@ -243,7 +243,11 @@ class MetricsCollector:
 
         # War
         conquered_planets = self.aggregate_events_for_players(
-            self.get_events_for_players("Planet conquered by force", "planet"),
+            self.get_events_for_players(
+                message="Planet conquered by force",
+                key="planet",
+                data_type=str,
+            ),
             len,
         )
         killed_clans = self.aggregate_events_for_players(
