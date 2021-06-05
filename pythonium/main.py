@@ -44,7 +44,7 @@ def go():
         "the exception and stop.",
     )
     parser.add_argument(
-        "--sector-name", default="", help="An identification for the game"
+        "--galaxy-name", default="", help="An identification for the game"
     )
 
     args = parser.parse_args()
@@ -54,9 +54,9 @@ def go():
         return 0
 
     game_mode = ClassicMode()
-    sector_name = random_name(6)
+    galaxy_name = random_name(6)
 
-    logfile = Path.cwd() / f"{sector_name}.log"
+    logfile = Path.cwd() / f"{galaxy_name}.log"
     setup_logger(logfile, verbose=args.verbose)
 
     players = []
@@ -65,22 +65,18 @@ def go():
         player = player_class.Player()
         players.append(player)
 
-    start = time.time()
     game = Game(
-        sector_name,
-        players,
-        game_mode,
+        name=galaxy_name,
+        players=players,
+        gmode=game_mode,
         raise_exceptions=args.raise_exceptions,
     )
     game.play()
-    sys.stdout.write(f"Game ran in {round(time.time() - start, 2)} seconds\n")
 
     if args.metrics:
+        sys.stdout.write("\n")
         sys.stdout.write("Building report...\n")
-        start = time.time()
         with open(logfile) as logs:
             metrics = MetricsCollector(logs)
         metrics.build_report()
-        sys.stdout.write(
-            f"Report built in {round(time.time() - start, 2)} seconds\n"
-        )
+        sys.stdout.write("Done.\n")

@@ -55,13 +55,13 @@ class MetricsCollector:
             }
         )
 
-        # Search sector name
+        # Search galaxy name
         init_log = list(
             filter(
                 lambda l: l["message"] == "Initializing galaxy", self.logdicts
             )
         )[0]
-        self.sector = init_log["extras"]["sector"]
+        self.galaxy_name = init_log["extras"]["galaxy_name"]
 
         # Search winner
         winner_log = list(
@@ -430,7 +430,7 @@ class MetricsCollector:
         draw = ImageDraw.Draw(report)
         draw.text(
             (100, 50),
-            f"Sector #{self.sector}",
+            f"Galaxy #{self.galaxy_name}",
             font=self._title_font,
             fill="black",
         )
@@ -463,4 +463,4 @@ class MetricsCollector:
             fill="black",
         )
 
-        report.save(f"report_{self.sector}.png")
+        report.save(f"report_{self.galaxy_name}.png")

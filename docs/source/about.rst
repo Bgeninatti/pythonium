@@ -54,17 +54,17 @@ i.e: the ``standard_player`` bot.
 
     pythonium --players pythonium.bots.standard_player
 
-Once the command finishes you should have a ``<sector>.gif`` file and a ``<sector>.log``, where ``<sector>`` is a unique code generated for the game.
+Once the command finishes you should have a ``<galaxy_name>.gif`` file and a ``<galaxy_name>.log``, where ``<sector>`` is a unique code generated for the game.
 
-* ``<sector>.gif``: This is an animation showing how the galaxy ownership changed along the game,
+* ``<galaxy_name>.gif``: This is an animation showing how the galaxy ownership changed along the game,
   which planets belongs to each player, ships movements, combats and the score on each turn.
 
-* ``<sector>.log``: Contain the logs with all the relevant events during the game.
+* ``<galaxy_name>.log``: Contain the logs with all the relevant events during the game.
 
 Here's an example of the gif
 
-.. image:: https://ik.imagekit.io/jmpdcmsvqee/single_player_ywFgXK732.gif
-   :target: https://ik.imagekit.io/jmpdcmsvqee/single_player_ywFgXK732.gif
+.. image:: https://ik.imagekit.io/jmpdcmsvqee/single_player_Phcod5vAc.gif
+   :target: https://ik.imagekit.io/jmpdcmsvqee/single_player_Phcod5vAc.gif
    :width: 300pt
 
 Multiplayer mode
@@ -89,7 +89,7 @@ This is specially useful to evaluate the performance of your players, and know t
 
     pythonium --metrics --players pythonium.bots.standard_player pythonium.bots.pacific_player
 
-In adition to the ``.gif`` and ``.log`` now you will se a ``report_<sector>.png`` with several charts.
+In adition to the ``.gif`` and ``.log`` now you will se a ``report_<galaxy_name>.png`` with several charts.
 
 
 What next?

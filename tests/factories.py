@@ -98,6 +98,7 @@ class GalaxyFactory(Factory):
     class Meta:
         model = Galaxy
 
+    name = Faker("word")
     size = MAP_SIZE
     things = [
         PlanetFactory(position=fake_position(MAP_SIZE)) for _ in range(10)

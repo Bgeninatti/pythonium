@@ -44,11 +44,11 @@ i.e: the ``standard_player`` bot.
 $ pythonium --players pythonium.bots.standard_player
 ```
 
-Once the command finishes you should have a ``<sector>.gif`` file and a ``<sector>.log``, where ``<sector>`` is a unique code generated for the game.
+Once the command finishes you should have a ``<galaxy>.gif`` file and a ``<galaxy>.log``, where ``<galaxy>`` is the name of the galaxy where the game occurs.
 
-* ``<sector>.gif``: This is an animation showing how the planet's ownership, ship movements, and score along with the game.
+* ``<galaxy>.gif``: This is an animation showing how the planet's ownership, ship movements, and score along with the game.
 
-* ``<sector>.log``: Logs with all the relevant events during the game.
+* ``<galaxy>.log``: Logs with all the relevant events during the game.
 
 
 ## Multiplayer mode
@@ -72,7 +72,7 @@ This is especially useful to evaluate the performance of your players, and know 
 $ pythonium --metrics --players pythonium.bots.standard_player pythonium.bots.pacific_player
 ```
 
-In adition to the ``.gif`` and ``.log`` now you will se a ``report_<sector>.png`` with several charts.
+In adition to the ``.gif`` and ``.log`` now you will se a ``report_<galaxy>.png`` with several charts.
 
 
 ## Code your own player.
