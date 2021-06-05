@@ -20,7 +20,7 @@ logger = logging.getLogger("game")
 class Game:
     def __init__(
         self,
-        sector,
+        name,
         players,
         gmode,
         *,
@@ -28,8 +28,8 @@ class Game:
         raise_exceptions=False,
     ):
         """
-        :param sector: Sector name
-        :type sector: str
+        :param name: Name for the galaxy. Also used as game identifier.
+        :type name: str
         :param players: Players for the game. Supports one or two players.
         :type players: list of instances of classes that extends
             from :class:`AbstractPlayer`
@@ -46,19 +46,18 @@ class Game:
         if len(players) != len({p.name for p in players}):
             raise ValueError("Player names must be unique")
 
-        self.sector = sector
         sys.stdout.write("** Pythonium **\n")
-        sys.stdout.write(f"Running battle in Sector #{self.sector}\n")
         self.gmode = gmode
         self.players = players
         self.raise_exceptions = raise_exceptions
         logger.info(
             "Initializing galaxy",
-            extra={"players": len(self.players), "sector": self.sector},
+            extra={"players": len(self.players), "galaxy_name": name},
         )
-        self.galaxy = self.gmode.build_galaxy(self.players)
+        self.galaxy = self.gmode.build_galaxy(name, self.players)
         logger.info("Galaxy initialized")
-        self._renderer = renderer(self.galaxy, f"Sector #{self.sector}")
+        sys.stdout.write(f"Running battle in galaxy #{name}\n")
+        self._renderer = renderer(self.galaxy, f"Galaxy #{name}")
 
     def extract_player_orders(self, player, galaxy, context):
         player_galaxy = player.next_turn(galaxy, context)
@@ -180,7 +179,7 @@ class Game:
                     )
                     self._renderer.render_frame(context)
                     # Save as gif
-                    self._renderer.save_gif(f"{self.sector}.gif")
+                    self._renderer.save_gif(f"{self.galaxy.name}.gif")
                 break
 
             # Reset explosions
