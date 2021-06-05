@@ -55,12 +55,11 @@ Let's save now this file as ``my_player.py`` and execute the following command:
 
     $ pyhtonium --player my_player
     ** Pythonium **
-    Running battle in Sector #PBA5V2
+    Running battle in Galaxy #PBA5V2
     Playing game.....................................
     Nobody won
-    Game ran in 5.38 seconds
 
-The output will show the name of the *sector* (some place in the galaxy) where the game occurs, and some other
+The output will show the name of the galaxy where the game occurs, and some other
 self-explained information.
 
 Once the command finishes, you will find in your working directory two files:
@@ -70,22 +69,22 @@ Once the command finishes, you will find in your working directory two files:
 
 .. note::
 
-    Notice that the name of both files is the sector name. Each game is generated with a random (kinda unique)
-    sector name.
+    Notice that the name of both files is the galaxy name. Each game is generated with a random (kinda unique)
+    galaxy name.
 
 As a gif you will see something similar to this:
 
-.. image:: https://ik.imagekit.io/jmpdcmsvqee/first_player_tT9jZvrre.gif
-   :target: https://ik.imagekit.io/jmpdcmsvqee/first_player_tT9jZvrre.gif
+.. image:: https://ik.imagekit.io/jmpdcmsvqee/chapter_01_OD61CbRiL.gif
+   :target: https://ik.imagekit.io/jmpdcmsvqee/chapter_01_OD61CbRiL.gif
    :width: 300pt
 
 Reading from the top to the bottom:
 
-* You are in sector `#PBA5V2`
+* You are in the galaxy `#PBA5V2`
 * You are Han Solo (your player's name)
 * The turn at each frame is displayed at the left of the player name
 * You have one planet and two ships
-* Your planet and ships are in the blue dot. The rest of the dots are the others 299 planets in the sector.
+* Your planet and ships are in the blue dot. The rest of the dots are the others 299 planets in the galaxy.
 
 .. note::
 
