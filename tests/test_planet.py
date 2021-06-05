@@ -1,6 +1,6 @@
 import pytest
 
-from pythonium import Planet, Transfer, cfg
+from pythonium import Transfer, cfg
 
 from .factories import PlanetFactory, ShipTypeFactory
 
@@ -118,8 +118,13 @@ def planets_group_with_temperature(temperatures_range):
 
 
 class TestPlanet:
-    def test_repr(self, planet):
-        assert str(planet) == f"Planet #{planet.id} <player={planet.player}>"
+    @pytest.fixture
+    def expected_repr(self, planet):
+        return f"Planet<id={planet.id}, position={planet.position}, player={planet.player}>"
+
+    def test_repr(self, planet, expected_repr):
+        assert str(planet) == expected_repr
+        assert str(planet) == planet.__repr__()
 
 
 class TestPlanetHappyPoints:
