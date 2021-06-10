@@ -31,7 +31,7 @@ class Player(AbstractPlayer):
         populated_planets = list(
             filter(
                 lambda p: p.clans > self.populated_planet_threshold.clans,
-                my_planets.values(),
+                galaxy.get_player_planets(self.name),
             )
         )
 
@@ -74,7 +74,7 @@ class Player(AbstractPlayer):
 
                 ship.target = destination.position
 
-        for planet in my_planets.values():
+        for planet in my_planets:
             planet.taxes = context.get("tolerable_taxes")
             planet.new_mines = planet.can_build_mines()
 

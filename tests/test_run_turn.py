@@ -220,7 +220,7 @@ def test_planet_build_ship(test_player, game, planet_state, ship_type_name):
         - New ship of demanded type located in same position as planet
     Planet attempt to build a ship without available resources
     """
-    planet = list(game.galaxy.get_player_planets(test_player.name).values())[0]
+    planet = next(game.galaxy.get_player_planets(test_player.name))
     # generate initial conditions for planet
     planet.megacredits = planet_state[0]
     planet.pythonium = planet_state[1]
@@ -230,12 +230,14 @@ def test_planet_build_ship(test_player, game, planet_state, ship_type_name):
 
     can_build_ship = planet.can_build_ship(ship_type)
     ships_count = len(game.galaxy.ships)
-    ships_in_planet = game.galaxy.get_ships_in_position(planet.position)
+    ships_in_planet = list(game.galaxy.get_ships_in_position(planet.position))
 
     game.action_planet_build_ship(planet, ship_type)
 
     last_ship = game.galaxy.ships[-1]
-    actual_ships_in_planet = game.galaxy.get_ships_in_position(planet.position)
+    actual_ships_in_planet = list(
+        game.galaxy.get_ships_in_position(planet.position)
+    )
 
     if can_build_ship:
         assert len(game.galaxy.ships) == ships_count + 1
@@ -345,7 +347,7 @@ def test_planet_produce_resources(test_player, game, planet_state):
     """
     In next turn ``pythonium`` must increase in ``dpythonium``
     """
-    planet = list(game.galaxy.get_player_planets(test_player.name).values())[0]
+    planet = next(game.galaxy.get_player_planets(test_player.name))
     planet.clans = planet_state[0]
     planet.megacredits = planet_state[1]
     planet.pythonium = planet_state[2]

@@ -667,7 +667,7 @@ class Game:
 
     def action_planet_build_ship(self, planet, ship_type):
 
-        ships_count = len(self.galaxy.get_player_ships(planet.player))
+        ships_count = len(list(self.galaxy.get_player_ships(planet.player)))
         if ships_count >= self.gmode.max_ships:
             logger.warning(
                 "Ships limit reached",

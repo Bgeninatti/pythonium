@@ -92,17 +92,15 @@ class TestNearbyPlanets:
 class TestGetPlayerPlanets:
     @pytest.fixture
     def expected_planets(self, planets, random_player):
-        return {
-            planet.position: planet
-            for planet in planets
-            if planet.player == random_player
-        }
+        return list(filter(lambda p: p.player == random_player, planets))
 
     def test_get_player_planets(self, galaxy, expected_planets, random_player):
-        assert galaxy.get_player_planets(random_player) == expected_planets
+        assert (
+            list(galaxy.get_player_planets(random_player)) == expected_planets
+        )
 
     def test_get_player_planets_fake_player(self, galaxy, faker):
-        assert not galaxy.get_player_planets(faker.word())
+        assert not list(galaxy.get_player_planets(faker.word()))
 
 
 class TestSearchPlanet:
@@ -119,7 +117,7 @@ class TestOcupedPlanets:
         return [planet for planet in planets if planet.player is not None]
 
     def test_ocuped_planets(self, galaxy, expected_ocuped_planets):
-        assert galaxy.get_ocuped_planets() == expected_ocuped_planets
+        assert list(galaxy.get_ocuped_planets()) == expected_ocuped_planets
 
 
 class TestAddShip:
@@ -142,10 +140,10 @@ class TestGetPlayerShips:
         return [ship for ship in ships if ship.player == random_player]
 
     def test_get_player_ships(self, galaxy, expected_ships, random_player):
-        assert galaxy.get_player_ships(random_player) == expected_ships
+        assert list(galaxy.get_player_ships(random_player)) == expected_ships
 
     def test_get_player_ships_fake_player(self, galaxy, faker):
-        assert not galaxy.get_player_ships(faker.word())
+        assert not list(galaxy.get_player_ships(faker.word()))
 
 
 class TestSearchShip:
@@ -187,7 +185,7 @@ class TestGetShipsConflicts:
         self, ships_in_conflict_galaxy, ships_in_conflict
     ):
         conflicts = ships_in_conflict_galaxy.get_ships_conflicts()
-        assert [ships_in_conflict] == conflicts
+        assert [ships_in_conflict] == list(conflicts)
 
 
 class TestGetShipsInPlanets:
@@ -238,9 +236,11 @@ class TestGetShipsInPosition:
         return [random_ship, another_ship_in_position]
 
     def test_ships_in_position(self, galaxy, position, ships_in_position):
-        assert galaxy.get_ships_in_position(position) == ships_in_position
+        assert (
+            list(galaxy.get_ships_in_position(position)) == ships_in_position
+        )
 
 
 class TestGetShipsInDeepSpace:
     def test_ships_in_deep_space(self, galaxy, ships):
-        assert galaxy.get_ships_in_deep_space() == ships
+        assert list(galaxy.get_ships_in_deep_space()) == ships
