@@ -234,7 +234,9 @@ class ClassicMode(GameMode):
         #   or in any own planet
         # * The player can see any ship in deep space
 
-        player_planets = galaxy.get_player_planets(player.name)
+        player_planets_positions = [
+            p.position for p in galaxy.get_player_planets(player.name)
+        ]
         # Player can see ships that:
         # * Belongs to him
         # * Are located in any of his planets.
@@ -243,7 +245,7 @@ class ClassicMode(GameMode):
             ship
             for ship in galaxy.ships
             if player.name == ship.player
-            or ship.position in player_planets.keys()
+            or ship.position in player_planets_positions
             or ship.position not in galaxy.planets.keys()
         ]
         planets = copy.deepcopy(galaxy.planets)
