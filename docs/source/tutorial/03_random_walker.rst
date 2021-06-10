@@ -1,6 +1,6 @@
-.. _Tutorial Chapter 02:
+.. _Tutorial Chapter 03:
 
-Chapter 2 - Han Solo: The Random Walker
+Chapter 3 - Han Solo: The Random Walker
 ========================================
 
 Hello player. Good to see you again.
@@ -13,53 +13,6 @@ this tutorial you will be a globetrotter on the galaxy. The Han Solo of the Pyth
 
 
 
-In Pythonium, the ``galaxy`` will be the source of all truth for you. It represents all your owned knowledge about
-the universe, and in most cases all the information to develop your strategy will be extracted from the ``galaxy``.
-
-.. note::
-    To know more about ``galaxy`` (and ``context``) check :func:`AbstractPlayer.next_turn<pythonium.AbstractPlayer.next_turn>`
-
-First, you need to learn what do you know about the galaxy. To do so we will use ``ipdb``, the ancient oracle of
-python code.
-
-This tool allows you to see what's going on with your python code at some point. In our case we want to
-know what's going on at the beginning of each turn.
-
-Open the player built in :ref:`Chapter 1<Tutorial Chapter 01>` and set a trace in your ``next_turn`` method. Like this:
-
-.. code-block:: python
-
-   from pyhtonium import AbstractPlayer
-
-   class Player(AbstractPlayer):
-
-       name = 'Han Solo'
-
-       def next_turn(self, galaxy, context):
-           import ipdb; ipdb.set_trace()
-           return galaxy
-
-Once executed (I'll not tell you how to do that at this point), you will see something similar to:
-
-.. code-block:: python
-
-               8     def next_turn(self, galaxy, context):
-               9         import ipdb; ipdb.set_trace()
-      ---> 10         return galaxy
-
-      ipdb> _
-
-Now we can start investigating the ``galaxy``.
-
-
-.. code-block:: python
-
-      ipdb> galaxy
-      Galaxy<size=(500, 500), planets=300>
-
-
-Ok then, this means you are in a galaxy of 500 light-years width and 500 ly height (``size=(500, 500)``) compounded by
-300 planets (``planets=300``).
 
 Let's check now what about ``context``.
 
@@ -126,17 +79,11 @@ a :class:`Planet<pythonium.Planet>` instance.
     are randomly generated for each game, so having different values is the normal behavior.
 
 
-A planet has tons of attributes, for now we will focus just in a few of them:
-
-* ``id`` a unique identifier for the planet,
-* ``position`` is the planet position in the galaxy,
-* ``player`` is the planet's owner, it can be ``None`` if the planet is not colonized or the owner is unknown for you.
-
 What about your ships?
 
 In a similar fashion, you can use the :meth:`galaxy.get_player_ships<pythonium.Galaxy.get_player_ships>` to get all your ships.
 
-.. code-block:: python
+.. code-block::
 
       ipdb> my_ships = galaxy.get_player_ships(self.name)
       ipdb> pp my_ships

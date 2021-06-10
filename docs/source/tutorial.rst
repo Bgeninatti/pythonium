@@ -9,4 +9,5 @@ Tutorial
     :caption: Contents:
 
     tutorial/01_first_player
-    tutorial/02_random_walker
+    tutorial/02_understanding_the_unknown
+    tutorial/03_random_walker

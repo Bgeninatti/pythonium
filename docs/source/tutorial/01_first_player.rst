@@ -49,6 +49,11 @@ Second, there is one attribute and one method that needs to be defined in this c
 * ``name``: The name of your player. Try to make it short or your reports and gif will look buggy.
 * ``next_turn``: A method that will be executed every turn. This is where your strategy is implemented.
 
+.. _Executing your player:
+
+Executing your player
+----------------------
+
 Let's save now this file as ``my_player.py`` (or whatever name you like) and execute the following command:
 
 .. code-block:: bash
