@@ -286,6 +286,7 @@ class ClassicMode(GameMode):
             planet.taxes = None
 
         return Galaxy(
+            turn=galaxy.turn,
             name=galaxy.name,
             size=galaxy.size,
             things=list(planets.values()) + ships,
