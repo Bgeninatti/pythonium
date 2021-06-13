@@ -120,7 +120,7 @@ def planets_group_with_temperature(temperatures_range):
 class TestPlanet:
     @pytest.fixture
     def expected_repr(self, planet):
-        return f"Planet<id={planet.id}, position={planet.position}, player={planet.player}>"
+        return f"Planet(id={planet.id}, position={planet.position}, player={planet.player})"
 
     def test_repr(self, planet, expected_repr):
         assert str(planet) == expected_repr

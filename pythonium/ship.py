@@ -81,7 +81,7 @@ class Ship(StellarThing):
     """
 
     def __str__(self):
-        return f"Ship<id={self.id}, position={self.position}, player={self.player}>"
+        return f"Ship(id={self.id}, position={self.position}, player={self.player})"
 
     def __repr__(self):
         return self.__str__()

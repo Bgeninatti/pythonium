@@ -10,7 +10,7 @@ from tests.factories import ExplosionFactory, ShipFactory, fake_position
 class TestGalaxyBasics:
     @pytest.fixture
     def expected_repr(self, galaxy):
-        return f"Galaxy<size={galaxy.size}, planets={len(galaxy.planets)}>"
+        return f"Galaxy(size={galaxy.size}, planets={len(galaxy.planets)})"
 
     @pytest.fixture
     def another_random_position(self, galaxy_size):
@@ -65,7 +65,7 @@ class TestDistancesToPlanets:
         return expected_distances
 
     def test_distances_to_planets(
-        self, when, expected_distances, random_position, galaxy
+        self, expected_distances, random_position, galaxy
     ):
         assert expected_distances == galaxy.distances_to_planets(
             random_position

@@ -161,7 +161,7 @@ class Planet(StellarThing):
         self.happypoints = self.max_happypoints
 
     def __str__(self):
-        return f"Planet<id={self.id}, position={self.position}, player={self.player}>"
+        return f"Planet(id={self.id}, position={self.position}, player={self.player})"
 
     def __repr__(self):
         return self.__str__()
