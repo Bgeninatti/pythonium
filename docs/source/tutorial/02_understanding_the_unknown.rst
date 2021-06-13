@@ -247,6 +247,57 @@ This can be answered by simply searching if there is planets in the ship's posit
     Planet(id=63fa8f87-9fa6-40da-a744-5b8b23a9d538, position=(157, 10), player=Han Solo)
 
 
+Turn ``context``
+----------------
+
+Apart from ``galaxy`` there is a second argument received by the ``Player.next_turn`` method: the turn ``context``.
+
+The ``context`` contains additional metadata about the turn and the overall game.
+
+.. code-block::
+
+    ipdb> type(context)
+    <class 'dict'>
+
+    ipdb> context.keys()
+    dict_keys(['ship_types', 'tolerable_taxes', 'happypoints_tolerance', 'score'])
+
+
+Here we see that ``context`` is a dictionary with several keys. For now, we will focus on the ``score``.
+
+
+.. code-block:: python
+
+    ipdb> context['score']
+    [{'turn': 1, 'player': 'Han Solo', 'planets': 1, 'ships_carrier': 2, 'ships_war': 0, 'total_ships': 2}]
+
+
+From the score we know:
+
+* The current turn number is ``1``,
+* there is only one player called 'Han Solo' (that's you!),
+* Han Solo owns,
+
+    * one planet,
+    * two carrier ships
+    * zero warships,
+    * and two ships in total
+
+This is, in fact, consistent with the found results in previous sections. When you query your owned planets, the result
+was one single planet, and for your ships, the result was two ships.
+
+You can verify that both ships are carriers by doing
+
+.. code-block:: python
+
+    ipdb> for ship in my_ships:
+        print(ship.type.name)
+
+    carrier
+    carrier
+
+In the next chapters, we will explore a bit more about the ``context``, different ship types, and their attributes.
+
 How to exit from the `ipdb` debuger
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
