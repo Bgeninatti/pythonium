@@ -1,4 +1,4 @@
-from . import bots, core, logger
+from . import bots, core, debugger, logger
 from .explosion import Explosion
 from .galaxy import Galaxy
 from .game import Game
@@ -25,4 +25,5 @@ __all__ = [
     "Transfer",
     "bots",
     "logger",
+    "debugger",
 ]
