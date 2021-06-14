@@ -126,11 +126,10 @@ class Galaxy:
     def nearby_planets(
         self,
         point: Position,
-        neighborhood: int = cfg.ship_speed,
+        neighborhood: int,
     ) -> List[Planet]:
         """
-        Return all the planet that are ``turns`` away or less,
-        traveling at a speed defined by ``cfg.ship speed``
+        Return all the planets that are ``neighborhood`` light-years away or less.
         """
         distances = self.distances_to_planets(point)
         return list(
