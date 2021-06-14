@@ -80,7 +80,7 @@ class TestNearbyPlanets:
     @pytest.mark.parametrize("turns", list(range(1, 6)))
     def test_nearby_planets(self, galaxy, random_position, turns, speed):
         nearby_planets = galaxy.nearby_planets(
-            point=random_position, turns=turns, speed=speed
+            point=random_position, neighborhood=turns * speed
         )
         for planet in nearby_planets:
             assert (

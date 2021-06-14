@@ -126,8 +126,7 @@ class Galaxy:
     def nearby_planets(
         self,
         point: Position,
-        turns: int = 1,
-        speed: int = cfg.ship_speed,
+        neighborhood: int = cfg.ship_speed,
     ) -> List[Planet]:
         """
         Return all the planet that are ``turns`` away or less,
@@ -136,7 +135,7 @@ class Galaxy:
         distances = self.distances_to_planets(point)
         return list(
             filter(
-                lambda p: distances[p.position] <= speed * turns,
+                lambda p: distances[p.position] <= neighborhood,
                 self.planets.values(),
             )
         )
