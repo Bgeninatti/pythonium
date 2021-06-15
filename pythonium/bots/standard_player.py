@@ -61,7 +61,9 @@ class Player(AbstractPlayer):
             # Voy a buscar un planeta que no sea mio para colonizar.
             if not ship.target:
                 destination = None
-                nearby_planets = galaxy.nearby_planets(ship.position)
+                nearby_planets = galaxy.nearby_planets(
+                    ship.position, ship.speed
+                )
                 unknown_nearby_planets = [
                     p
                     for p in nearby_planets

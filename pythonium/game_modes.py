@@ -202,7 +202,7 @@ class ClassicMode(GameMode):
                     galaxy.size[0] - margins[0],
                     galaxy.size[1] - margins[1],
                 )
-            nearby_planets = galaxy.nearby_planets(position, 2)
+            nearby_planets = galaxy.nearby_planets(position, 50)
 
             homeworld = random.choice(nearby_planets)
 

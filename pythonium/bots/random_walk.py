@@ -16,7 +16,7 @@ class Player(AbstractPlayer):
         my_ships = galaxy.get_player_ships(self.name)
 
         for ship in my_ships:
-            nearby_planets = galaxy.nearby_planets(ship.position)
+            nearby_planets = galaxy.nearby_planets(ship.position, ship.speed)
             destination = random.choice(nearby_planets)
             ship.target = destination.position
 
