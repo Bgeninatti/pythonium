@@ -298,7 +298,9 @@ You can verify that both ships are carriers by doing
 
 In the next chapters, we will explore a bit more about the ``context``, different ship types, and their attributes.
 
-How to exit from the `ipdb` debuger
+.. _exit the debugger:
+
+How to exit from the `ipdb` debugger
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Pythonium has a special command for exit the ``ipdb``. You will notice that the usual ``exit`` command
