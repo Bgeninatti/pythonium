@@ -110,10 +110,10 @@ and the values are :class:`Planet<pythonium.Planet>` instances.
     <class 'dict'>
 
     ipdb> pp galaxy.planets
-    {(1, 360): Planet(id=f346b8cb-1911-438a-bbc1-a3fe3244f0f1, position=(1, 360), player=None),
-     (5, 73): Planet(id=26a1b68d-8ae8-45b7-b431-3fe45fed4907, position=(5, 73), player=None),
-     (6, 84): Planet(id=f6f9b52b-27a4-4801-83e8-360d9cab26de, position=(6, 84), player=None),
-     (8, 215): Planet(id=cce601ba-6056-4b0e-b49e-56afc1409c31, position=(8, 215), player=None),
+    {(2, 124): Planet(id=ecf5f0b9-d639-48fb-ac06-cb0027d03d5b, position=(2, 124), player=None),
+     (3, 466): Planet(id=b20406cb-b764-4842-8dac-ec13c2038ca9, position=(3, 466), player=None),
+     (4, 129): Planet(id=ec53e2a9-24e2-49f5-aa56-4a6337b06b87, position=(4, 129), player=None),
+     (4, 294): Planet(id=40712b86-5bf3-453f-9714-760dbe771570, position=(4, 294), player=None),
     ...
     }
 
@@ -142,8 +142,8 @@ In a similar way as with the planets, the ``galaxy.ships`` attribute is a python
     <class 'list'>
 
     ipdb> pp galaxy.ships
-    [Ship(id=4a14cd55-4169-45dd-ad50-dacaf1da919f, position=(60, 185), player=Han Solo),
-     Ship(id=fda35773-c3c1-4cf7-b382-6ef09af18783, position=(60, 185), player=Han Solo)]
+    [Ship(id=b615699e-c70e-4e55-b678-fb0513abbb0b, position=(27, 23), player=Han Solo),
+     Ship(id=5b8e15a8-a319-43d0-bdd0-6be675d1742e, position=(27, 23), player=Han Solo)]
 
     ipdb> len(galaxy.ships)
     2
@@ -177,7 +177,7 @@ name you asked for.
 
     ipdb> my_planets = galaxy.get_player_planets(self.name)
     ipdb> pp list(my_planets)
-    [Planet(id=0a1d661a-56b3-4040-888f-35bd153eddf6, position=(111, 93), player=Han Solo)]
+    [Planet(id=1fa89759-6834-478a-9eda-6985dd95a0c7, position=(27, 23), player=Han Solo)]
 
 
 .. note::
@@ -193,8 +193,8 @@ In a similar fashion to planets, you can find all your ships with the :func:`Gal
 
     ipdb> my_ships = galaxy.get_player_ships(self.name)
     ipdb> pp list(my_ships)
-    [Ship(id=feb8eb82-9663-4e3e-9f05-e3cffe67e144, position=(111, 93), player=Han Solo),
-     Ship(id=3088bd21-6d62-4ce7-8f88-d63910c4dac5, position=(111, 93), player=Han Solo)]
+    [Ship(id=b615699e-c70e-4e55-b678-fb0513abbb0b, position=(27, 23), player=Han Solo),
+     Ship(id=5b8e15a8-a319-43d0-bdd0-6be675d1742e, position=(27, 23), player=Han Solo)]
 
 
 In single-player mode :func:`Galaxy.get_player_ships<pythonium.Galaxy.get_player_ships>` always returns all the ships in
@@ -220,12 +220,12 @@ In our case, that will be the ``position`` attribute of your planet.
     ipdb> my_planets = galaxy.get_player_planets(self.name)
     ipdb> some_planet = next(my_planets)
     ipdb> some_planet
-    Planet(id=4bd4d574-e4c9-459d-9da2-72802ca91ea2, position=(81, 184), player=Han Solo)
+    Planet(id=1fa89759-6834-478a-9eda-6985dd95a0c7, position=(27, 23), player=Han Solo)
 
     ipdb> ships_in_planet = galaxy.get_ships_in_position(some_planet.position)
     ipdb> pp list(ships_in_planet)
-    [Ship(id=d5bb02cd-eeb5-4e1e-a93f-028773443b25, position=(81, 184), player=Han Solo),
-     Ship(id=2a98e5bf-b5bd-4f97-8884-d83577df85c2, position=(81, 184), player=Han Solo)]
+    [Ship(id=b615699e-c70e-4e55-b678-fb0513abbb0b, position=(27, 23), player=Han Solo),
+     Ship(id=5b8e15a8-a319-43d0-bdd0-6be675d1742e, position=(27, 23), player=Han Solo)]
 
 
 Is my ship in a planet?
@@ -240,11 +240,11 @@ This can be answered by simply searching if there is planets in the ship's posit
     ipdb> my_ships = galaxy.get_player_ships(self.name)
     ipdb> some_ship = next(my_ships)
     ipdb> some_ship
-    Ship(id=d5bb02cd-eeb5-4e1e-a93f-028773443b25, position=(81, 184), player=Han Solo)
+    Ship(id=b615699e-c70e-4e55-b678-fb0513abbb0b, position=(27, 23), player=Han Solo)
 
     ipdb> planet = galaxy.planets.get(some_ship.position)
     ipdb> planet
-    Planet(id=63fa8f87-9fa6-40da-a744-5b8b23a9d538, position=(157, 10), player=Han Solo)
+    Planet(id=1fa89759-6834-478a-9eda-6985dd95a0c7, position=(27, 23), player=Han Solo)
 
 
 Turn ``context``

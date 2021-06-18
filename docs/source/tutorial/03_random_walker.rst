@@ -42,7 +42,7 @@ You can verify it easily.
     ipdb> galaxy.turn # Check the current turn
     0
     ipdb> explorer_ship.position # Check the ship's position
-    (66, 180)
+    (43, 37)
     ipdb> c # Move one turn forward
     ...
     ipdb> galaxy.turn # Now you are in turn 1
@@ -50,7 +50,7 @@ You can verify it easily.
     ipdb> my_ships = galaxy.get_player_ships(self.name) # Find the explorer ship again
     ipdb> explorer_ship = next(my_ships)
     ipdb> explorer_ship.position # The ship position is the same as previous turn
-    (66, 180)
+    (43, 37)
 
 The ship stays in the same position when time moves forward. It is not going anywhere.
 
@@ -90,31 +90,29 @@ ship location.
 
     ipdb> neighborhood = galaxy.nearby_planets(explorer_ship.position, explorer_ship.speed)
     ipdb> pp neighborhood
-    [Planet(id=512901b7-2fa1-4546-8c28-b744e374e859, position=(48, 164), player=None),
-     Planet(id=df982408-e2f0-41eb-b290-9d5b3b4c8e8c, position=(31, 65), player=None),
-     Planet(id=18ebd813-309f-4e3b-860e-44dd8ac019d3, position=(57, 41), player=None),
-     Planet(id=18f2e9c8-d9af-44fa-9545-895da620b479, position=(5, 67), player=None),
-     Planet(id=60ca5e8d-6ce9-48a3-b42a-303a8643820b, position=(76, 166), player=None),
-     Planet(id=fa611a75-1e5d-4af9-870a-b345c278198e, position=(111, 151), player=None),
-     Planet(id=4f60a82a-21ff-429b-bec5-4d5f560d8d34, position=(76, 67), player=None),
-     Planet(id=4210f138-3a2f-4355-a0e9-c3c841462c9a, position=(5, 46), player=None),
-     Planet(id=dbc95644-4e0a-4aa7-8031-4b349a18faf7, position=(28, 139), player=None),
-     Planet(id=a0cb9a30-dabf-45dc-aa06-d0b06a91a6d5, position=(68, 129), player=None),
-     Planet(id=b6c14192-9261-45aa-b846-ca63c7018a83, position=(134, 68), player=None),
-     Planet(id=eaf93629-c9f5-47c9-a731-d147a83484b8, position=(95, 33), player=None),
-     Planet(id=6e236d4b-ef20-4752-b882-c3211640a4fd, position=(27, 26), player=None),
-     Planet(id=bf33760f-13fd-4e2d-ad3e-f5572be98cda, position=(84, 92), player=None),
-     Planet(id=ffe302e9-1c76-4fd8-a720-7141f288bce7, position=(124, 82), player=None),
-     Planet(id=183ff157-ba85-45e3-abae-8fa74a2ddd01, position=(64, 159), player=None),
-     Planet(id=5622a094-bee6-4c2b-8418-e68838a4e977, position=(61, 96), player=Han Solo),
-     Planet(id=263233ec-f055-4dd7-81c3-c7782f4b8843, position=(103, 137), player=None),
-     Planet(id=6e4cf954-3b73-4b72-a327-cc468e040f0e, position=(103, 155), player=None),
-     Planet(id=337540ca-454a-44c1-83dd-a88edee900a0, position=(45, 22), player=None),
-     Planet(id=1d29c2cc-03b4-480e-9ead-e856f6042974, position=(94, 51), player=None),
-     Planet(id=15781fb7-9cfe-415c-bbf9-bc671db0b962, position=(32, 170), player=None),
-     Planet(id=165fb6a1-abff-4d1b-a731-0a67212eae5d, position=(128, 58), player=None),
-     Planet(id=0631d3bd-a77e-41b6-ae22-cf5592e9c327, position=(60, 97), player=None),
-     Planet(id=d9533de2-994a-4783-b876-6379f83792e4, position=(15, 131), player=None)]
+    [Planet(id=7d9321ab-57cb-4a05-afaa-c2f4ef8e4627, position=(43, 37), player=Han Solo),
+     Planet(id=a374a560-ba94-43b1-87b0-78eca8ca5b97, position=(25, 41), player=None),
+     Planet(id=e3319ed0-24ec-491c-bb76-a418d9b8b508, position=(112, 50), player=None),
+     Planet(id=1b7d714e-22d2-4ca2-826a-bf0656138793, position=(115, 9), player=None),
+     Planet(id=70279963-541b-49c9-bb87-32cf6936f45f, position=(31, 42), player=None),
+     Planet(id=73f25d86-44f1-4cfc-a8ac-44a96affa1d9, position=(9, 21), player=None),
+     Planet(id=1c7ec1c3-7aea-44bf-b582-1f7e3cb3b7ec, position=(81, 27), player=None),
+     Planet(id=1378a7ab-2120-46d3-ac93-fc50632141b0, position=(96, 62), player=None),
+     Planet(id=fb0d019d-ca71-4353-a06c-d3b4898ffd82, position=(93, 44), player=None),
+     Planet(id=02539d23-2911-4354-81f5-9a1f83ef0936, position=(21, 86), player=None),
+     Planet(id=38ce324b-ce2a-4bf1-997c-bb8990ae7509, position=(67, 37), player=None),
+     Planet(id=4e19fda6-ac81-4d85-bdde-bd7244430a2e, position=(70, 33), player=None),
+     Planet(id=e2234771-dbeb-425f-9b0a-1e761f5cf3e1, position=(44, 18), player=None),
+     Planet(id=b5b025dd-dfcf-4ca5-8b03-67bb3a04479f, position=(30, 92), player=None),
+     Planet(id=4b29c3d8-3c2f-4b33-8ca7-f451eb269e21, position=(61, 110), player=None),
+     Planet(id=72b77b24-0063-42f1-aeb0-259f04125cbd, position=(67, 71), player=None),
+     Planet(id=bf00cfa3-aece-48e6-8d67-11b3797e2f2c, position=(42, 69), player=None),
+     Planet(id=43bcb3bb-b788-46e9-b425-8539caeff03c, position=(89, 64), player=None),
+     Planet(id=0a9f5a40-034e-4fe8-a6b1-83f3437e09c8, position=(109, 54), player=None),
+     Planet(id=a51d8923-1003-4357-bb2b-f3efa7d5023e, position=(17, 35), player=None),
+     Planet(id=da112184-1e01-41ee-b146-d073946ce41e, position=(32, 81), player=None),
+     Planet(id=765a19df-2639-4efd-8aa6-30ff3926039c, position=(75, 40), player=None),
+     Planet(id=40052c15-3ffa-4dfa-ad22-9afbd0a16091, position=(95, 57), player=None)]
 
 Cool, right?
 
@@ -132,7 +130,7 @@ Now let's select the target for the ship. For now, keep it simple: pic some rand
     ipdb> import random
     ipdb> target_planet = random.choice(unknown_nearby_planets)
     ipdb> target_planet
-    Planet(id=18f2e9c8-d9af-44fa-9545-895da620b479, position=(5, 67), player=None)
+    Planet(id=1b7d714e-22d2-4ca2-826a-bf0656138793, position=(115, 9), player=None)
 
 That's your ship first destination. An unknown planet one turn away from your ship's location.
 
@@ -143,7 +141,7 @@ The next step is set the ship's ``target`` as the planet's ``position`` and move
     ipdb> galaxy.turn # Check the current turn
     1
     ipdb> explorer_ship.position # Check the ship position
-    (61, 96)
+    (43, 37)
     ipdb> explorer_ship.target = target_planet.position # set the ship target
     ipdb> c # move one turn forward
 
@@ -156,10 +154,10 @@ Where is the ship now?
     ipdb> my_ships = galaxy.get_player_ships(self.name) # Find all your ships
     ipdb> explorer_ship = next(my_ships) # And keep the explorer ship
     ipdb> explorer_ship.position # Check the ship position
-    (5, 67)
+    (115, 9)
     ipdb> explored_planet = galaxy.planets.get(explorer_ship.position) # Find the planet in the ship's position
     ipdb> explored_planet
-    Planet(id=18f2e9c8-d9af-44fa-9545-895da620b479, position=(5, 67), player=None)
+    Planet(id=1b7d714e-22d2-4ca2-826a-bf0656138793, position=(115, 9), player=None)
 
 Your explorer ship just arrived at the target planet. A new and unknown rock in the middle of the space with a lot of
 things to learn about and explore.
@@ -184,7 +182,7 @@ You will end up with something like this:
 .. code-block:: python
 
     import random
-    from pyhtonium import AbstractPlayer
+    from pythonium import AbstractPlayer
 
     class Player(AbstractPlayer):
 
@@ -204,7 +202,12 @@ You will end up with something like this:
 
             return galaxy
 
-After executing your player you will end up with something like this:
+After executing your player the generated gif should look similar to this one:
+
+
+.. image:: https://ik.imagekit.io/jmpdcmsvqee/chapter_03_Xkt-G_P7-.gif
+   :target: https://ik.imagekit.io/jmpdcmsvqee/chapter_03_Xkt-G_P7-.gif
+   :width: 300pt
 
 Can you see those ships moving around? That, my friend, is what I call freedom.
 
