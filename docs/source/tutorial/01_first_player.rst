@@ -79,8 +79,8 @@ Once the command finishes, you will find in your working directory two files:
 
 As a gif you will see something similar to this:
 
-.. image:: https://ik.imagekit.io/jmpdcmsvqee/chapter_01_OD61CbRiL.gif
-   :target: https://ik.imagekit.io/jmpdcmsvqee/chapter_01_OD61CbRiL.gif
+.. image:: https://ik.imagekit.io/jmpdcmsvqee/chapter_01_pwIQAPgxD.gif
+   :target: https://ik.imagekit.io/jmpdcmsvqee/chapter_01_pwIQAPgxD.gif
    :width: 300pt
 
 Reading from the top to the bottom:

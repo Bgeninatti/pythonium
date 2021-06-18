@@ -1,80 +1,32 @@
-# pythonium
+# Pythonium
 
-Pythonium is a space turn-based strategy game where each player leads an alien race
-that aims to conquer the galaxy.
+Pythonium is a space turn-based strategy game where each player leads an alien race that aims to conquer the galaxy.
 
 You must explore planets to search and extract a valuable mineral: the `pythonium`.
-This precious material allows you to build cargo and combat spaceships, mines to get
-more pythonium for your planets.
+This precious material allows you to build cargo and combat spaceships, or mines to get
+more pythonium.
 
-Manage the economy on your planets, and collect taxes to your people to found your
-constructions, but be careful! Keep your clans happy if you want to avoid unrest
-in your planets.
+Manage the economy on your planets, and collect taxes on your people to finance your
+constructions, but be careful! Keep your clans happy if you want to avoid unrest in your planets.
 
 Put your space helmet on, set your virtualenv, and start coding.
-Battle for pythonium is waiting for you.
 
+Battle for pythonium is waiting for you!
 
-## Installation
+## About the game
 
-You can install Pythonium cloning the repository and running
+Pythonium is a [programming game](https://en.wikipedia.org/wiki/Programming_game), which means you need to code a player to play.
 
-```
-$ python setup.py install
-```
+You can choose by playing alone in single-player mode, in multi-player mode against some of the available bots, or your friend's bots.
 
-To test your installation run
+The game generates several outputs that will help you to evaluate the performance of your player and make improvements on those.
 
-```
-$ pythonium --version
-Running 'pythonium' version x.y.z
-```
+If you want to know more and learn how to play, check out the [official documentation](https://pythonium.readthedocs.io/en/latest/).
 
-## Getting started
+## Acknowledge
 
-Pythonium allows for different game modes. The default is the **classic mode**, where each player starts with 1 planet and 2 carriers in a random galaxy of 300 planets.
-The first player that conquers 210 planets (70% of the total) wins.
+This game is strongly inspired by [VGA Planets](https://en.wikipedia.org/wiki/VGA_Planets), a space strategy war game from 1992 created by Tim Wisseman.
 
-## Single player mode
+The modern version of VGA Planets is [Planets.nu](https://planets.nu/), and that project has also influenced the development of Pythonium.
 
-Once you have Pythonium installed you can test it in single-player mode with some of the available bots.
-i.e: the ``standard_player`` bot.
-
-```
-$ pythonium --players pythonium.bots.standard_player
-```
-
-Once the command finishes you should have a ``<galaxy>.gif`` file and a ``<galaxy>.log``, where ``<galaxy>`` is the name of the galaxy where the game occurs.
-
-* ``<galaxy>.gif``: This is an animation showing how the planet's ownership, ship movements, and score along with the game.
-
-* ``<galaxy>.log``: Logs with all the relevant events during the game.
-
-
-## Multiplayer mode
-
-Pythonium allows to play up to two players in a single game. You can test it by providing two bots to the ``--players`` argument.
-
-
-```
-$ pythonium --players pythonium.bots.standard_player pythonium.bots.pacific_player
-```
-
-The output will be similar to the single-player mode: one ``.gif`` and one ``.log`` file.
-
-
-## Metrics
-
-By providing the ``--metrics`` arguments pythonium creates a report with several metrics of the game.
-This is especially useful to evaluate the performance of your players, and know their strengths and weaknesses.
-
-```
-$ pythonium --metrics --players pythonium.bots.standard_player pythonium.bots.pacific_player
-```
-
-In adition to the ``.gif`` and ``.log`` now you will se a ``report_<galaxy>.png`` with several charts.
-
-
-## Code your own player.
-
-Tutorial coming soon.
+To all of them, thank you.

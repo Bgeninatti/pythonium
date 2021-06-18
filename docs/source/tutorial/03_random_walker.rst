@@ -205,8 +205,8 @@ You will end up with something like this:
 After executing your player the generated gif should look similar to this one:
 
 
-.. image:: https://ik.imagekit.io/jmpdcmsvqee/chapter_03_Xkt-G_P7-.gif
-   :target: https://ik.imagekit.io/jmpdcmsvqee/chapter_03_Xkt-G_P7-.gif
+.. image:: https://ik.imagekit.io/jmpdcmsvqee/chapter_03_-WCVHoMkz.gif
+   :target: https://ik.imagekit.io/jmpdcmsvqee/chapter_03_-WCVHoMkz.gif
    :width: 300pt
 
 Can you see those ships moving around? That, my friend, is what I call freedom.
