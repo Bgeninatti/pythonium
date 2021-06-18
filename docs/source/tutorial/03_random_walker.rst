@@ -5,7 +5,7 @@ Chapter 3 - Han Solo: The Random Walker
 
 Hi human. Glad to see you here. I thought you were lost in some capitalist leisure streaming service.
 
-In this chapter you will learn how to move once for all from your primitive planet and explore the galaxy. Once completed
+In this chapter, you will learn how to move once for all from your primitive planet and explore the galaxy. Once completed
 this tutorial you will be a globetrotter on the galaxy. The Han Solo of the Pythonium universe.
 
 .. warning::
@@ -14,17 +14,26 @@ this tutorial you will be a globetrotter on the galaxy. The Han Solo of the Pyth
 ``target``: Where do you want to go?
 -------------------------------------
 
-Each ``ship`` instance has a ``target`` attribute indicating where the ship is going. This is one of the control variables
-for the ships. You can edit this parameter to order your ships to go into some point in the galaxy.
+Each ``ship`` has a ``target`` attribute indicating where the ship is going. This is one of the control variables
+for your ships. You can edit this parameter to order your ships to go to some specific point in the galaxy.
 
-Let's see where our explorer ship is going:
+Start the ``ipdb`` debugger as you learned in :ref:`Chapter 2<Tutorial Chapter 02>`, and select some random ship to be
+your explorer:
+
+.. code-block:: python
+
+    ipdb> my_ships = galaxy.get_player_ships(self.name) # Find all your ships
+    ipdb> explorer_ship = next(my_ships) # Select the first ship
+
+
+Now let's see where the explorer ship is going:
 
 .. code-block:: python
 
     ipdb> print(explorer_ship.target)
     None
 
-This mean your ship has no target. Is not going anywhere. In the text turn it will be in the same positions.
+This means the ship has no target. In the next turn, it will be in the same position.
 
 You can verify it easily.
 
@@ -32,33 +41,33 @@ You can verify it easily.
 
     ipdb> galaxy.turn # Check the current turn
     0
-    ipdb> my_ships = galaxy.get_player_ships(self.name) # Find all your ships
-    ipdb> explorer_ship = next(my_ships) # Select the first ship
-    ipdb> explorer_ship.position # Check the ship position
+    ipdb> explorer_ship.position # Check the ship's position
     (66, 180)
     ipdb> c # Move one turn forward
     ...
     ipdb> galaxy.turn # Now you are in turn 1
     1
-    ipdb> my_ships = galaxy.get_player_ships(self.name) # Find your ship again
+    ipdb> my_ships = galaxy.get_player_ships(self.name) # Find the explorer ship again
     ipdb> explorer_ship = next(my_ships)
-    ipdb> explorer_ship.position # Your ship position is the same as previous turn
+    ipdb> explorer_ship.position # The ship position is the same as previous turn
     (66, 180)
 
-Your ship stays in the same position when times moves forward. It is not going anywhere.
+The ship stays in the same position when time moves forward. It is not going anywhere.
 
+.. note::
+    Note that when you move one turn forward ``ipbb`` do not save the variables declared in the previous turn.
+    That's why we need to search the ``explorer_ship`` again.
 
 Knowing the neighborhood
 -------------------------
 
-Now you know how to order your ships to go some place, let's figure out what the first destination can be.
+The next step is to find a destination for the ``explorer_ship``
 
 For sure you want to visit one of the many unknown planets around you (those with ``player=None``), and possibly you don't
-want to travel for all the eternity.
+want to travel for all eternity. We need to find some unknown planet near yours to arrive fast. The ship should arrive
+by the next turn.
 
-We need to find some unknown planet near yours to arrive fast. In pythonium "fast" means in the next turn.
-
-But wait a minute, how fast your ships travels?
+But wait a minute, how fast the ``explorer_ship`` moves?
 
 Every ship has a ``speed`` attribute indicating how many light-years can travel in a single turn.
 
@@ -67,14 +76,14 @@ Every ship has a ``speed`` attribute indicating how many light-years can travel 
     ipdb> explorer_ship.speed
     80
 
-Great, so your ship can travel up to 80ly in a single turn. The next step is to find an unknown planet that is 80ly or
+Based on this we can say the ship can travel up to 80ly in a single turn. The next step is to find an unknown planet that is 80ly or
 less from your planet.
 
 The :func:`Galaxy.nearby_planets<pythonium.Galaxy.nearby_planets>` method allows you to find all the planets that are
-up to a certain distance away (or less) from an specific position. This method takes a ``position`` and some distance
-(called ``neighborhood``), and returns a list with all the nearby planets around that position.
+up to a certain distance away (or less) from a specific position. This method takes a ``position`` and a distance
+(called ``neighborhood``) and returns a list with all the nearby planets around that position.
 
-In our case, the neighborhood will be 80ly, the distance a ship can travel in one turn, and the position will be the
+In our case, the neighborhood will be 80ly, the distance the ship can travel in one turn, and the position will be the
 ship location.
 
 .. code-block:: python
@@ -109,13 +118,13 @@ ship location.
 
 Cool, right?
 
-All those planets are one turn away from you. Notice that your planet is included in the neighborhood (because your ship is located in it and
+All those planets are one turn away the ``explorer_ship``. Notice that your planet is included in the neighborhood (because your ship is located in it and
 the distance to it is zero).
 
 Traveling
 ----------
 
-Now let's select the target for your ship. For now, keep it simple: pic some random unknown planet from the list.
+Now let's select the target for the ship. For now, keep it simple: pic some random unknown planet from the list.
 
 .. code-block:: python
 
@@ -127,7 +136,7 @@ Now let's select the target for your ship. For now, keep it simple: pic some ran
 
 That's your ship first destination. An unknown planet one turn away from your ship's location.
 
-The next step is set the ship ``target`` to the ``target_planet.position`` and move one turn forward.
+The next step is set the ship's ``target`` as the planet's ``position`` and move one turn forward.
 
 .. code-block:: python
 
@@ -138,7 +147,7 @@ The next step is set the ship ``target`` to the ``target_planet.position`` and m
     ipdb> explorer_ship.target = target_planet.position # set the ship target
     ipdb> c # move one turn forward
 
-Where is your ship now?
+Where is the ship now?
 
 .. code-block:: python
 
@@ -152,18 +161,18 @@ Where is your ship now?
     ipdb> explored_planet
     Planet(id=18f2e9c8-d9af-44fa-9545-895da620b479, position=(5, 67), player=None)
 
-Your explorer ship just arrived to the target planet. A new and unknown rock in the middle of the space with a lot of
+Your explorer ship just arrived at the target planet. A new and unknown rock in the middle of the space with a lot of
 things to learn about and explore.
 
 Congratulations human. You did it. You left the pathetic rock where you spent your whole life, and now you are in a
-different one. Probably more pathetic, probably more boring, maybe you don't even have air to breath or food to eat.
+different one. Probably more pathetic, probably more boring, maybe you don't even have air to breathe or food to eat.
 But hey... you are a space traveler.
 
 
 Putting the pieces together
 ----------------------------
 
-Here we explained how to move your ships. You learned the first, and most basic command: Ship movement.
+In this chapter, we explained how to move your ships. You learned the first, and most basic command: Ship movement.
 
 But we also developed a strategy. I call it "The Random Walker Strategy": A group of ships moving around, exploring
 planets without much more to do but travel around the galaxy.
@@ -186,21 +195,54 @@ You will end up with something like this:
             my_ships = galaxy.get_player_ships(self.name)
             # For every of your ships...
             for ship in my_ships:
-                # find the nearby planets
+                # find the nearby planets...
                 nearby_planets = galaxy.nearby_planets(ship.position, ship.speed)
-                # pick any of them
+                # pick any of them...
                 target_planet = random.choice(nearby_planets)
-                # set the target to the selected planet
+                # an set the target to the selected planet
                 ship.target = target_planet.position
 
             return galaxy
 
 After executing your player you will end up with something like this:
 
-
 Can you see those ships moving around? That, my friend, is what I call freedom.
+
+Long travels
+-------------
+
+The implemented random walker strategy moves ships to planets that are one turn away from the original position only.
+
+If you send a ship to a point that is furthest the distance the ship can travel in one turn (this is ``ship.speed``),
+it will take more than one turn to arrive at the destination. In the next turn, the ship will be at some point in the
+middle between the target and the original destination.
+
+Of course, you can change the ship's target at any time during travel.
+
+.. note::
+
+    **Challenge**
+    Build a random walker player that travels to planets that are two turns away only (and not planets that are one turn away)
+
 
 Final thoughts
 --------------
 
-*“You know, sometimes I amaze even myself.”* - Han Solo
+In this chapter we introduced the :attr:`target<pythonium.Ship.target>` attribute, and how it can be used
+to set a movement command for a ship.
+
+We also explained how to find planets around certain position with the :func:`Galaxy.nearby_planets<pythonium.Galaxy.nearby_planets>`
+method.
+
+Finally, this chapter is a first attempt to describe a player-building methodology in pythonium. Usually, you will make
+use of the debugger to test some commands, try a few movements and see how they work from one turn to another. This will help
+you to start a draft for your player strategy, and after that, you will need to code it in your player class.
+
+The debugger is a good tool for testing and see how things evolve in a rudimentary way. On more complex players it is hard
+to track all the changes and commands that happen in one turn. Imagine you having an empire of more than
+100 planets and around 150 ships, it is impossible to check all the positions and movements with the ``ipdb`` debugger.
+
+For those cases, there are more advanced techniques of analysis that involve the generated logs and the report file.
+But that is a topic for future chapters.
+
+I hope to see you again, there's still a lot more to learn.
