@@ -14,10 +14,10 @@ You shouldn't expect any useful information from those methods and attributes. M
     :members: known_races, compute_distance, distances_to_planets, nearby_planets, get_player_planets, get_player_ships, get_ships_in_deep_space, get_ships_in_position, search_ship, search_planet, get_ships_by_position, get_ships_in_planets, get_ships_conflicts, get_ocuped_planets, get_planets_conflicts
 
 .. autoclass:: pythonium.Planet
-    :members: pid, position, temperature, underground_pythonium, concentration, pythonium, mine_cost, player, megacredits, clans, mines, max_happypoints, happypoints, new_mines, new_ship, max_mines, taxes, rioting_index, dpythonium, dmegacredits, dhappypoints, dclans, can_build_mines, can_build_ship
+    :members: id, position, temperature, underground_pythonium, concentration, pythonium, mine_cost, player, megacredits, clans, mines, max_happypoints, happypoints, new_mines, new_ship, max_mines, taxes, rioting_index, dpythonium, dmegacredits, dhappypoints, dclans, can_build_mines, can_build_ship
 
 .. autoclass:: pythonium.Ship
-    :members: nid, player, type, position, max_cargo, max_mc, attack, megacredits, pythonium, clans, target, transfer
+    :members: id, player, type, position, max_cargo, max_mc, attack, megacredits, pythonium, clans, target, transfer
 
 .. autoclass:: pythonium.ShipType
     :members: name, cost, max_cargo, max_mc, attack
@@ -26,4 +26,10 @@ You shouldn't expect any useful information from those methods and attributes. M
     :members:
 
 .. autoclass:: pythonium.Explosion
+    :members:
+
+.. autoclass:: pythonium.core.Position
+    :members:
+
+.. autoclass:: pythonium.core.StellarThing
     :members:

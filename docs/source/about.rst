@@ -38,12 +38,6 @@ You can test your installation by running
     Running 'pythonium' version x.y.z
 
 
-Getting started
-================
-
-Pythonium allows different game modes. The default is the **classic mode**, where each player starts with 1 planet and 2 carriers in a random galaxy of 300 planets.
-The first player in conquer 210 planets (70% of the total) wins.
-
 Single player mode
 ==================
 

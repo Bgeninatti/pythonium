@@ -172,20 +172,20 @@ class Galaxy:
         for ship in filter(lambda s: s.position == position, self.ships):
             yield ship
 
-    def search_ship(self, nid: int) -> Ship:
+    def search_ship(self, _id: int) -> Ship:
         """
-        Return the ship with ID ``nid`` if any and is known
+        Return the ship with ID ``id`` if any and is known
         """
-        match = [ship for ship in self.ships if ship.id == nid]
+        match = [ship for ship in self.ships if ship.id == _id]
         if match:
             return match.pop()
 
-    def search_planet(self, pid: int) -> Planet:
+    def search_planet(self, _id: int) -> Planet:
         """
-        Return the planet with ID ``nid`` if any
+        Return the planet with ID ``id`` if any
         """
         match = [
-            planet for planet in self.planets.values() if planet.id == pid
+            planet for planet in self.planets.values() if planet.id == _id
         ]
         if match:
             return match.pop()
