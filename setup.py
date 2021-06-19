@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pythonium-pkg-BGENINATTI",  # Replace with your own username
-    version="0.2.0a0",
+    version="0.2.0b0",
     author="Bruno Geninatti",
     author_email="brunogeninatti@gmail.com",
     description="A space strategy algorithmic-game build in python",

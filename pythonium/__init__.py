@@ -29,4 +29,4 @@ __all__ = [
     "debugger",
 ]
 
-__version__ = "0.2.0a0"
+__version__ = "0.2.0b0"

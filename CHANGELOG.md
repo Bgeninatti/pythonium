@@ -1,3 +1,41 @@
+## 0.2.0b0 (2021-06-19)
+
+### Fix
+
+- fixes version references
+- **ClassicMode**: get_galaxy_for_player copies turn from game galaxy (#36)
+- Removes obsolete bots (#35)
+- **reports**: fixes report after uuid implementation (#33)
+- **bin**: fixes pythonium executable
+
+### Refactor
+
+- **repr**: a more pythonic repr
+- **galaxy**: make the turn number a galaxy attribute (#20)
+- **loggger**: refactor logger to be global variable in files. Uses dictconfig (#19)
+- **ship**: make speed a Ship and shipType attribute (#18)
+- Remove old pyproject.toml
+
+### Feat
+
+- **debugger**: adds debugger.terminate to exit form ipdb infinite loop
+- human redeable __repr__ for Galaxy, Planet and Ship (#32)
+- Adds automatic version detection patterns
+- adds pyproject.toml
+- Makes the repo commitizen-friendly
+
+## 0.2.0a0 (2020-11-24)
+
+### Feat
+
+- Adds automatic version detection patterns
+- adds pyproject.toml
+- Makes the repo commitizen-friendly
+
+### Refactor
+
+- Remove old pyproject.toml
+
 ## 0.1.0 (2020-11-24)
 
 ### Feat
@@ -25,15 +63,3 @@
     * ``Transfer`` class. Represent a transfer between ships and planets, planets and ships or planets, and the game itself (a.k.a. cost vectors, such as ships or structures costs).
 - Implements ``MetricsCollector`` class. Builds a report with game metrics based on the log file.
 - Implements ``GifRenderer`` class. Renders a gif with the state of the game turn by turn.
-
-## 0.2.0a0 (2020-11-24)
-
-### Feat
-
-- Adds automatic version detection patterns
-- adds pyproject.toml
-- Makes the repo commitizen-friendly
-
-### Refactor
-
-- Remove old pyproject.toml
