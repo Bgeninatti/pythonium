@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pythonium",
-    version="0.2.0b0",
+    version="0.2.0b1",
     author="Bruno Geninatti",
     author_email="brunogeninatti@gmail.com",
     description="A space strategy algorithmic-game build in python",
