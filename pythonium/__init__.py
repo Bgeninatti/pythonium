@@ -11,6 +11,7 @@ from .ship_type import ShipType
 from .vectors import Transfer
 
 __all__ = [
+    "__version__",
     "core",
     "Planet",
     "Galaxy",
@@ -27,3 +28,5 @@ __all__ = [
     "logger",
     "debugger",
 ]
+
+__version__ = "0.2.0a0"

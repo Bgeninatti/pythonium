@@ -2,7 +2,7 @@
 name = "cz_conventional_commits"
 version = "0.2.0a0"
 version_files = [
-    "pythonium/__version__.py",
+    "pythonium/__init__.py",
     "setup.py:version",
     "pyproject.toml:version"
 ]
