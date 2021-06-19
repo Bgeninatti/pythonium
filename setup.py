@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pythonium-pkg-BGENINATTI",  # Replace with your own username
+    name="pythonium",
     version="0.2.0b0",
     author="Bruno Geninatti",
     author_email="brunogeninatti@gmail.com",
