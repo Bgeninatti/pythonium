@@ -31,7 +31,7 @@ class Player(AbstractPlayer):
         populated_planets = list(
             filter(
                 lambda p: p.clans > self.populated_planet_threshold.clans,
-                my_planets.values(),
+                galaxy.get_player_planets(self.name),
             )
         )
 
@@ -61,11 +61,13 @@ class Player(AbstractPlayer):
             # Voy a buscar un planeta que no sea mio para colonizar.
             if not ship.target:
                 destination = None
-                nearby_planets = galaxy.nearby_planets(ship.position)
+                nearby_planets = galaxy.nearby_planets(
+                    ship.position, ship.speed
+                )
                 unknown_nearby_planets = [
                     p
                     for p in nearby_planets
-                    if not p.player and p.pid not in visited_planets
+                    if not p.player and p.id not in visited_planets
                 ]
                 if unknown_nearby_planets:
                     destination = random.choice(unknown_nearby_planets)
@@ -74,7 +76,7 @@ class Player(AbstractPlayer):
 
                 ship.target = destination.position
 
-        for planet in my_planets.values():
+        for planet in my_planets:
             planet.taxes = context.get("tolerable_taxes")
             planet.new_mines = planet.can_build_mines()
 

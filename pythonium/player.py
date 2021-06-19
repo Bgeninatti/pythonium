@@ -20,10 +20,10 @@ class AbstractPlayer:
         :param galaxy: The state of the Galaxy known by the player.
         :param context: Aditional information about the game.
 
-        Players can see the following
+        Each player sees a different part of the galaxy, and the ``galaxy`` \
+        known by every player is different.
 
-        On one hand, each player sees a different part of the galaxy, and the ``galaxy`` \
-        known by a player contains:
+        A galaxy contains:
 
           * All his ships and planets,
           * All the enemy ships in any of his planets,

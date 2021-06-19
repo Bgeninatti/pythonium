@@ -1,6 +1,5 @@
 import logging
 import logging.config
-import sys
 
 
 class ContextLogger(logging.Logger):

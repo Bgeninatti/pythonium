@@ -1,54 +1,105 @@
-from faker import Faker
+from typing import List, Tuple
 
-from pythonium import Planet
+from factory import Factory, Faker, SubFactory
+
+from pythonium import Explosion, Galaxy, Planet, Ship
+from pythonium.core import Position
 from pythonium.ship_type import ShipType
 from pythonium.vectors import Transfer
 
+fake = Faker._get_faker()
 
-class TransferVectorFactory:
 
-    faker = Faker()
-
-    @classmethod
-    def build_transfer_vector(cls):
-        return Transfer(
-            megacredits=cls.faker.pyint(min_value=1),
-            pythonium=cls.faker.pyint(min_value=1),
+def fake_position(map_size: Tuple[int, int]):
+    max_x, max_y = map_size
+    return Position(
+        (
+            fake.pyint(min_value=0, max_value=max_x),
+            fake.pyint(min_value=0, max_value=max_y),
         )
+    )
 
 
-class ShipTypeFactory:
+class TransferVectorFactory(Factory):
+    class Meta:
+        model = Transfer
 
-    faker = Faker()
-
-    @classmethod
-    def build(cls, **kwargs):
-        ship_cost = TransferVectorFactory.build_transfer_vector()
-        return ShipType(
-            name=cls.faker.pystr(),
-            cost=ship_cost,
-            max_cargo=cls.faker.pyint(),
-            max_mc=cls.faker.pyint(),
-            attack=cls.faker.pyint(),
-            speed=cls.faker.pyint(),
-        )
+    megacredits = Faker("pyint")
+    pythonium = Faker("pyint")
+    clans = Faker("pyint")
 
 
-class PlanetFactory:
+class PositiveTransferVectorFactory(Factory):
+    class Meta:
+        model = Transfer
 
-    faker = Faker()
+    megacredits = Faker("pyint", min_value=0)
+    pythonium = Faker("pyint", min_value=0)
+    clans = Faker("pyint", min_value=0)
 
-    @classmethod
-    def build_planet(cls, **kwargs):
-        mine_cost = TransferVectorFactory.build_transfer_vector()
-        return Planet(
-            pid=cls.faker.pyint(),
-            position=(cls.faker.pyint(), cls.faker.pyint()),
-            temperature=kwargs.get("temperature", cls.faker.pyint()),
-            underground_pythonium=cls.faker.pyint(),
-            concentration=kwargs.get(
-                "concentration", cls.faker.pyfloat(min_value=0, max_value=1)
-            ),
-            pythonium=cls.faker.pyint(),
-            mine_cost=mine_cost,
-        )
+
+class NegativeTransferVectorFactory(Factory):
+    class Meta:
+        model = Transfer
+
+    megacredits = Faker("pyint", max_value=0)
+    pythonium = Faker("pyint", max_value=0)
+    clans = Faker("pyint", max_value=0)
+
+
+class ShipTypeFactory(Factory):
+    class Meta:
+        model = ShipType
+
+    name = Faker("word")
+    cost = SubFactory(PositiveTransferVectorFactory)
+    max_cargo = Faker("pyint", min_value=0)
+    max_mc = Faker("pyint", min_value=0)
+    attack = Faker("pyint", min_value=0)
+    speed = Faker("pyint", min_value=0)
+
+
+class ShipFactory(Factory):
+    class Meta:
+        model = Ship
+
+    type = SubFactory(ShipTypeFactory)
+    max_cargo = Faker("pyint", min_value=0)
+    max_mc = Faker("pyint", min_value=0)
+    attack = Faker("pyint", min_value=0)
+    speed = Faker("pyint", min_value=0)
+
+
+class PlanetFactory(Factory):
+    class Meta:
+        model = Planet
+
+    position = (Faker("pyint", min_value=0), Faker("pyint", min_value=0))
+    temperature = Faker("pyint", min_value=0, max_value=100)
+    underground_pythonium = Faker("pyint", min_value=0)
+    concentration = Faker("pyfloat", min_value=0, max_value=1)
+    pythonium = Faker("pyint", min_value=0)
+    mine_cost = SubFactory(PositiveTransferVectorFactory)
+
+
+class ExplosionFactory(Factory):
+    class Meta:
+        model = Explosion
+
+    ship = SubFactory(ShipFactory)
+    ships_involved = Faker("pyint", min_value=2)
+    total_attack = Faker("pyint", min_value=100)
+
+
+MAP_SIZE = (fake.pyint(min_value=10), fake.pyint(min_value=10))
+
+
+class GalaxyFactory(Factory):
+    class Meta:
+        model = Galaxy
+
+    name = Faker("word")
+    size = MAP_SIZE
+    things = [
+        PlanetFactory(position=fake_position(MAP_SIZE)) for _ in range(10)
+    ]

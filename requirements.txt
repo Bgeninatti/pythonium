@@ -7,3 +7,6 @@ numpy==1.19.4
 Pillow==8.0.1
 matplotlib==3.3.3
 Faker==6.4.1
+factory-boy==3.2.0
+mockito==1.2.2
+pytest-mockito==0.0.4

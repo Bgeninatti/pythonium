@@ -46,7 +46,7 @@ class GameMode:
         self.mine_cost = mine_cost
         self.tenacity = tenacity
 
-    def build_galaxy(self, players):
+    def build_galaxy(self, name, players):
         """
         Fabrica la galaxy
 
@@ -112,7 +112,7 @@ class ClassicMode(GameMode):
         self.max_ships = max_ships
         self.winner = None
 
-    def build_galaxy(self, players):
+    def build_galaxy(self, name, players):
         """
         Representa el conjunto de planets en el que se desenvolverá el juego.
 
@@ -158,16 +158,14 @@ class ClassicMode(GameMode):
             round(random.random() * 100) for i in range(self.planets_count)
         )
 
-        planets = {}
+        things = []
         for (
-            pid,
             position,
             pythonium,
             underground_pythonium,
             concentration,
             temperature,
         ) in zip(
-            range(self.planets_count),
             positions,
             pythonium,
             underground_pythonium,
@@ -176,7 +174,6 @@ class ClassicMode(GameMode):
         ):
 
             planet = Planet(
-                pid=pid,
                 position=position,
                 temperature=temperature,
                 underground_pythonium=underground_pythonium,
@@ -184,9 +181,9 @@ class ClassicMode(GameMode):
                 pythonium=pythonium,
                 mine_cost=self.mine_cost,
             )
-            planets[planet.position] = planet
+            things.append(planet)
 
-        galaxy = Galaxy(self.map_size, planets, [])
+        galaxy = Galaxy(name=name, size=self.map_size, things=things)
 
         galaxy = self.init_players(players, galaxy)
 
@@ -205,7 +202,7 @@ class ClassicMode(GameMode):
                     galaxy.size[0] - margins[0],
                     galaxy.size[1] - margins[1],
                 )
-            nearby_planets = galaxy.nearby_planets(position, 2)
+            nearby_planets = galaxy.nearby_planets(position, 50)
 
             homeworld = random.choice(nearby_planets)
 
@@ -237,7 +234,9 @@ class ClassicMode(GameMode):
         #   or in any own planet
         # * The player can see any ship in deep space
 
-        player_planets = galaxy.get_player_planets(player.name)
+        player_planets_positions = [
+            p.position for p in galaxy.get_player_planets(player.name)
+        ]
         # Player can see ships that:
         # * Belongs to him
         # * Are located in any of his planets.
@@ -246,7 +245,7 @@ class ClassicMode(GameMode):
             ship
             for ship in galaxy.ships
             if player.name == ship.player
-            or ship.position in player_planets.keys()
+            or ship.position in player_planets_positions
             or ship.position not in galaxy.planets.keys()
         ]
         planets = copy.deepcopy(galaxy.planets)
@@ -288,7 +287,13 @@ class ClassicMode(GameMode):
             planet.new_ship = None
             planet.taxes = None
 
-        return Galaxy(galaxy.size, planets, ships, galaxy.explosions)
+        return Galaxy(
+            turn=galaxy.turn,
+            name=galaxy.name,
+            size=galaxy.size,
+            things=list(planets.values()) + ships,
+            explosions=galaxy.explosions,
+        )
 
     def has_ended(self, galaxy, t):
         if t >= self.max_turn:
@@ -343,5 +348,4 @@ class ClassicMode(GameMode):
             "tolerable_taxes": cfg.tolerable_taxes,
             "happypoints_tolerance": cfg.happypoints_tolerance,
             "score": score,
-            "turn": turn,
         }

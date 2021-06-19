@@ -1,6 +1,6 @@
 import pytest
 
-from pythonium import Planet, Transfer, cfg
+from pythonium import Transfer, cfg
 
 from .factories import PlanetFactory, ShipTypeFactory
 
@@ -15,43 +15,37 @@ def is_monotonic_decreasing(sample):
 
 @pytest.fixture
 def planet():
-    return PlanetFactory.build_planet()
+    return PlanetFactory()
 
 
 @pytest.fixture
 def ship_type():
-    return ShipTypeFactory.build()
+    return ShipTypeFactory()
 
 
 @pytest.fixture
 def colonized_planet(faker):
-    planet = PlanetFactory.build_planet()
-    planet.clans = faker.pyint()
-    planet.pythonium = faker.pyint()
-    planet.megacredits = faker.pyint()
-    return planet
+    return PlanetFactory(clans=faker.pyint(), megacredits=faker.pyint())
 
 
 @pytest.fixture
 def optimal_temperature_planet():
-    return PlanetFactory.build_planet(temperature=cfg.optimal_temperature)
+    return PlanetFactory(temperature=cfg.optimal_temperature)
 
 
 @pytest.fixture
 def temperatured_planet(temperature):
-    return PlanetFactory.build_planet(temperature=temperature)
+    return PlanetFactory(temperature=temperature)
 
 
 @pytest.fixture
 def planet_with_clans(clans):
-    planet = PlanetFactory.build_planet()
-    planet.clans = clans
-    return planet
+    return PlanetFactory(clans=clans)
 
 
 @pytest.fixture
 def planet_with_hp(happypoints):
-    planet = PlanetFactory.build_planet()
+    planet = PlanetFactory()
     planet.happypoints = happypoints
     return planet
 
@@ -60,8 +54,7 @@ def planet_with_hp(happypoints):
 def planets_group_with_mines(mines_range):
     planets = []
     for mines in mines_range:
-        planet = PlanetFactory.build_planet(concentration=1.0)
-        planet.mines = mines
+        planet = PlanetFactory(concentration=1.0, mines=mines)
         planets.append(planet)
     return planets
 
@@ -70,8 +63,7 @@ def planets_group_with_mines(mines_range):
 def planets_group_with_concentration(concentrations_range):
     planets = []
     for concentration in concentrations_range:
-        planet = PlanetFactory.build_planet(mines=100)
-        planet.concentration = concentration / 100
+        planet = PlanetFactory(concentration=concentration / 100, mines=100)
         planets.append(planet)
     return planets
 
@@ -80,7 +72,8 @@ def planets_group_with_concentration(concentrations_range):
 def planets_group_with_happypoints(happypoints_range):
     planets = []
     for happypoints in happypoints_range:
-        planet = PlanetFactory.build_planet(happypoints=happypoints, mines=100)
+        planet = PlanetFactory(mines=100, concentration=1.0)
+        planet.happypoints = happypoints
         planets.append(planet)
     return planets
 
@@ -89,8 +82,8 @@ def planets_group_with_happypoints(happypoints_range):
 def planets_group_with_collection_factor(taxes_collection_factor):
     planets = []
     for collection_factor in taxes_collection_factor:
-        planet = PlanetFactory.build_planet(clans=100)
-        planet.taxes = cfg.tolerable_taxes
+        planet = PlanetFactory(clans=100, taxes=cfg.tolerable_taxes)
+        planet.taxes_collection_factor = collection_factor
         planets.append(planet)
     return planets
 
@@ -99,7 +92,7 @@ def planets_group_with_collection_factor(taxes_collection_factor):
 def planets_group_with_clans(clans_range):
     planets = []
     for clans in clans_range:
-        planet = PlanetFactory.build_planet(clans=clans)
+        planet = PlanetFactory(clans=clans)
         planets.append(planet)
     return planets
 
@@ -108,10 +101,9 @@ def planets_group_with_clans(clans_range):
 def planets_group_with_taxes(taxes_range):
     planets = []
     for taxes in taxes_range:
-        planet = PlanetFactory.build_planet(
-            temperature=cfg.optimal_temperature
+        planet = PlanetFactory(
+            temperature=cfg.optimal_temperature, taxes=taxes
         )
-        planet.taxes = taxes
         planets.append(planet)
     return planets
 
@@ -120,14 +112,19 @@ def planets_group_with_taxes(taxes_range):
 def planets_group_with_temperature(temperatures_range):
     planets = []
     for temperature in temperatures_range:
-        planet = PlanetFactory.build_planet(temperature=temperature)
+        planet = PlanetFactory(temperature=temperature)
         planets.append(planet)
     return planets
 
 
 class TestPlanet:
-    def test_repr(self, planet):
-        assert str(planet) == f"Planet #{planet.pid} <player={planet.player}>"
+    @pytest.fixture
+    def expected_repr(self, planet):
+        return f"Planet(id={planet.id}, position={planet.position}, player={planet.player})"
+
+    def test_repr(self, planet, expected_repr):
+        assert str(planet) == expected_repr
+        assert str(planet) == planet.__repr__()
 
 
 class TestPlanetHappyPoints:
@@ -261,14 +258,16 @@ class TestPlanetPythonium:
         ]
         assert is_monotonic_increasing(dpythonium_range)
 
-    @pytest.mark.parametrize("happypoints_range", (range(0, 100),))
+    @pytest.mark.parametrize(
+        "happypoints_range", (range(0, cfg.happypoints_tolerance),)
+    )
     def test_dpythonium_decreases_with_rioting_index(
         self, planets_group_with_happypoints
     ):
         dpythonium_range = [
             planet.dpythonium for planet in planets_group_with_happypoints
         ]
-        assert is_monotonic_decreasing(dpythonium_range)
+        assert is_monotonic_increasing(dpythonium_range)
 
     def test_dpythonium_is_int(self, planet):
         assert type(planet.dpythonium) is int
@@ -387,7 +386,7 @@ class TestPlanetOrders:
         colonized_planet.taxes = taxes
         orders = colonized_planet.get_orders()
         taxes_order = next(o for o in orders if o[0] == "planet_set_taxes")
-        assert taxes_order[1] == colonized_planet.pid
+        assert taxes_order[1] == colonized_planet.id
         assert taxes_order[2] == taxes
 
     @pytest.mark.parametrize("new_mines", range(1, 101))
@@ -397,7 +396,7 @@ class TestPlanetOrders:
         build_mines_order = next(
             o for o in orders if o[0] == "planet_build_mines"
         )
-        assert build_mines_order[1] == colonized_planet.pid
+        assert build_mines_order[1] == colonized_planet.id
         assert build_mines_order[2] == new_mines
 
     def test_no_mines_order_if_new_mines_is_zero(self, colonized_planet):
@@ -411,7 +410,7 @@ class TestPlanetOrders:
         build_ship_order = next(
             o for o in orders if o[0] == "planet_build_ship"
         )
-        assert build_ship_order[1] == colonized_planet.pid
+        assert build_ship_order[1] == colonized_planet.id
         assert build_ship_order[2] is ship_type
 
     def test_no_ship_order_if_new_ship_is_none(self, colonized_planet):

@@ -1,14 +1,12 @@
-from typing import Tuple
-
 import attr
 
-from . import validators
+from .core import Position, StellarThing
 from .ship_type import ShipType
 from .vectors import Transfer
 
 
-@attr.s
-class Ship:
+@attr.s(auto_attribs=True, repr=False)
+class Ship(StellarThing):
     """
     A ship that belongs to a race.
 
@@ -16,51 +14,33 @@ class Ship:
     and in some cases can be used to attack planets or ships.
     """
 
-    # Initial conditions
-    # The id is set when the ship is added to the galaxy
-    nid: int = attr.ib(init=False, default=None)
-    """
-    Unique identifier for the ship. It is assigned by the galaxy.
-    """
-
-    player: str = attr.ib()
-    """
-    Name of the ship's owner.
-    """
-
-    type: int = attr.ib(
-        validator=[attr.validators.instance_of((ShipType, type(None)))]
+    type: ShipType = attr.ib(
+        validator=[attr.validators.instance_of((ShipType, type(None)))],
+        kw_only=True,
     )
     """
     Name of the :class:`ShipType`
     """
 
-    position: Tuple[int, int] = attr.ib(
-        converter=tuple, validator=[validators.is_valid_position]
-    )
-    """
-    Position of the ship in (x, y) coordinates
-    """
-
-    max_cargo: int = attr.ib(converter=int)
+    max_cargo: int = attr.ib(converter=int, kw_only=True)
     """
     Indicates how much pythonium and clans (together) can carry the ship.
     See :attr:`ShipType.max_cargo`
     """
 
-    max_mc: int = attr.ib(converter=int)
+    max_mc: int = attr.ib(converter=int, kw_only=True)
     """
     Indicates how much megacredits can carry the ship.
     See :attr:`ShipType.max_mc`
     """
 
-    attack: int = attr.ib(converter=int)
+    attack: int = attr.ib(converter=int, kw_only=True)
     """
     Indicates how much attack the ship has.
     See :attr:`ShipType.attack`
     """
 
-    speed: int = attr.ib(converter=int)
+    speed: int = attr.ib(converter=int, kw_only=True)
     """
     Ship's speed in ly per turn
     """
@@ -82,9 +62,7 @@ class Ship:
     """
 
     # User controls
-    target: Tuple[int, int] = attr.ib(
-        default=None, init=False, validator=[validators.is_valid_position]
-    )
+    target: Position = attr.ib(default=None, init=False)
     """
     **Attribute that can be modified by the player**
 
@@ -102,8 +80,14 @@ class Ship:
     See :class:`Transfer` bool conversion.
     """
 
+    def __str__(self):
+        return f"Ship(id={self.id}, position={self.position}, player={self.player})"
+
     def __repr__(self):
-        return f"Ship #{self.nid} <player={self.player}>"
+        return self.__str__()
+
+    def move(self, position: Position) -> None:
+        self.target = position
 
     def get_orders(self):
         """
@@ -111,9 +95,9 @@ class Ship:
         """
         orders = []
         if self.transfer:
-            orders.append(("ship_transfer", self.nid, self.transfer))
+            orders.append(("ship_transfer", self.id, self.transfer))
 
         if self.target is not None:
-            orders.append(("ship_move", self.nid, self.target))
+            orders.append(("ship_move", self.id, self.target))
 
         return orders
