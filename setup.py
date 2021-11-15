@@ -18,7 +18,12 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=["Pillow", "matplotlib", "numpy", "attrs", "ipdb"],
+    install_requires=[
+        "Pillow==8.4.0",
+        "matplotlib==3.4.3",
+        "attrs==21.2.0",
+        "ipdb==0.13.9",
+    ],
     python_requires=">=3.7",
     scripts=["bin/pythonium"],
     data_files=[("font", ["font/jmh_typewriter.ttf"])],
