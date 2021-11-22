@@ -227,7 +227,8 @@ class Galaxy:
         ]
         # keep only the groups with more than one player
         for ships in filter(
-            lambda ships: len({s.player for s in ships if s.player}) > 1,
+            lambda ships: len({s.player for s in ships if s.player}) > 1
+            and any((s.attack for s in ships)),
             ships_by_position,
         ):
             yield ships
