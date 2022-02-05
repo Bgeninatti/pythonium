@@ -3,6 +3,16 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+<<<<<<< Updated upstream
+||||||| constructed merge base
+with open("requirements.build.txt", "r") as rf:
+    requirements = list(fh.readlines())
+
+=======
+with open("requirements.build.txt", "r") as rf:
+    requirements = list(rf.readlines())
+
+>>>>>>> Stashed changes
 setuptools.setup(
     name="pythonium",
     version="0.2.0b0",

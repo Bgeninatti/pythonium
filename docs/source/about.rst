@@ -17,13 +17,46 @@ Battle for pythonium is waiting for you!
 Installation
 ================
 
-You can install Pythonium by cloning `the repository <https://github.com/Bgeninatti/pythonium>`_ and running
+First of all, clone `the pythonium repo <https://github.com/Bgeninatti/pythonium>`_
+
+::
+
+    $ git clone https://github.com/Bgeninatti/pythonium.git
+    $ cd pythonium
+
+The recommended way to use pythonium is with Docker
+
+::
+
+    $ docker compose up -d
+
+
+The command will hang forever. This means the container is running and waiting for commands.
+
+In a separated shell run:
+
+::
+    $ docker compose exec pserver /bin/bash
+
+you will end in a new prompt and the pythonium CLI will be available
+
+::
+
+    # pythonium --version
+    Running 'pythonium' version x.y.z
+
+
+Manual installation
+-------------------
+
+
+You can also install Pythonium with:
 
 ::
 
     $ python setup.py install
 
-and then test your installation by running
+and then test your installation doing
 
 ::
 
