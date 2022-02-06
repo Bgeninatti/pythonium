@@ -24,21 +24,16 @@ First of all, clone `the pythonium repo <https://github.com/Bgeninatti/pythonium
     $ git clone https://github.com/Bgeninatti/pythonium.git
     $ cd pythonium
 
-The recommended way to use pythonium is with Docker
+The recommended way to use pythonium is with Docker.
+
+Once you have `docker <https://www.docker.com/>`_ and `docker-compose <https://docs.docker.com/compose/install/>`_ installed in your system you can run
 
 ::
 
-    $ docker compose up -d
+    $ make play
 
 
-The command will hang forever. This means the container is running and waiting for commands.
-
-In a separated shell run:
-
-::
-    $ docker compose exec pserver /bin/bash
-
-you will end in a new prompt and the pythonium CLI will be available
+you will end up in a new prompt and the pythonium CLI will be available
 
 ::
 

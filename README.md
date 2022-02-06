@@ -21,7 +21,7 @@ You can choose by playing alone in single-player mode, in multi-player mode agai
 
 The game generates several outputs that will help you to evaluate the performance of your player and make improvements on those.
 
-If you want to know more and learn how to play, check out the [official documentation](https://pythonium.readthedocs.io/en/latest/).
+If you want to know more and learn how to play, check out the [documentation](https://pythonium.readthedocs.io/en/latest/).
 
 ## Acknowledge
 
