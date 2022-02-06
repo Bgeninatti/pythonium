@@ -1,0 +1,4 @@
+Pillow==8.4.0
+matplotlib==3.4.3
+attrs==21.2.0
+ipdb==0.13.9
