@@ -22,7 +22,7 @@ class TestGalaxyBasics:
     ):
         a = random_position[0] - another_random_position[0]
         b = random_position[1] - another_random_position[1]
-        return math.sqrt(a ** 2 + b ** 2)
+        return math.sqrt(a**2 + b**2)
 
     def test_repr(self, galaxy, expected_repr):
         assert str(galaxy) == expected_repr

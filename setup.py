@@ -3,6 +3,9 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+with open("requirements.build.txt", "r") as rf:
+    requirements = list(rf.readlines())
+
 setuptools.setup(
     name="pythonium",
     version="0.2.0b0",
@@ -18,12 +21,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=[
-        "Pillow==8.4.0",
-        "matplotlib==3.4.3",
-        "attrs==21.2.0",
-        "ipdb==0.13.9",
-    ],
+    install_requires=requirements,
     python_requires=">=3.7",
     scripts=["bin/pythonium"],
     data_files=[("font", ["font/jmh_typewriter.ttf"])],

@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 
 from pythonium.core import Position
@@ -52,4 +53,4 @@ class TestShipMoveOrder:
         order = ShipMoveOrder(ship=random_ship, target=long_target)
         order.execute(galaxy)
         assert random_ship.target == long_target
-        assert pytest.approx(random_ship.position, long_movement_expected_stop)
+        assert np.all(np.isclose(random_ship.position, long_movement_expected_stop, atol=1))
