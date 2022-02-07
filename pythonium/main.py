@@ -80,7 +80,7 @@ def run(
     game = Game(
         name=galaxy_name,
         players=_players,
-        gmode=game_mode,
+        game_mode=game_mode,
         output_handler=output_handler,
         orders_extractor=orders_extractor,
     )

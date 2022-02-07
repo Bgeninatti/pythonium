@@ -17,7 +17,7 @@ class Game:
         self,
         name,
         players,
-        gmode,
+        game_mode,
         output_handler,
         orders_extractor,
     ):
@@ -27,13 +27,13 @@ class Game:
         :param players: Players for the game. Supports one or two players.
         :type players: list of instances of classes that extends
             from :class:`AbstractPlayer`
-        :param gmode: Class that define some game rules
-        :type gmode: :class:GameMode
+        :param game_mode: Class that define some game rules
+        :type game_mode: :class:GameMode
         """
         if len(players) != len({p.name for p in players}):
             raise ValueError("Player names must be unique")
 
-        self.gmode = gmode
+        self.game_mode = game_mode
         self.players = players
         self.output_handler = output_handler
         self._extract_orders = orders_extractor
@@ -41,7 +41,7 @@ class Game:
             "Initializing galaxy",
             extra={"players": len(self.players), "galaxy_name": name},
         )
-        self.galaxy = self.gmode.build_galaxy(name, self.players)
+        self.galaxy = self.game_mode.build_galaxy(name, self.players)
         logger.info("Galaxy initialized")
         self.output_handler.start(self.galaxy)
 
@@ -86,7 +86,7 @@ class Game:
 
             logger.info("Turn started", extra={"turn": self.galaxy.turn})
 
-            context = self.gmode.get_context(
+            context = self.game_mode.get_context(
                 self.galaxy, self.players, self.galaxy.turn
             )
 
@@ -102,7 +102,7 @@ class Game:
                 galaxy=self.galaxy,
             )
 
-            if self.gmode.has_ended(self.galaxy, self.galaxy.turn):
+            if self.game_mode.has_ended(self.galaxy, self.galaxy.turn):
                 self.end_game()
                 break
             self.run_turn(orders)
@@ -112,7 +112,7 @@ class Game:
             "Game ended",
             extra={
                 "turn": self.galaxy.turn,
-                "winner": self.gmode.winner,
+                "winner": self.game_mode.winner,
             },
         )
         self.output_handler.finish(self.galaxy, self.gmode.winner)
@@ -281,7 +281,7 @@ class Game:
     def action_planet_build_ship(self, planet, ship_type):
 
         ships_count = len(list(self.galaxy.get_player_ships(planet.player)))
-        if ships_count >= self.gmode.max_ships:
+        if ships_count >= self.game_mode.max_ships:
             logger.warning(
                 "Ships limit reached",
                 extra={
