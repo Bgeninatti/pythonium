@@ -1,5 +1,4 @@
 import logging
-from itertools import groupby
 
 from . import cfg
 from .orders import galaxy as galaxy_orders
