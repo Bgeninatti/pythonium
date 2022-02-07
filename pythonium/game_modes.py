@@ -61,7 +61,7 @@ class GameMode:
         """
         raise NotImplementedError("Metodo no implementado")
 
-    def get_context(self, galaxy, players):
+    def get_context(self, galaxy, players, turn):
         """
         Genera variables de context para el player en un turn determinado
         """
