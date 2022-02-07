@@ -2,6 +2,8 @@ import logging
 from collections import defaultdict
 from itertools import groupby
 
+import sys
+
 from . import cfg
 from .orders import galaxy as galaxy_orders
 from .orders import planet as planet_orders
@@ -17,9 +19,7 @@ class Game:
         players,
         gmode,
         output_handler,
-        *,
-        raise_exceptions=False,
-        stream_state=False,
+        orders_extractor,
     ):
         """
         :param name: Name for the galaxy. Also used as game identifier.
@@ -29,20 +29,14 @@ class Game:
             from :class:`AbstractPlayer`
         :param gmode: Class that define some game rules
         :type gmode: :class:GameMode
-        :param raise_exceptions: If ``True`` stop the game if an exception is raised when
-            computing player actions. Useful for debuging players.
-        :type raise_exceptions: bool
-        :param stream_state: Default ``False``. If ``True`` each step in the
-            simulation will be serialized & printed to standard output.
-        :type stream_state: bool
         """
         if len(players) != len({p.name for p in players}):
             raise ValueError("Player names must be unique")
 
         self.gmode = gmode
         self.players = players
-        self.raise_exceptions = raise_exceptions
         self.output_handler = output_handler
+        self._extract_orders = orders_extractor
         logger.info(
             "Initializing galaxy",
             extra={"players": len(self.players), "galaxy_name": name},
@@ -91,7 +85,7 @@ class Game:
         while True:
 
             logger.info("Turn started", extra={"turn": self.galaxy.turn})
-            orders = defaultdict(lambda: [])
+
             context = self.gmode.get_context(
                 self.galaxy, self.players, self.galaxy.turn
             )
@@ -102,65 +96,26 @@ class Game:
             for player_score in context["score"]:
                 logger.info("Current score", extra=player_score)
 
-            for player in self.players:
-                # Filtra cosas que ve el player según las reglas del juego
-                galaxy = self.gmode.galaxy_for_player(self.galaxy, player)
-                try:
-                    logger.info(
-                        "Computing orders for player",
-                        extra={
-                            "turn": self.galaxy.turn,
-                            "player": player.name,
-                        },
-                    )
-
-                    player_orders = self.extract_player_orders(
-                        player, galaxy, context
-                    )
-                    for name, player_orders in player_orders:
-                        for order in player_orders:
-                            orders[name].append((player, order[1:]))
-
-                except Exception as e:
-                    logger.error(
-                        "Player lost turn",
-                        extra={
-                            "turn": self.galaxy.turn,
-                            "player": player.name,
-                            "reason": str(e),
-                        },
-                    )
-                    logger.info(
-                        "Player orders computed",
-                        extra={
-                            "turn": self.galaxy.turn,
-                            "player": player.name,
-                            "orders": 0,
-                        },
-                    )
-                    if self.raise_exceptions:
-                        raise e
-                    continue
+            orders = self._extract_orders(
+                players=self.players,
+                context=context,
+                galaxy=self.galaxy,
+            )
 
             if self.gmode.has_ended(self.galaxy, self.galaxy.turn):
-                logger.info(
-                    "Game ended",
-                    extra={
-                        "turn": self.galaxy.turn,
-                        "winner": self.gmode.winner,
-                    },
-                )
-                self.output_handler.finish(self.galaxy, self.gmode.winner)
+                self.end_game()
                 break
-
-            # Reset explosions
-            self.galaxy.explosions = []
-
-            # Sort orders by object id
-            for o in orders.values():
-                o.sort(key=lambda x: x[1][0])
-
             self.run_turn(orders)
+
+    def end_game(self):
+        logger.info(
+            "Game ended",
+            extra={
+                "turn": self.galaxy.turn,
+                "winner": self.gmode.winner,
+            },
+        )
+        self.output_handler.finish(self.galaxy, self.gmode.winner)
 
     def run_turn(self, orders):
         """
@@ -178,6 +133,8 @@ class Game:
         11. Taxes recollection
         12. Pythonium extraction
         """
+        # Reset explosions
+        self.galaxy.explosions = []
         # 1. Ships download transfers
         # 2. Ships upload transfers
         self.run_player_action(

@@ -17,6 +17,7 @@ from .game_modes import ClassicMode
 from .helpers import random_name
 from .logger import setup_logger
 from .output_handler import StandardOutputHanlder, StreamOutputHanlder
+from .orders.extractor import OrdersExtractor
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -74,12 +75,14 @@ def run(
     else:
         output_handler = StandardOutputHanlder()
 
+    orders_extractor = OrdersExtractor(game_mode, args.raise_exceptions)
+
     game = Game(
         name=galaxy_name,
         players=_players,
         gmode=game_mode,
         output_handler=output_handler,
-        raise_exceptions=raise_exceptions,
+        orders_extractor=orders_extractor,
     )
     game.play()
 
