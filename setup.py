@@ -24,5 +24,6 @@ setuptools.setup(
     install_requires=requirements,
     python_requires=">=3.7",
     scripts=["bin/pythonium"],
-    data_files=[("font", ["font/jmh_typewriter.ttf"])],
+    include_package_data=True,
+    data_files=[('font', ['font/jmh_typewriter.ttf'])],
 )
