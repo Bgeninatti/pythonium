@@ -1,16 +1,13 @@
 import logging
 import sys
+
 from collections import defaultdict
 from itertools import groupby
-
-import numpy as np
-
 from . import cfg
 from .explosion import Explosion
 from .orders import galaxy as galaxy_orders
 from .orders import planet as planet_orders
 from .orders import ship as ship_orders
-from .renderer import GifRenderer
 
 logger = logging.getLogger("game")
 
@@ -22,8 +19,8 @@ class Game:
         players,
         gmode,
         *,
-        renderer=GifRenderer,
         raise_exceptions=False,
+        stream_state=False
     ):
         """
         :param name: Name for the galaxy. Also used as game identifier.
@@ -33,10 +30,12 @@ class Game:
             from :class:`AbstractPlayer`
         :param gmode: Class that define some game rules
         :type gmode: :class:GameMode
-        :param renderer: Instance that renders the game on each turn
         :param raise_exceptions: If ``True`` stop the game if an exception is raised when
             computing player actions. Useful for debuging players.
         :type raise_exceptions: bool
+        :param stream_state: Default ``False``. If ``True`` each step in the 
+            simulation will be serialized & printed to standard output.
+        :type stream_state: bool
         """
         if len(players) != len({p.name for p in players}):
             raise ValueError("Player names must be unique")
@@ -45,6 +44,7 @@ class Game:
         self.gmode = gmode
         self.players = players
         self.raise_exceptions = raise_exceptions
+        self._stream_state = stream_state
         logger.info(
             "Initializing galaxy",
             extra={"players": len(self.players), "galaxy_name": name},
@@ -52,7 +52,6 @@ class Game:
         self.galaxy = self.gmode.build_galaxy(name, self.players)
         logger.info("Galaxy initialized")
         sys.stdout.write(f"Running battle in galaxy #{name}\n")
-        self._renderer = renderer(self.galaxy, f"Galaxy #{name}")
 
     def extract_player_orders(self, player, galaxy, context):
         player_galaxy = player.next_turn(galaxy, context)
@@ -103,8 +102,8 @@ class Game:
             )
 
             # Should I record the state?
-            if self._renderer:
-                self._renderer.render_frame(context)
+            if self._stream_state:
+                logger.info("*** Acá el estado serializado...")
 
             # log current score
             for player_score in context["score"]:
@@ -167,14 +166,6 @@ class Game:
                 sys.stdout.write("\n")
                 sys.stdout.write(message)
 
-                if self._renderer:
-                    # Render last frame
-                    context = self.gmode.get_context(
-                        self.galaxy, self.players, self.galaxy.turn
-                    )
-                    self._renderer.render_frame(context)
-                    # Save as gif
-                    self._renderer.save_gif(f"{self.galaxy.name}.gif")
                 break
 
             # Reset explosions

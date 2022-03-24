@@ -10,7 +10,7 @@ from .game import Game
 from .game_modes import ClassicMode
 from .helpers import random_name
 from .logger import setup_logger
-from .metrics_collector import MetricsCollector
+
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 
@@ -24,12 +24,6 @@ def go():
         help="show version and info about the system, and exit",
     )
     parser.add_argument("--players", action="extend", nargs="+", help="")
-    parser.add_argument(
-        "--metrics",
-        action="store_true",
-        default=False,
-        help="Generate a report with metrics of the game",
-    )
     parser.add_argument(
         "--verbose",
         action="store_true",
@@ -45,6 +39,13 @@ def go():
     )
     parser.add_argument(
         "--galaxy-name", default="", help="An identification for the game"
+    )
+
+    parser.add_argument(
+        "--stream-state",
+        action="store_true",
+        default=False,
+        help="Print to standard output",
     )
 
     args = parser.parse_args()
@@ -70,13 +71,6 @@ def go():
         players=players,
         gmode=game_mode,
         raise_exceptions=args.raise_exceptions,
+        stream_state=args.stream_state
     )
     game.play()
-
-    if args.metrics:
-        sys.stdout.write("\n")
-        sys.stdout.write("Building report...\n")
-        with open(logfile) as logs:
-            metrics = MetricsCollector(logs)
-        metrics.build_report()
-        sys.stdout.write("Done.\n")
