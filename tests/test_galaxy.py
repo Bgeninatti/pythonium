@@ -4,7 +4,7 @@ import random
 import pytest
 
 from pythonium import Galaxy
-from tests.factories import ExplosionFactory, ShipFactory, fake_position
+from tests.factories import ExplosionFactory, ShipFactory, fake_positions
 
 
 class TestGalaxyBasics:
@@ -14,7 +14,7 @@ class TestGalaxyBasics:
 
     @pytest.fixture
     def another_random_position(self, galaxy_size):
-        return fake_position(galaxy_size)
+        return next(fake_positions(galaxy_size))
 
     @pytest.fixture
     def expected_distance_between_positions(
@@ -22,7 +22,7 @@ class TestGalaxyBasics:
     ):
         a = random_position[0] - another_random_position[0]
         b = random_position[1] - another_random_position[1]
-        return math.sqrt(a ** 2 + b ** 2)
+        return math.sqrt(a**2 + b**2)
 
     def test_repr(self, galaxy, expected_repr):
         assert str(galaxy) == expected_repr
@@ -122,9 +122,9 @@ class TestOcupedPlanets:
 
 class TestAddShip:
     @pytest.fixture
-    def new_ship(self, galaxy_size, expected_players):
+    def new_ship(self, galaxy_size, expected_players, random_position):
         return ShipFactory(
-            position=fake_position(galaxy_size),
+            position=random_position,
             player=random.choice(expected_players),
         )
 
