@@ -39,7 +39,7 @@ def setup_logger(filename, lvl="info", verbose=False):
         },
         "loggers": {
             "game": {
-                "handlers": ["default", "file"] if verbose else ["default"],
+                "handlers": ["default", "stream"] if verbose else ["default"],
                 "level": lvl.upper(),
                 "propagate": False,
             },
