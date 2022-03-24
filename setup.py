@@ -25,16 +25,12 @@ setuptools.setup(
     extras_require={
         "render": ["matplotlib==3.4.3"]
     },
+    python_requires=">=3.7",
     entry_points = {
         'console_scripts': [
-<<<<<<< HEAD
-            'pythoniu = pythonium.main:cli'
-=======
             'pythonium = pythonium.main:cli'
->>>>>>> ebc3d15601beca0bbb56c1768d9f5e9e460f2c59
         ]
     },
-    python_requires=">=3.7",
     include_package_data=True,
     data_files=[('font', ['font/jmh_typewriter.ttf'])],
 )
