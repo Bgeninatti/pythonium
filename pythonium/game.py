@@ -101,7 +101,7 @@ class Game:
                 self.galaxy, self.players, self.galaxy.turn
             )
 
-            # Should I record the state?
+            # Should I record the state?  Litox dejó acá...
             if self._stream_state:
                 logger.info("*** Acá el estado serializado...")
 
