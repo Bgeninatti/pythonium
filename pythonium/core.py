@@ -19,7 +19,7 @@ class StellarThing(ABC):
     Position of the `StellarThing` in (x, y) coordinates.
     """
 
-    id: uuid = attr.ib(factory=uuid.uuid4)
+    id: str = attr.ib(factory=lambda: str(uuid.uuid4()))
     """
     Unique identifier for the `StellarThing`
     """
