@@ -25,8 +25,12 @@ setuptools.setup(
     extras_require={
         "render": ["matplotlib==3.4.3"]
     },
+    entry_points = {
+        'console_scripts': [
+            'pythonium = pythonium.main:cli'
+        ]
+    },
     python_requires=">=3.7",
-    scripts=["bin/pythonium"],
     include_package_data=True,
     data_files=[('font', ['font/jmh_typewriter.ttf'])],
 )
