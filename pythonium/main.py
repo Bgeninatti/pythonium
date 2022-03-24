@@ -1,4 +1,5 @@
 import argparse
+import click
 import importlib
 import logging
 import sys
@@ -15,62 +16,43 @@ from .logger import setup_logger
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 
 
-def go():
-    parser = argparse.ArgumentParser(prog="pythonium", epilog=HELP_EPILOG)
-    parser.add_argument(
-        "-V",
-        "--version",
-        action="store_true",
-        help="show version and info about the system, and exit",
-    )
-    parser.add_argument("--players", action="extend", nargs="+", help="")
-    parser.add_argument(
-        "--verbose",
-        action="store_true",
-        default=False,
-        help="Show logs in stdout",
-    )
-    parser.add_argument(
-        "--raise-exceptions",
-        action="store_true",
-        default=False,
-        help="If the commands computations (for any player) fails, raise "
-        "the exception and stop.",
-    )
-    parser.add_argument(
-        "--galaxy-name", default="", help="An identification for the game"
-    )
+@click.group(help=HELP_EPILOG)
+@click.version_option(__version__)
+@click.pass_context
+def cli(ctx):
+    # logfile = Path.cwd() / f"{galaxy_name}.log"
+    # setup_logger(logfile, verbose=args.verbose)
 
-    parser.add_argument(
-        "--stream-state",
-        action="store_true",
-        default=False,
-        help="Print to standard output",
-    )
+    pass
 
-    args = parser.parse_args()
 
-    if args.version:
-        print("Running 'pythonium' version", __version__)
-        return 0
-
+@cli.command()
+@click.pass_context
+@click.argument("galaxy-name")
+@click.argument("players", nargs=-1)
+@click.option("--raise-exceptions/--no-raise-exceptions", default=False)
+@click.option("--verbose/--no-verbose", default=False)
+def run(ctx, galaxy_name, players, raise_exceptions, verbose, *args, **kwargs):
     game_mode = ClassicMode()
     galaxy_name = random_name(6)
 
-    logfile = Path.cwd() / f"{galaxy_name}.log"
-    setup_logger(logfile, verbose=args.verbose)
-
-    players = []
-    for player_module in args.players:
-        player_class = importlib.import_module(player_module)
-        player = player_class.Player()
-        players.append(player)
+    _players = []
+    for player_module in players:
+        player = importlib.import_module(player_module)
+        _player = player.Player()
+        _players.append(_player)
 
     game = Game(
         name=galaxy_name,
-        players=players,
+        players=_players,
         gmode=game_mode,
-        raise_exceptions=args.raise_exceptions,
-        stream_state=args.stream_state
+        raise_exceptions=raise_exceptions,
+        # stream_state=stream_state
+        stream_state=False,
     )
     game.play()
+
+
+@cli.command()
+def visualize():
+    click.echo('implement me')
