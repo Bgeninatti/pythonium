@@ -25,11 +25,6 @@ setuptools.setup(
     extras_require={
         "render": ["matplotlib==3.4.3"]
     },
-    entry_points = {
-        'console_scripts': [
-            'pythoniu = pythonium.main:cli'
-        ]
-    },
     python_requires=">=3.7",
     entry_points = {
         'console_scripts': [

@@ -22,7 +22,6 @@ HELP_EPILOG = "A space strategy algorithmic-game build in python"
 @click.version_option(__version__)
 @click.pass_context
 def cli(ctx):
-<<<<<<< HEAD
     pass
 
 
@@ -43,13 +42,11 @@ def run(
     *args,
     **kwargs,
 ):
-=======
     # logfile = Path.cwd() / f"{galaxy_name}.log"
     # setup_logger(logfile, verbose=args.verbose)
 
     pass
 
->>>>>>> 1d5573e (feat: move from argparse to click to implement the main command)
 
 @cli.command()
 @click.pass_context
