@@ -31,7 +31,7 @@ Put this code inside a python file:
 
 .. code-block:: python
 
-   from pyhtonium import AbstractPlayer
+   from pythonium import AbstractPlayer
 
    class Player(AbstractPlayer):
 
@@ -58,7 +58,7 @@ Let's save now this file as ``my_player.py`` (or whatever name you like) and exe
 
 .. code-block:: bash
 
-    $ pyhtonium --player my_player
+    $ pythonium --player my_player
     ** Pythonium **
     Running battle in Galaxy #PBA5V2
     Playing game.....................................
