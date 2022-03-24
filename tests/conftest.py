@@ -2,6 +2,7 @@ import math
 import random
 import uuid
 
+import attr
 import pytest
 
 from pythonium import AbstractPlayer, Game, cfg
@@ -18,7 +19,7 @@ from .game_modes import SandboxGameMode
 
 
 @pytest.fixture
-def galaxy_size(faker):
+def galaxy_size():
     return 200, 200
 
 
@@ -177,9 +178,10 @@ def tenacity():
 #  fixtures for test_run_turn
 
 
+@attr.s
 class TestPlayer(AbstractPlayer):
 
-    name = "Test Player"
+    name = attr.ib()
 
     def next_turn(self, galaxy, context):
         return galaxy
@@ -196,19 +198,24 @@ def logger_setup(logfile):
 
 
 @pytest.fixture
-def test_player():
-    """
-    This don'tn return the same instance that is used in the game, but is useful to
-    have a reference of `player.name`
-    """
-    return TestPlayer()
+def player(faker):
+    return TestPlayer(faker.name())
 
 
 @pytest.fixture
-def game():
+def another_player(faker):
+    return TestPlayer(faker.name())
+
+
+@pytest.fixture
+def game_mode():
+    return SandboxGameMode()
+
+
+@pytest.fixture
+def game(game_mode):
     """
     Return an instance of the game
     """
-    game_mode = SandboxGameMode()
     player = TestPlayer()
     return Game("test_sector", [player], game_mode)

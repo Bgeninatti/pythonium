@@ -1,6 +1,7 @@
 import pytest
 
 from pythonium import Transfer, cfg
+from pythonium.orders.request import PlanetOrderRequest
 
 from .factories import PlanetFactory, ShipTypeFactory
 
@@ -379,41 +380,49 @@ class TestPlanetClans:
 
 class TestPlanetOrders:
     def test_get_orders_return_list(self, colonized_planet):
-        assert isinstance(colonized_planet.get_orders(), list)
+        orders = colonized_planet.get_orders()
+        assert isinstance(orders, list)
+        assert all([
+            isinstance(order, PlanetOrderRequest)
+            for order in orders
+        ])
 
     @pytest.mark.parametrize("taxes", range(0, 101))
     def test_set_taxes_order(self, taxes, colonized_planet):
         colonized_planet.taxes = taxes
         orders = colonized_planet.get_orders()
-        taxes_order = next(o for o in orders if o[0] == "planet_set_taxes")
-        assert taxes_order[1] == colonized_planet.id
-        assert taxes_order[2] == taxes
+        taxes_order = next(o for o in orders if o.name == "planet_set_taxes")
+        assert taxes_order.id == colonized_planet.id
+        assert 'taxes' in taxes_order.kwargs
+        assert taxes_order.kwargs['taxes'] == taxes
 
     @pytest.mark.parametrize("new_mines", range(1, 101))
     def test_build_mines_order(self, new_mines, colonized_planet):
         colonized_planet.new_mines = new_mines
         orders = colonized_planet.get_orders()
         build_mines_order = next(
-            o for o in orders if o[0] == "planet_build_mines"
+            o for o in orders if o.name == "planet_build_mines"
         )
-        assert build_mines_order[1] == colonized_planet.id
-        assert build_mines_order[2] == new_mines
+        assert build_mines_order.id == colonized_planet.id
+        assert 'new_mines' in  build_mines_order.kwargs
+        assert build_mines_order.kwargs['new_mines'] == new_mines
 
     def test_no_mines_order_if_new_mines_is_zero(self, colonized_planet):
         orders = colonized_planet.get_orders()
-        order_names = [o[0] for o in orders]
+        order_names = [o.name for o in orders]
         assert "planet_build_mines" not in order_names
 
     def test_build_ship_order(self, ship_type, colonized_planet):
         colonized_planet.new_ship = ship_type
         orders = colonized_planet.get_orders()
         build_ship_order = next(
-            o for o in orders if o[0] == "planet_build_ship"
+            o for o in orders if o.name == "planet_build_ship"
         )
-        assert build_ship_order[1] == colonized_planet.id
-        assert build_ship_order[2] is ship_type
+        assert build_ship_order.id == colonized_planet.id
+        assert 'new_ship' in build_ship_order.kwargs
+        assert build_ship_order.kwargs['new_ship'] is ship_type
 
     def test_no_ship_order_if_new_ship_is_none(self, colonized_planet):
         orders = colonized_planet.get_orders()
-        order_names = [o[0] for o in orders]
+        order_names = [o.name for o in orders]
         assert "planet_build_ship" not in order_names

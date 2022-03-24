@@ -2,6 +2,7 @@ import attr
 
 from . import cfg, validators
 from .core import Position, StellarThing
+from .orders.request import PlanetOrderRequest
 from .ship_type import ShipType
 from .vectors import Transfer
 
@@ -257,13 +258,31 @@ class Planet(StellarThing):
         Compute orders based on player control attributes: ``new_mines``, \
         ``new_ship`` and ``taxes``
         """
-        orders = [("planet_set_taxes", self.id, self.taxes)]
+        orders = [
+            PlanetOrderRequest(
+                name="planet_set_taxes",
+                id=self.id,
+                kwargs={'taxes': self.taxes}
+            )
+        ]
 
         if self.new_ship is not None:
-            orders.append(("planet_build_ship", self.id, self.new_ship))
+            orders.append(
+                PlanetOrderRequest(
+                    name="planet_build_ship",
+                    id=self.id,
+                    kwargs={'new_ship': self.new_ship}
+                )
+            )
 
         if self.new_mines > 0:
-            orders.append(("planet_build_mines", self.id, self.new_mines))
+            orders.append(
+                PlanetOrderRequest(
+                    name="planet_build_mines",
+                    id=self.id,
+                    kwargs={'new_mines': self.new_mines}
+                )
+            )
 
         return orders
 
