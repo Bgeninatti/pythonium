@@ -8,7 +8,7 @@ with open("requirements.build.txt", "r") as rf:
 
 setuptools.setup(
     name="pythonium",
-    version="0.2.0b0",
+    version="0.3.0b0",
     author="Bruno Geninatti",
     author_email="brunogeninatti@gmail.com",
     description="A space strategy algorithmic-game build in python",
