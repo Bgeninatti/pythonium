@@ -22,6 +22,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=requirements,
+    extras_require={
+        "render": ["matplotlib==3.4.3"]
+    },
     python_requires=">=3.7",
     scripts=["bin/pythonium"],
     include_package_data=True,
