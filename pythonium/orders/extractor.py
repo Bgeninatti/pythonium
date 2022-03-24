@@ -22,15 +22,17 @@ class OrdersExtractor:
     _raise_exceptions: bool = attr.ib(default=False)
 
     @staticmethod
-    def extract_player_orders(player, galaxy, context):
-        player_galaxy = player.next_turn(galaxy, context)
-
-        # The function must return the mutated galaxy
+    def _validate_galaxy(galaxy, player_galaxy):
+        # The player `next_turn` method must return the mutated galaxy
 
         if id(galaxy) != id(player_galaxy):
             raise ValueError(
                 "The `run_player` method must return a mutated galaxy"
             )
+
+    def extract_player_orders(self, player, galaxy, context):
+        player_galaxy = player.next_turn(galaxy, context)
+        self._validate_galaxy(galaxy, player_galaxy)
 
         planets_orders = [
             p.get_orders()
