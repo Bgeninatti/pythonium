@@ -1,5 +1,4 @@
 import argparse
-import click
 import importlib
 import logging
 import sys
@@ -42,19 +41,7 @@ def run(
     *args,
     **kwargs,
 ):
-    # logfile = Path.cwd() / f"{galaxy_name}.log"
-    # setup_logger(logfile, verbose=args.verbose)
 
-    pass
-
-
-@cli.command()
-@click.pass_context
-@click.argument("galaxy-name")
-@click.argument("players", nargs=-1)
-@click.option("--raise-exceptions/--no-raise-exceptions", default=False)
-@click.option("--verbose/--no-verbose", default=False)
-def run(ctx, galaxy_name, players, raise_exceptions, verbose, *args, **kwargs):
     game_mode = ClassicMode()
     galaxy_name = galaxy_name if galaxy_name else random_name(6)
 
@@ -82,26 +69,6 @@ def run(ctx, galaxy_name, players, raise_exceptions, verbose, *args, **kwargs):
     game.play()
 
 
-from datetime import date, datetime as dt
-import os
-
 @cli.command()
-@click.argument("state")
-def visualize(state):
-    click.echo('implement me')
-    with open(state, "r") as state_file:
-        state_data = state_file.read()
-
-    with open("pythonium/index.html", "r") as template_file:
-        template = template_file.read()
-        web = template.replace(
-            "<!-- DATA PLACEHOLDER -->",
-            state_data
-        )
-    
-    prefix, ext = os.path.splitext(state)
-    ts = dt.timestamp(dt.now())
-    output_fname = prefix + str(ts) + ".html"
-    with open(output_fname, "w") as out_file:
-        out_file.write(web)
-
+def visualize():
+    click.echo("implement me")
