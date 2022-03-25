@@ -74,7 +74,8 @@ import os
 
 @cli.command()
 @click.argument("state")
-def visualize(state):
+@click.option("--html", default=None)
+def visualize(state, html):
     with open(state, "r") as state_file:
         state_data = state_file.read()
 
@@ -85,9 +86,12 @@ def visualize(state):
             state_data
         )
     
-    prefix, ext = os.path.splitext(state)
-    ts = dt.timestamp(dt.now())
-    output_fname = prefix + str(ts) + ".html"
+    output_fname = html
+    if output_fname is None:
+        prefix, ext = os.path.splitext(state)
+        ts = dt.timestamp(dt.now())
+        output_fname = prefix + str(ts) + ".html"
+        
     with open(output_fname, "w") as out_file:
         out_file.write(web)
         click.echo('Visualizarion in ' + output_fname)
