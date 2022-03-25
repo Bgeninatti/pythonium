@@ -60,11 +60,11 @@ class StreamOutputHandler(OutputHandler):
 class ColorPairs(Enum):
     SPACE = (curses.COLOR_BLACK, curses.COLOR_BLACK)
     NEUTRAL_PLANET = (curses.COLOR_WHITE, curses.COLOR_WHITE)
-    
+
     PLAYER_1 = (curses.COLOR_RED, curses.COLOR_RED)
     PLAYER_1_SHIP_ON_PLANET = (curses.COLOR_RED, curses.COLOR_WHITE)
     PLAYER_1_SHIP_ON_SPACE = (curses.COLOR_RED, curses.COLOR_BLACK)
-    
+
     PLAYER_2 = (curses.COLOR_BLUE, curses.COLOR_BLUE)
     PLAYER_2_SHIP_ON_PLANET = (curses.COLOR_BLUE, curses.COLOR_WHITE)
     PLAYER_2_SHIP_ON_SPACE = (curses.COLOR_BLUE, curses.COLOR_BLACK)
@@ -102,7 +102,7 @@ class CursesOutputHandler(OutputHandler):
         planets = self._get_planets(galaxy)
         self._show_planets(planets)
         sleep(.5)
-    
+
     def finish(self, galaxy, winner):
         self.win.timeout(2)
         self.sc.addstr(10, 30, f"pythonium: The winner is {winner} !!")
