@@ -27,7 +27,7 @@ class OutputHandler:
 
 
 @attr.s
-class StandardOutputHanlder(OutputHandler):
+class StandardOutputHandler(OutputHandler):
     def start(self, galaxy):
         self.output.write("** Pythonium **\n")
         self.output.write(f"Running battle in galaxy #{galaxy.name}\n")
@@ -45,7 +45,7 @@ class StandardOutputHanlder(OutputHandler):
 
 
 @attr.s
-class StreamOutputHanlder(OutputHandler):
+class StreamOutputHandler(OutputHandler):
     def start(self, galaxy):
         self.output.write(f"pythonium|{__version__}|{galaxy.name}\n")
 
@@ -215,7 +215,7 @@ class CursesOutputHandler(OutputHandler):
         return self._get_color(ColorPairs.PLAYER_2)
 
 OUTPUT_HANDLERS = {
-    "standard": StandardOutputHanlder,
-    "stream": StreamOutputHanlder,
+    "standard": StandardOutputHandler,
+    "stream": StreamOutputHandler,
     "curses": CursesOutputHandler
 }
