@@ -1,3 +1,4 @@
+import copy
 import curses
 import json
 import sys
@@ -6,7 +7,8 @@ from typing import IO
 
 import attr
 
-from pythonium import __version__
+from . import __version__
+from .planet import Planet
 
 
 @attr.s
@@ -94,55 +96,76 @@ class CursesOutputHanlder(OutputHandler):
         self.win.refresh()
 
     def step(self, galaxy, context):
-        turn = galaxy.serialize()
-        planets = [thing for thing in turn['things'] if self.is_planet(thing)]
-        ships = [thing for thing in turn['things'] if self.is_ship(thing)]
+        self.show_ships(galaxy.ships, galaxy)
+        
+        planets = self.get_planets(galaxy)
+        self.show_planets(planets)
+        time.sleep(.3)
 
-        for item in [ships, planets]:
-            for thing in item:
-                # Get position
-                position_h = int(thing['position'][0] * self.h_pixels_for_unit)
-                position_w = int(thing['position'][1] * self.w_pixels_for_unit)
+    def get_planets(self, galaxy):
+        return filter(lambda t: isinstance(t, Planet), galaxy.things)
 
-                # Get color
-                color_pair = self.get_color_pair(thing, planets, position_h, position_w)
+    def show_ships(self, ships, galaxy):
+        for ship in ships:
+            position = self.get_screen_position(ship)
+            color_pair = self.get_ship_color_pair(ship, galaxy, position)
+            character = 'Ö' if ship.type.name == 'carrier' else '╬'
 
-                # Draw thing
-                if self.is_planet(thing):
-                    old_planet = [planet for planet in self.old_planets if planet['id'] == thing['id']]
-                    if len(old_planet) == 0 or old_planet[0]['player'] != thing['player']:
-                        self.win.addch(position_h, position_w, curses.ACS_BLOCK, color_pair)
-                        self.win.refresh()
-                elif self.is_ship(thing):
-                    if thing['type']['name'] == 'carrier':
-                        character = 'Ö'
-                    else:
-                        character = '╬'
+            old_ship = self.find_old_ship(ship)
+            if old_ship is not None:
+                old_position = (
+                    int(old_ship.position[0] * self.h_pixels_for_unit),
+                    int(old_ship.position[1] * self.w_pixels_for_unit)
+                )
+                current_position_h = old_position[0]
+                current_position_w = old_position[1]
 
-                    old_ship = [ship for ship in self.old_ships if ship['id'] == thing['id']]
-                    if len(old_ship) > 0:
-                        old_ship = old_ship[0]
-                        old_position_h = int(old_ship['position'][0] * self.h_pixels_for_unit)
-                        old_position_w = int(old_ship['position'][1] * self.w_pixels_for_unit)
-                        current_position_h = old_position_h
-                        current_position_w = old_position_w
+                for current_position_h in range(old_position[0], position[0]):
+                    current_position = (current_position_h, old_position[1])
+                    if not self.exists_planet(galaxy, current_position):
+                        color_pair = self.get_ship_color_pair(ship, galaxy, current_position)
+                        self.show_step(current_position, character, color_pair)
 
-                        for current_position_h in range(old_position_h, position_h):
-                            if not self.exists_planet(planets, current_position_h, old_position_w):
-                                color_pair = self.get_color_pair(thing, planets, current_position_h, old_position_w)
-                                self.show_step(current_position_h, old_position_w, character, color_pair)
-                        for current_position_w in range(old_position_w, position_w):
-                            if not self.exists_planet(planets, current_position_h, current_position_w):
-                                color_pair = self.get_color_pair(thing, planets, current_position_h, current_position_w)
-                                self.show_step(current_position_h, current_position_w, character, color_pair)
+                for current_position_w in range(old_position[1], position[1]):
+                    current_position = (current_position_h, current_position_w)
+                    if not self.exists_planet(galaxy, current_position):
+                        color_pair = self.get_ship_color_pair(ship, galaxy, current_position)
+                        self.show_step(current_position, character, color_pair)
 
-                    color_pair = self.get_color_pair(thing, planets, position_h, position_w)
-                    self.win.addch(position_h, position_w, character, color_pair)
-                    self.win.refresh()
+            color_pair = self.get_ship_color_pair(ship, galaxy, position)
+            self.win.addch(position[0], position[1], character, color_pair)
+            self.win.refresh()
 
-        time.sleep(.1)
-        self.old_ships = ships
-        self.old_planets = planets
+        self.old_ships = copy.deepcopy(ships)
+
+    def show_planets(self, planets):
+        for planet in planets:
+            position = self.get_screen_position(planet)
+            color_pair = self.get_planet_color_pair(planet)
+
+            old_planet = self.find_old_planet(planet)
+            if old_planet is None or old_planet[0].player != planet.player:
+                self.win.addch(position[0], position[1], curses.ACS_BLOCK, color_pair)
+                self.win.refresh()
+
+        self.old_planets = copy.deepcopy(planets)
+
+    def find_old_planet(self, planet):
+        for old_planet in self.old_planets:
+            if old_planet.id == planet.id:
+                return old_planet
+        return None
+
+    def find_old_ship(self, ship):
+        for old_ship in self.old_ships:
+            if old_ship.id == ship.id:
+                return old_ship
+        return None
+
+    def get_screen_position(self, thing):
+        position_h = int(thing.position[0] * self.h_pixels_for_unit)
+        position_w = int(thing.position[1] * self.w_pixels_for_unit)
+        return [position_h, position_w]
 
     def finish(self, galaxy, winner):
         time.sleep(2)
@@ -158,39 +181,38 @@ class CursesOutputHanlder(OutputHandler):
     def is_ship(self, thing):
         return thing['thing_type'] == 'ship'
 
-    def exists_planet(self, planets, position_h, position_w):
-        for planet in planets:
-            planet_pos_h = int(planet['position'][0] * self.h_pixels_for_unit)
-            planet_pos_w = int(planet['position'][1] * self.w_pixels_for_unit)
-            if planet_pos_h == position_h and planet_pos_w == position_w:
+    def exists_planet(self, galaxy, position):
+        for planet in self.get_planets(galaxy):
+            planet_position = self.get_screen_position(planet)
+            if planet_position[0] == position[0] and planet_position[1] == position[1]:
                 return True
         return False
 
-
-    def show_step(self, position_h, position_w, character, color_pair):
-        self.win.addch(position_h, position_w, character, color_pair)
+    def show_step(self, position, character, color_pair):
+        self.win.addch(position[0], position[1], character, color_pair)
         self.win.refresh()
         time.sleep(.05)
-        self.win.addch(position_h, position_w, ' ', curses.color_pair(1))
+        self.win.addch(position[0], position[1], ' ', curses.color_pair(1))
 
-    def get_color_pair(self, thing, planets, position_h, position_w):
-        player = thing['player']
-
-        if self.is_planet(thing):
-            if player is None:
-                return curses.color_pair(4)
-            elif player == 'Solar Fed.':
-                return curses.color_pair(3)
-            return curses.color_pair(2)
-
-        if not self.exists_planet(planets, position_h, position_w):
-            if player == 'Solar Fed.':
+    def get_ship_color_pair(self, ship, galaxy, position):
+        in_planet = self.exists_planet(galaxy, position)
+        if not in_planet:
+            if ship.player == 'Solar Fed.':
                 return curses.color_pair(7)
             return curses.color_pair(8)
-        if player == 'Solar Fed.':
+
+        if ship.player == 'Solar Fed.':
             return curses.color_pair(5)
         return curses.color_pair(6)
 
+    def get_planet_color_pair(self, planet):
+        player = planet.player
+
+        if player is None:
+            return curses.color_pair(4)
+        elif player == 'Solar Fed.':
+            return curses.color_pair(3)
+        return curses.color_pair(2)
 
 OUTPUT_HANDLERS = {
     "standard": StandardOutputHanlder,
