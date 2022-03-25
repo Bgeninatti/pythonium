@@ -42,11 +42,27 @@ class StandardOutputHanlder(OutputHandler):
 @attr.s
 class StreamOutputHanlder(OutputHandler):
     def start(self, galaxy):
-        self.output.write(f"pythonium|{__version__}|{galaxy.name}\n")
+        data = {
+            "version": __version__,
+            "galaxy": galaxy.name,
+            "players": [player for player in galaxy.known_races],
+            "size": list(galaxy.size)
+        }
+        self.output.write(json.dumps(data))
+        self.output.write("\n")
+
 
     def step(self, galaxy, context):
-        self.output.write(json.dumps(galaxy.serialize()))
+        data = {
+            "galaxy": galaxy.serialize(),
+            "score": context["score"]
+        }
+        self.output.write(json.dumps(data))
         self.output.write("\n")
 
     def finish(self, galaxy, winner):
-        self.output.write(f"pythonium|{galaxy.name}|{galaxy.turn}|{winner}\n")
+        data = {
+            "turns": galaxy.turn,
+            "winner": winner
+        }
+        self.output.write(json.dumps(data))
