@@ -419,8 +419,8 @@ class TestPlanetOrders:
             o for o in orders if o.name == "planet_build_ship"
         )
         assert build_ship_order.id == colonized_planet.id
-        assert 'new_ship' in build_ship_order.kwargs
-        assert build_ship_order.kwargs['new_ship'] is ship_type
+        assert 'ship_type' in build_ship_order.kwargs
+        assert build_ship_order.kwargs['ship_type'] is ship_type
 
     def test_no_ship_order_if_new_ship_is_none(self, colonized_planet):
         orders = colonized_planet.get_orders()
