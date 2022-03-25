@@ -1,9 +1,11 @@
 import re
 import os
-import re
 import random
 import uuid
 import time
+import importlib
+from pathlib import Path
+
 import click
 import importlib
 
@@ -19,6 +21,11 @@ from .output_handler import StandardOutputHanlder, StreamOutputHanlder
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 dir_path = os.path.dirname(os.path.realpath(__file__))
 WEB_RENDERER_TEMPLATE = os.path.join(dir_path, "webrenderer/index.html")
+
+
+def set_seed(seed):
+    random.seed(seed)
+    uuid.uuid4 = lambda: uuid.UUID(version=4, int=random.getrandbits(128))
 
 
 def set_seed(seed):
