@@ -90,7 +90,7 @@ from datetime import datetime as dt
 @click.option("--html", default=None)
 def visualize(state, html):
     with open(state, "r") as state_file:
-        state_data = parseToJS(state_file.read())
+        state_data = parseToPOJO(state_file.read())
 
     with open(WEB_RENDERER_TEMPLATE, "r") as template_file:
         template = template_file.read()
@@ -107,43 +107,29 @@ def visualize(state, html):
         click.echo("Visualization in " + output_fname)
 
 
-def parseToJS(data_json):
-    match_data = f"""{{
-        turns: {get_data_turns(data_json)},
-        galaxyName: {get_data_galaxy_name(data_json)},
+def parseToPOJO(data_json):
+    prefix, *states, suffix = data_json.splitlines()
+    pojo = f"""{{
+        turns: {get_data_turns(states)},
+        galaxyName: "{get_data_galaxy_name(prefix)}",
         players: {get_data_players(data_json)},
     }}"""
 
-    return match_data
+    return pojo
 
+def get_data_galaxy_name(prefix):
+    return prefix.split("|")[2]
 
-def get_data_galaxy_name(data_json):
-    name_end = data_json.index("\n")
-    data_turns = data_json[: name_end + 1]
-    name = re.findall("\w+\n", data_turns)[0][:-1]
-    return f'"{name}"'
-
-
-def get_data_turns(data_json):
-    data_js_start = data_json.index("\n")
-    data_turns = data_json[data_js_start:]
-    data_turns = data_turns.replace("}{", "}, {")
-    data_turns = data_turns.replace("}\n{", "},\n{")
-
-    start_tail = data_turns.index("|") - len("pythonium")
-    data_turns = data_turns[0:start_tail]
-    data_turns = f"[{data_turns}]"
-
-    return data_turns
-
+def get_data_turns(states):
+    return "[{}]".format(",\n".join(states))
 
 def get_data_players(data_json):
     def oc_to_name(oc):
-        return oc[len('"player": ') :]
+        return oc[len('"player": '):]
 
     names_occurrencies = re.findall('"player": "[^(?!")]*"', data_json)
     names = list(set([oc_to_name(name_oc) for name_oc in names_occurrencies]))
 
     if len(names) == 1:
-        return f"[{names[0]}]"
-    return f"[{names[0]}, {names[1]}]"
+        return f'[{names[0]}]'
+    return f'[{names[0]}, {names[1]}]'
