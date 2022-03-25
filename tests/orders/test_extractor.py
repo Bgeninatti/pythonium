@@ -7,4 +7,4 @@ class TestOrdersExtractor:
         self.extract = OrdersExtractor(game_mode)
 
     def stub_player_next_turn(self, player, when):
-        when(player).next_turn(...).thenReturn()
+        when(player).step(...).thenReturn()

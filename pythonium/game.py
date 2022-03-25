@@ -1,5 +1,4 @@
 import logging
-from itertools import groupby
 
 from . import cfg
 from .orders import galaxy as galaxy_orders
@@ -44,6 +43,9 @@ class Game:
         logger.info("Galaxy initialized")
         self.output_handler.start(self.galaxy)
 
+        for player in self.players:
+            player.start(self.galaxy)
+
     def play(self):
         while True:
 
@@ -79,6 +81,9 @@ class Game:
             },
         )
         self.output_handler.finish(self.galaxy, self.game_mode.winner)
+
+        for player in self.players:
+            player.finish(self.galaxy, self.game_mode.winner)
 
     def run_turn(self, orders):
         """

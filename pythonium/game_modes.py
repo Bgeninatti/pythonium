@@ -112,11 +112,16 @@ class ClassicMode(GameMode):
         self.max_ships = max_ships
         self.winner = None
 
-    def build_galaxy(self, name, players):
+    def get_players(self, agents):
+        return [a for a in agents if a.is_player]
+
+    def build_galaxy(self, name, agents):
         """
         Representa el conjunto de planets en el que se desenvolverá el juego.
 
         """
+        players = self.get_players(agents)
+
         total_pythonium = int(self.pythonium_stock * self.pythonium_in_surface)
         total_underground_pythonium = self.pythonium_stock - total_pythonium
         # 1. Genera los planeras
@@ -227,12 +232,17 @@ class ClassicMode(GameMode):
                     galaxy.add_ship(ship)
         return galaxy
 
-    def galaxy_for_player(self, galaxy, player):
+    def galaxy_for_player(self, galaxy, agent):
         # TODO: add the following tests:
         # * The player can't see enemy ships not located with own ship
         # * The player can see enemy ships located with any own ship
         #   or in any own planet
         # * The player can see any ship in deep space
+
+        if not agent.is_player:
+            return galaxy
+        else:
+            player = agent
 
         player_planets_positions = [
             p.position for p in galaxy.get_player_planets(player.name)
@@ -309,7 +319,9 @@ class ClassicMode(GameMode):
                 return True
         return False
 
-    def get_score(self, galaxy, players, turn):
+    def get_score(self, galaxy, agents, turn):
+        players = self.get_players(agents)
+
         planets_score = Counter(
             (p.player for p in galaxy.planets.values() if p.player is not None)
         )

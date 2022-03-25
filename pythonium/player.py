@@ -1,18 +1,25 @@
+from abc import ABC, abstractmethod
+
 import attr
 
 from .galaxy import Galaxy
 
 
 @attr.s
-class AbstractPlayer:
+class AbstractPlayer(ABC):
 
     name: str = attr.ib(init=False)
+    is_player: bool = attr.ib(default=True)
     """
     Player's name. Please make it short (less than 12 characters), or you will break the
     gif and reports.
     """
 
-    def next_turn(self, galaxy: Galaxy, context: dict) -> Galaxy:
+    def start(self, galaxy: Galaxy):
+        ...
+
+    @abstractmethod
+    def step(self, galaxy: Galaxy, context: dict) -> Galaxy:
         """
         Compute the player strategy based on the available information in the ``galaxy``
         and ``context``.
@@ -45,6 +52,7 @@ class AbstractPlayer:
           * ``score``: A list with the score for each player.
           * ``turn``: Number of the current turn.
         """
-        raise NotImplementedError(
-            "You must implement the ``next_turn`` method in your ``Player`` class"
-        )
+        ...
+
+    def finish(self, galaxy, winner):
+        ...

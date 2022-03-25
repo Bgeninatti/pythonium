@@ -31,7 +31,7 @@ class OrdersExtractor:
             )
 
     def extract_player_orders(self, player, galaxy, context):
-        player_galaxy = player.next_turn(galaxy, context)
+        player_galaxy = player.step(galaxy, context)
         self._validate_galaxy(galaxy, player_galaxy)
 
         planets_orders = [

@@ -21,7 +21,7 @@ class Player(AbstractPlayer):
     )
     tenacity = 0.5
 
-    def next_turn(self, galaxy, context):
+    def step(self, galaxy, context):
 
         my_ships = galaxy.get_player_ships(self.name)
         my_planets = galaxy.get_player_planets(self.name)

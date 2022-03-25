@@ -6,6 +6,7 @@ import attr
 import pytest
 
 from pythonium import AbstractPlayer, Game, cfg
+from pythonium.bots import monitor_player
 from pythonium.logger import setup_logger
 from tests.factories import (
     GalaxyFactory,
@@ -15,7 +16,7 @@ from tests.factories import (
     fake_positions,
 )
 
-from .game_modes import SandboxGameMode
+from .game_modes.sandbox import SandboxGameMode
 
 
 @pytest.fixture
@@ -26,6 +27,15 @@ def galaxy_size():
 @pytest.fixture
 def expected_players(faker):
     return [faker.word(), faker.word()]
+
+
+@pytest.fixture
+def agents(expected_players, spectator):
+    agents = []
+    for name in expected_players:
+        agents.append(TestPlayer(name))
+    agents.append(spectator)
+    return agents
 
 
 @pytest.fixture
@@ -180,10 +190,10 @@ def tenacity():
 
 @attr.s
 class TestPlayer(AbstractPlayer):
-
     name = attr.ib()
+    is_player: bool = attr.ib(default=True)
 
-    def next_turn(self, galaxy, context):
+    def step(self, galaxy, context):
         return galaxy
 
 
@@ -200,6 +210,13 @@ def logger_setup(logfile):
 @pytest.fixture
 def player(faker):
     return TestPlayer(faker.name())
+
+
+@pytest.fixture
+def spectator():
+    spectator = monitor_player.Player(is_player=False)
+    assert not spectator.is_player
+    return spectator
 
 
 @pytest.fixture

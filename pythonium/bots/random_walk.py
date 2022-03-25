@@ -1,7 +1,6 @@
 import random
 
 from ..player import AbstractPlayer
-from ..ship import Ship
 
 
 class Player(AbstractPlayer):
@@ -11,7 +10,7 @@ class Player(AbstractPlayer):
 
     name = "Walkers"
 
-    def run_turn(self, galaxy, context):
+    def step(self, galaxy, context):
 
         my_ships = galaxy.get_player_ships(self.name)
 

@@ -1,9 +1,3 @@
-import random
-
-import attr
-
-from ..player import AbstractPlayer
-from ..ship import Ship
 from .standard_player import Player as StandardPlayer
 
 
