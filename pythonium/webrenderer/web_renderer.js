@@ -12,14 +12,22 @@ function renderTheGalaxy(simulationStep) {
             sprite = new PIXI.TilingSprite(textures.planets[index % 3]);
             sprite.anchor.set(0.5);
             sprite.scale.set(0.1);
-            if (p.player !== null) {
+            if (p.player == data.players[0]) {
                 sprite.tint = playerColors[0];
+            }
+            if (p.player == data.players[1]) {
+                sprite.tint = playerColors[1];
             }
         } else {
             sprite = new PIXI.TilingSprite(textures.ships[0]);
             sprite.anchor.set(0.5);
             sprite.scale.set(0.1);
-            sprite.tint = playerColors[0];
+            if (p.player == data.players[0]) {
+                sprite.tint = playerColors[0];
+            }
+            if (p.player == data.players[1]) {
+                sprite.tint = playerColors[1];
+            }
         }
         sprite.position = {
             x: p.position[0],
