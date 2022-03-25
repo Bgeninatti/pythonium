@@ -1,16 +1,12 @@
-window.onload = function() {
-
-// Create the application helper and add its render target to the page
+// Globals
 let SIZE = 700;
 let resizeFactor = SIZE / 500;  // 500 is the galaxy size
 let app = new PIXI.Application({ width: SIZE, height: SIZE});
 document.getElementById("visualization").appendChild(app.view);
-
 app.stage.scale.set(resizeFactor);
-const textures = {};
-const playerColors = [0x00AAFF, 0xFFAA00]
 
 function renderTheGalaxy(simulationStep) {
+    // data is global, defined in the HTML
     data[simulationStep].things.forEach((p, index, array) => {
         let sprite;
         if (p.thing_type == "planet") {
@@ -34,52 +30,76 @@ function renderTheGalaxy(simulationStep) {
     });
 }
 
-function main() {
-    let N_STEPS = data.length;
-    let DEFAULT_DELAY = 500;  // milliseconds
-    var counter = 0;
-    let stepInputElem = document.getElementById("step-input");
-    let animationControlElem = document.getElementById("animation-control");
-    let animationPlaying = true;
-    
-    function renderStep(n) {
-        // Every `DEFAULT_DELAY` milliseconds clear the Galaxy
-        // and render the simulation step given by `counter`
-        app.stage.removeChildren();
-        renderTheGalaxy(n);
-        stepInputElem.value = n;
-    };
+/**
+ * CONTROLS
+ */
 
-    function play(){
-        // Every `DEFAULT_DELAY` milliseconds clear the Galaxy
-        // and render the simulation step given by `counter`
-        let step = counter % N_STEPS;
-        renderStep(step);
-        counter++;
-    }
+var timer;
+let DEFAULT_DELAY = 500;  // milliseconds
+var counter = 0; 
 
-    function pause(){
-        clearInterval(timer);
-        animationControlElem.innerHTML = "&#x23EF; Play";
-        animationControlElem.classList.add("btn-success")
-        animationControlElem.classList.remove("btn-primary")
-    };
+let stepInputElem = document.getElementById("step-input");
+let animationControlElem = document.getElementById("animation-control");
+let animationPrevElem = document.getElementById("animation-prev");
+let animationNextElem = document.getElementById("animation-next");
+let animationPlaying = true;
 
-    var timer = setInterval(play, DEFAULT_DELAY);
-    animationControlElem.onclick = () => {
-        if (animationPlaying) {
-            animationPlaying = false;
-            pause();
-        } else {
-            animationPlaying = true;
-            timer = setInterval(play, DEFAULT_DELAY);
-            animationControlElem.innerHTML = "&#x23EF; Pause";
-            animationControlElem.classList.remove("btn-success")
-            animationControlElem.classList.add("btn-primary")
-        }
-    };
+function renderStep(n) {
+    app.stage.removeChildren();
+    renderTheGalaxy(n);
+    stepInputElem.value = n;
+};
+
+function playNext(){
+    counter++;
+    let step = counter % data.length;
+    renderStep(step);
 }
 
+function playPrevious(){
+    counter--;
+    if (counter < 0) {
+        counter = data.length - 1;
+    }
+    let step = counter % data.length;
+    renderStep(step);
+}
+
+function pause(){
+    // el timer global
+    clearInterval(timer);
+    animationControlElem.innerHTML = "&#x23EF; Play";
+    animationControlElem.classList.add("btn-success")
+    animationControlElem.classList.remove("btn-primary")
+};
+
+animationControlElem.onclick = () => {
+    if (animationPlaying) {  // Pause pressed
+        animationPlaying = false;
+        pause();
+    } else {
+        animationPlaying = true;
+        timer = setInterval(playNext, DEFAULT_DELAY);
+        animationControlElem.innerHTML = "&#x23EF; Pause";
+        animationControlElem.classList.remove("btn-success")
+        animationControlElem.classList.add("btn-primary")
+    }
+    animationNextElem.disabled = animationPlaying;
+    animationPrevElem.disabled = animationPlaying;
+};
+
+document.getElementById("fullscreen-input").onclick = () => {
+    app.view.requestFullscreen();            
+};
+
+animationNextElem.onclick = playNext;
+animationPrevElem.onclick = playPrevious;
+
+
+
+// Create the application helper and add its render target to the page
+const textures = {};
+const playerColors = [0x00AAFF, 0xFFAA00]
 const loader = PIXI.Loader.shared;
 loader.add('planet01', 'assets/planet01.png');
 loader.add('planet02', 'assets/planet02.png');
@@ -96,10 +116,10 @@ loader.load((loader, resources) => {
         resources.ship01.texture,
     ];
 });
-loader.onComplete.add(main);
 
-document.getElementById("fullscreen-input").onclick = () => {
-    app.view.requestFullscreen();            
-};
-
+window.onload = function() {
+    loader.onComplete.add(() => {
+        renderStep(0);
+        timer = setInterval(playNext, DEFAULT_DELAY);
+    });    
 };
