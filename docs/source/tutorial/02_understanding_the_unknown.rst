@@ -32,7 +32,7 @@ Open the player you built in :ref:`Chapter 1<Tutorial Chapter 01>` and set a tra
 
 .. code-block:: python
 
-    from pyhtonium import AbstractPlayer
+    from pythonium import AbstractPlayer
 
     class Player(AbstractPlayer):
 
