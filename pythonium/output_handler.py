@@ -60,6 +60,7 @@ class StreamOutputHandler(OutputHandler):
 class ColorPairs(Enum):
     SPACE = (curses.COLOR_BLACK, curses.COLOR_BLACK)
     NEUTRAL_PLANET = (curses.COLOR_WHITE, curses.COLOR_WHITE)
+    EXPLOSION = (curses.COLOR_YELLOW, curses.COLOR_YELLOW)
 
     PLAYER_1 = (curses.COLOR_RED, curses.COLOR_RED)
     PLAYER_1_SHIP_ON_PLANET = (curses.COLOR_RED, curses.COLOR_WHITE)
@@ -77,10 +78,10 @@ class CursesOutputHandler(OutputHandler):
         self.old_ships = []
         self.players = list(galaxy.known_races)
         self.sc = curses.initscr()
-        height, width = self.sc.getmaxyx()
-        self.win = curses.newwin(height, width, 0, 0)
-        self.h_pixels_for_unit = height / galaxy.size[0]
-        self.w_pixels_for_unit = width / galaxy.size[1]
+        self.height, self.width = self.sc.getmaxyx()
+        self.win = curses.newwin(self.height, self.width, 0, 0)
+        self.h_pixels_for_unit = self.height / galaxy.size[0]
+        self.w_pixels_for_unit = self.width / galaxy.size[1]
 
         self.win.keypad(1)
         curses.curs_set(0)
@@ -100,6 +101,7 @@ class CursesOutputHandler(OutputHandler):
     def step(self, galaxy, context):
         self._show_ships(galaxy.ships, galaxy)
         planets = self._get_planets(galaxy)
+        self._show_explosions(galaxy.explosions)
         self._show_planets(planets)
         sleep(.5)
 
@@ -159,6 +161,28 @@ class CursesOutputHandler(OutputHandler):
                 self.win.refresh()
 
         self.old_planets = copy.deepcopy(planets)
+
+    def _show_explosions(self, explosions):
+        for explosion in explosions:
+            power_escalated = int(explosion.total_attack / 10)
+            expand_range = range(2, min(power_escalated, 20), 2)
+            for current_range in [expand_range, reversed(expand_range)]:
+                for size in current_range:
+                    position = self._get_screen_position(explosion.ship)
+                    box_h = position[0] - int(size/2)
+                    box_w = position[1] - int(size/2)
+                    self._show_box(box_h, box_w, size)
+
+    def _show_box(self, box_h, box_w, size):
+        if 0 < box_h <= self.height and 0 < box_w <= self.width:
+            box = self.sc.subwin(size, size, box_h, box_w)
+            box.bkgd(' ', self._get_color(ColorPairs.EXPLOSION))
+            box.box()
+            box.refresh()
+            sleep(.06)
+            box.bkgd(' ', self._get_color(ColorPairs.SPACE))
+            box.erase()
+            box.refresh()
 
     def _find_old_planet(self, planet):
         for old_planet in self.old_planets:
