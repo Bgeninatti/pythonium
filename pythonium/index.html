@@ -23,8 +23,8 @@
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6hfuFmcidryoWwgP7U34PFc6m8MaocfRlWg&usqp=CAU'
         ];
 
-        function f(t) {
-            data[t].things.forEach(function callback(p, index, array) {
+        function renderTheGalaxy(simulationStep) {
+            data[simulationStep].things.forEach(function callback(p, index, array) {
                 let sprite;
                 if (p.thing_type == "planet") {
                     sprite = PIXI.Sprite.from(planets[index % 3]);
@@ -40,15 +40,21 @@
                 app.stage.addChild(sprite);
             });
         }
-        // Create the sprite and add it to the stage
-        let elapsed = 0.0;
-        app.ticker.speed = 0.05;
-        app.ticker.add((delta) => {
-            app.stage.removeChildren();
-            elapsed += delta;
-            console.log(elapsed);
-            f(Math.round(elapsed));
-        });
+
+        let N_STEPS = data.length;
+        let DEFAULT_DELAY = 500;  // milliseconds
+        var counter = 0;
+        var idTimeout = window.setInterval(
+            function(){
+                // Every `DEFAULT_DELAY` milliseconds clear the Galaxy 
+                // and render the simulation step given by `counter`
+                app.stage.removeChildren();
+                renderTheGalaxy(counter % N_STEPS);
+                counter++;
+                console.log(counter);
+            }, 
+            DEFAULT_DELAY
+        );
         
     </script>
   </body>
