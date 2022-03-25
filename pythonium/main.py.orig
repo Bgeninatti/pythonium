@@ -6,18 +6,26 @@ import re
 import socketserver
 import time
 import uuid
+<<<<<<< HEAD
 import webbrowser
 from pathlib import Path
 
+||||||| parent of 679cabe (feat: kindo of functional OrdersExtractor)
+from pathlib import Path
+
+=======
+>>>>>>> 679cabe (feat: kindo of functional OrdersExtractor)
 import click
+from datetime import datetime as dt
+from pathlib import Path
 
 from . import __version__
 from .game import Game
 from .game_modes import ClassicMode
 from .helpers import random_name
 from .logger import setup_logger
-from .orders.extractor import OrdersExtractor
 from .output_handler import StandardOutputHanlder, StreamOutputHanlder
+from .orders.extractor import OrdersExtractor
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -85,11 +93,6 @@ def run(
         orders_extractor=orders_extractor,
     )
     game.play()
-
-
-import os
-from datetime import date
-from datetime import datetime as dt
 
 
 @cli.command()

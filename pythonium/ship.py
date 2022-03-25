@@ -1,6 +1,7 @@
 import attr
 
 from .core import Position, StellarThing
+from .orders.request import ShipOrderRequest
 from .ship_type import ShipType
 from .vectors import Transfer
 
@@ -97,10 +98,24 @@ class Ship(StellarThing):
         """
         orders = []
         if self.transfer:
-            orders.append(("ship_transfer", self.id, self.transfer))
+            orders.append(
+                ShipOrderRequest(
+                    name="ship_transfer",
+                    player=self.player,
+                    id=self.id,
+                    kwargs={"transfer": self.transfer},
+                )
+            )
 
         if self.target is not None:
-            orders.append(("ship_move", self.id, self.target))
+            orders.append(
+                ShipOrderRequest(
+                    name="ship_move",
+                    player=self.player,
+                    id=self.id,
+                    kwargs={"target": self.target},
+                )
+            )
 
         return orders
 
