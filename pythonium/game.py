@@ -4,7 +4,7 @@ from . import cfg
 from .rules import galaxy as galaxy_rules
 from .rules import planet as planet_rules
 from .rules import ship as ship_rules
-from .rules.request import ShipOrderRequest, PlanetOrderRequest
+from .rules.order import ShipOrder, PlanetOrder
 
 logger = logging.getLogger("game")
 
@@ -157,9 +157,9 @@ class Game:
         func = getattr(self, f"action_{name}", None)
         for order in orders:
             kwargs = order.kwargs
-            if isinstance(order, ShipOrderRequest):
+            if isinstance(order, ShipOrder):
                 obj = self.galaxy.search_ship(order.id)
-            elif isinstance(order, PlanetOrderRequest):
+            elif isinstance(order, PlanetOrder):
                 obj = self.galaxy.search_planet(order.id)
             else:
                 logger.warning(

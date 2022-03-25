@@ -2,7 +2,7 @@ import attr
 
 from . import cfg, validators
 from .core import Position, StellarThing
-from .rules.request import PlanetOrderRequest
+from .rules.order import PlanetOrder
 from .ship_type import ShipType
 from .vectors import Transfer
 
@@ -259,7 +259,7 @@ class Planet(StellarThing):
         ``new_ship`` and ``taxes``
         """
         orders = [
-            PlanetOrderRequest(
+            PlanetOrder(
                 name="planet_set_taxes",
                 id=self.id,
                 player=self.player,
@@ -269,7 +269,7 @@ class Planet(StellarThing):
 
         if self.new_ship is not None:
             orders.append(
-                PlanetOrderRequest(
+                PlanetOrder(
                     name="planet_build_ship",
                     id=self.id,
                     player=self.player,
@@ -279,7 +279,7 @@ class Planet(StellarThing):
 
         if self.new_mines > 0:
             orders.append(
-                PlanetOrderRequest(
+                PlanetOrder(
                     name="planet_build_mines",
                     id=self.id,
                     player=self.player,
