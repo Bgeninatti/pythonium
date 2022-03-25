@@ -1,4 +1,4 @@
-import argparse
+import re
 import importlib
 import os
 from pathlib import Path
@@ -97,13 +97,39 @@ def visualize(state, html):
         click.echo('Visualization in ' + output_fname)
 
 def parseToJS(data_json):
+    match_data = f"""{{
+        turns: {get_data_turns(data_json)},
+        galaxyName: {get_data_galaxy_name(data_json)},
+        players: {get_data_players(data_json)},
+    }}"""
+
+    return match_data
+
+def get_data_galaxy_name(data_json):
+    name_end = data_json.index('\n')
+    data_turns = data_json[:name_end+1]
+    name = re.findall('\w+\n', data_turns)[0][:-1]
+    return f'"{name}"'
+
+def get_data_turns(data_json):
     data_js_start = data_json.index('\n')
-    data_js = data_json[data_js_start:]
-    data_js = data_js.replace('}{', '}, {')
-    data_js = data_js.replace('}\n{', '},\n{')
+    data_turns = data_json[data_js_start:]
+    data_turns = data_turns.replace('}{', '}, {')
+    data_turns = data_turns.replace('}\n{', '},\n{')
 
-    start_tail = data_js.index('|') - len('pythonium')
-    data_js = data_js[0:start_tail]
-    data_js = f'[{data_js}]'
+    start_tail = data_turns.index('|') - len('pythonium')
+    data_turns = data_turns[0:start_tail]
+    data_turns = f'[{data_turns}]'
 
-    return data_js
+    return data_turns
+
+def get_data_players(data_json):
+    def oc_to_name(oc):
+        return oc[len('"player": '):]
+
+    names_occurrencies = re.findall('"player": "[^(?!")]*"', data_json)
+    names = list(set([oc_to_name(name_oc) for name_oc in names_occurrencies]))
+
+    if len(names) == 1:
+        return f'[{names[0]}]'
+    return f'[{names[0]}, {names[1]}]'

@@ -6,8 +6,7 @@ document.getElementById("visualization").appendChild(app.view);
 app.stage.scale.set(resizeFactor);
 
 function renderTheGalaxy(simulationStep) {
-    // data is global, defined in the HTML
-    data[simulationStep].things.forEach((p, index, array) => {
+    data.turns[simulationStep].things.forEach((p, index, array) => {
         let sprite;
         if (p.thing_type == "planet") {
             sprite = new PIXI.TilingSprite(textures.planets[index % 3]);
@@ -52,16 +51,16 @@ function renderStep(n) {
 
 function playNext(){
     counter++;
-    let step = counter % data.length;
+    let step = counter % data.turns.length;
     renderStep(step);
 }
 
 function playPrevious(){
     counter--;
     if (counter < 0) {
-        counter = data.length - 1;
+        counter = data.turns.length - 1;
     }
-    let step = counter % data.length;
+    let step = counter % data.turns.length;
     renderStep(step);
 }
 
@@ -118,6 +117,7 @@ loader.load((loader, resources) => {
 });
 
 window.onload = function() {
+    document.getElementById("galaxy-name-placeholder").innerText = data.galaxyName;
     loader.onComplete.add(() => {
         renderStep(0);
         timer = setInterval(playNext, DEFAULT_DELAY);
