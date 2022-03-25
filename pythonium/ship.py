@@ -1,7 +1,7 @@
 import attr
 
 from .core import Position, StellarThing
-from .orders.request import ShipOrderRequest
+from .rules.request import ShipOrderRequest
 from .ship_type import ShipType
 from .vectors import Transfer
 
@@ -94,7 +94,7 @@ class Ship(StellarThing):
 
     def get_orders(self):
         """
-        Compute orders based on player control attributes: ``transfer`` and ``target``
+        Compute rules based on player control attributes: ``transfer`` and ``target``
         """
         orders = []
         if self.transfer:

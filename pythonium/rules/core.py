@@ -8,7 +8,7 @@ from ..ship import Ship
 
 
 @attr.s()
-class ShipOrder(ABC):
+class ShipRule(ABC):
 
     name: str = attr.ib(init=False)
     ship: Ship = attr.ib()
@@ -18,7 +18,7 @@ class ShipOrder(ABC):
 
 
 @attr.s()
-class PlanetOrder(ABC):
+class PlanetRule(ABC):
 
     name: str = attr.ib(init=False)
     planet: Planet = attr.ib()
@@ -28,7 +28,7 @@ class PlanetOrder(ABC):
 
 
 @attr.s()
-class GalaxyOrder(ABC):
+class GalaxyRule(ABC):
 
     name: str = attr.ib(init=False)
     galaxy: Galaxy = attr.ib()

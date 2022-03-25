@@ -1,7 +1,7 @@
 import pytest
 
 from pythonium import Transfer, cfg
-from pythonium.orders.request import PlanetOrderRequest
+from pythonium.rules.request import PlanetOrderRequest
 
 from .factories import PlanetFactory, ShipTypeFactory
 

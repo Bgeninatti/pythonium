@@ -1,10 +1,10 @@
 import logging
 
 from . import cfg
-from .orders import galaxy as galaxy_orders
-from .orders import planet as planet_orders
-from .orders import ship as ship_orders
-from .orders.request import PlanetOrderRequest, ShipOrderRequest
+from .rules import galaxy as galaxy_rules
+from .rules import planet as planet_rules
+from .rules import ship as ship_rules
+from .rules.request import ShipOrderRequest, PlanetOrderRequest
 
 logger = logging.getLogger("game")
 
@@ -80,7 +80,7 @@ class Game:
 
     def run_turn(self, orders):
         """
-        Execute turn orders in the following order.
+        Execute turn rules in the following order.
         1. Ships download transfers :func:`action_ship_transfer`
         2. Ships upload transfers :func:`action_ship_transfer`
         3. Mines construction :func:`action_planet_build_mines`
@@ -135,15 +135,15 @@ class Game:
         self.galaxy.turn += 1
 
     def produce_resources(self):
-        order = galaxy_orders.ProduceResources(self.galaxy)
+        order = galaxy_rules.ProduceResources(self.galaxy)
         order.execute()
 
     def resolve_ships_conflicts(self):
-        order = galaxy_orders.ResolveShipsConflicts(self.galaxy, cfg.tenacity)
+        order = galaxy_rules.ResolveShipsConflicts(self.galaxy, cfg.tenacity)
         order.execute()
 
     def resolve_planets_conflicts(self):
-        order = galaxy_orders.ResolvePlanetsConflicts(self.galaxy)
+        order = galaxy_rules.ResolvePlanetsConflicts(self.galaxy)
         order.execute()
 
     def run_player_action(self, name, orders):
@@ -211,15 +211,15 @@ class Game:
                 )
 
     def action_ship_move(self, ship, target):
-        order = ship_orders.ShipMoveOrder(ship, target)
+        order = ship_rules.ShipMoveRule(ship, target)
         order.execute(self.galaxy)
 
     def action_ship_transfer(self, ship, transfer):
-        order = ship_orders.ShipTransferOrder(ship, transfer)
+        order = ship_rules.ShipTransferRule(ship, transfer)
         order.execute(self.galaxy)
 
     def action_planet_build_mines(self, planet, new_mines):
-        order = planet_orders.PlanetBuildMinesOrder(planet, new_mines)
+        order = planet_rules.PlanetBuildMinesRule(planet, new_mines)
         order.execute(self.galaxy)
 
     def action_planet_build_ship(self, planet, ship_type):
@@ -235,9 +235,9 @@ class Game:
                 },
             )
             return
-        order = planet_orders.PlanetBuildShipOrder(planet, ship_type)
+        order = planet_rules.PlanetBuildShipRule(planet, ship_type)
         order.execute(self.galaxy)
 
     def action_planet_set_taxes(self, planet, taxes):
-        order = planet_orders.PlanetSetTaxesOrder(planet, taxes)
+        order = planet_rules.PlanetSetTaxesRule(planet, taxes)
         order.execute(self.galaxy)

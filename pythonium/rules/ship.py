@@ -4,13 +4,13 @@ from typing import Tuple
 import attr
 
 from ..vectors import Transfer
-from .core import ShipOrder
+from .core import ShipRule
 
 logger = logging.getLogger("game")
 
 
 @attr.s()
-class ShipMoveOrder(ShipOrder):
+class ShipMoveRule(ShipRule):
 
     name = "ship_move"
     target: Tuple[int, int] = attr.ib()
@@ -53,7 +53,7 @@ class ShipMoveOrder(ShipOrder):
 
 
 @attr.s()
-class ShipTransferOrder(ShipOrder):
+class ShipTransferRule(ShipRule):
 
     name = "ship_transfer"
     transfer: Transfer = attr.ib()

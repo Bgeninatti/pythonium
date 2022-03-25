@@ -4,13 +4,13 @@ import attr
 
 from ..ship import Ship
 from ..ship_type import ShipType
-from .core import PlanetOrder
+from .core import PlanetRule
 
 logger = logging.getLogger("game")
 
 
 @attr.s()
-class PlanetBuildMinesOrder(PlanetOrder):
+class PlanetBuildMinesRule(PlanetRule):
 
     name = "build_mines"
     new_mines: int = attr.ib()
@@ -51,7 +51,7 @@ class PlanetBuildMinesOrder(PlanetOrder):
 
 
 @attr.s()
-class PlanetBuildShipOrder(PlanetOrder):
+class PlanetBuildShipRule(PlanetRule):
 
     name = "build_ship"
     ship_type: ShipType = attr.ib()
@@ -98,7 +98,7 @@ class PlanetBuildShipOrder(PlanetOrder):
 
 
 @attr.s()
-class PlanetSetTaxesOrder(PlanetOrder):
+class PlanetSetTaxesRule(PlanetRule):
 
     name = "set_taxes"
     taxes: int = attr.ib()

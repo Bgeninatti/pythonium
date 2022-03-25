@@ -2,7 +2,7 @@ import attr
 
 from . import cfg, validators
 from .core import Position, StellarThing
-from .orders.request import PlanetOrderRequest
+from .rules.request import PlanetOrderRequest
 from .ship_type import ShipType
 from .vectors import Transfer
 
@@ -113,7 +113,7 @@ class Planet(StellarThing):
     **Attribute that can be modified by the player**
 
     New mines that the player order to build in the current turn. This value is set to
-    zero when the player orders are executed.
+    zero when the player rules are executed.
     """
 
     new_ship: ShipType = attr.ib(
@@ -126,7 +126,7 @@ class Planet(StellarThing):
 
     The new ship that the player order to build in the current turn.
 
-    This value is set to ``None`` when the player orders are executed
+    This value is set to ``None`` when the player rules are executed
     """
 
     taxes: int = attr.ib(
@@ -255,7 +255,7 @@ class Planet(StellarThing):
 
     def get_orders(self):
         """
-        Compute orders based on player control attributes: ``new_mines``, \
+        Compute rules based on player control attributes: ``new_mines``, \
         ``new_ship`` and ``taxes``
         """
         orders = [
