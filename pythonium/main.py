@@ -1,6 +1,7 @@
 import argparse
 import importlib
 import logging
+import re
 import sys
 import time
 from pathlib import Path
@@ -77,7 +78,7 @@ import os
 @click.option("--html", default=None)
 def visualize(state, html):
     with open(state, "r") as state_file:
-        state_data = state_file.read()
+        state_data = parseToJS(state_file.read())
 
     with open("pythonium/index.html", "r") as template_file:
         template = template_file.read()
@@ -94,5 +95,16 @@ def visualize(state, html):
         
     with open(output_fname, "w") as out_file:
         out_file.write(web)
-        click.echo('Visualizarion in ' + output_fname)
+        click.echo('Visualization in ' + output_fname)
 
+def parseToJS(data_json):
+    data_js_start = data_json.index('\n')
+    data_js = data_json[data_js_start:]
+    data_js = data_js.replace('}{', '}, {')
+    data_js = data_js.replace('}\n{', '},\n{')
+
+    start_tail = data_js.index('|') - len('pythonium')
+    data_js = data_js[0:start_tail]
+    data_js = f'[{data_js}]'
+
+    return data_js
