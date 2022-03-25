@@ -1,8 +1,8 @@
+import logging
 from collections import defaultdict
 from itertools import groupby
 
 import attr
-import logging
 
 from pythonium import GameMode
 

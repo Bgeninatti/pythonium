@@ -16,8 +16,8 @@ from .game import Game
 from .game_modes import ClassicMode
 from .helpers import random_name
 from .logger import setup_logger
-from .output_handler import StandardOutputHanlder, StreamOutputHanlder
 from .orders.extractor import OrdersExtractor
+from .output_handler import StandardOutputHanlder, StreamOutputHanlder
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 dir_path = os.path.dirname(os.path.realpath(__file__))
