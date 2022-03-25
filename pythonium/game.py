@@ -1,10 +1,8 @@
 import logging
-import sys
 
 from collections import defaultdict
 from itertools import groupby
 from . import cfg
-from .explosion import Explosion
 from .orders import galaxy as galaxy_orders
 from .orders import planet as planet_orders
 from .orders import ship as ship_orders
@@ -18,9 +16,9 @@ class Game:
         name,
         players,
         gmode,
+        output_handler,
         *,
         raise_exceptions=False,
-        stream_state=False
     ):
         """
         :param name: Name for the galaxy. Also used as game identifier.
@@ -40,18 +38,17 @@ class Game:
         if len(players) != len({p.name for p in players}):
             raise ValueError("Player names must be unique")
 
-        sys.stdout.write("** Pythonium **\n")
         self.gmode = gmode
         self.players = players
         self.raise_exceptions = raise_exceptions
-        self._stream_state = stream_state
+        self.output_handler = output_handler
         logger.info(
             "Initializing galaxy",
             extra={"players": len(self.players), "galaxy_name": name},
         )
         self.galaxy = self.gmode.build_galaxy(name, self.players)
         logger.info("Galaxy initialized")
-        sys.stdout.write(f"Running battle in galaxy #{name}\n")
+        self.output_handler.start(self.galaxy)
 
     def extract_player_orders(self, player, galaxy, context):
         player_galaxy = player.next_turn(galaxy, context)
@@ -92,18 +89,13 @@ class Game:
     def play(self):
         while True:
 
-            sys.stdout.write(f"\rPlaying game{'.' * int(self.galaxy.turn/4)}")
-            sys.stdout.flush()
-
             logger.info("Turn started", extra={"turn": self.galaxy.turn})
             orders = defaultdict(lambda: [])
             context = self.gmode.get_context(
                 self.galaxy, self.players, self.galaxy.turn
             )
 
-            # Should I record the state?  Litox dejó acá...
-            if self._stream_state:
-                logger.info("*** Acá el estado serializado...")
+            self.output_handler.step(self.galaxy, context)
 
             # log current score
             for player_score in context["score"]:
@@ -150,22 +142,14 @@ class Game:
                     continue
 
             if self.gmode.has_ended(self.galaxy, self.galaxy.turn):
-                if self.gmode.winner:
-                    logger.info(
-                        "Winner!",
-                        extra={
-                            "turn": self.galaxy.turn,
-                            "winner": self.gmode.winner,
-                        },
-                    )
-                    message = f"Player {self.gmode.winner} wins\n"
-                else:
-                    logger.info("Nobody won", extra={"turn": self.galaxy.turn})
-                    message = "Nobody won\n"
-
-                sys.stdout.write("\n")
-                sys.stdout.write(message)
-
+                logger.info(
+                    "Game ended",
+                    extra={
+                        "turn": self.galaxy.turn,
+                        "winner": self.gmode.winner,
+                    },
+                )
+                self.output_handler.finish(self.galaxy, self.gmode.winner)
                 break
 
             # Reset explosions

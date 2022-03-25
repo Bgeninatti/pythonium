@@ -11,7 +11,7 @@ from .game import Game
 from .game_modes import ClassicMode
 from .helpers import random_name
 from .logger import setup_logger
-
+from .output_handler import StreamOutputHanlder, StandardOutputHanlder
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 
@@ -20,9 +20,6 @@ HELP_EPILOG = "A space strategy algorithmic-game build in python"
 @click.version_option(__version__)
 @click.pass_context
 def cli(ctx):
-    # logfile = Path.cwd() / f"{galaxy_name}.log"
-    # setup_logger(logfile, verbose=args.verbose)
-
     pass
 
 
@@ -32,9 +29,14 @@ def cli(ctx):
 @click.argument("players", nargs=-1)
 @click.option("--raise-exceptions/--no-raise-exceptions", default=False)
 @click.option("--verbose/--no-verbose", default=False)
-def run(ctx, galaxy_name, players, raise_exceptions, verbose, *args, **kwargs):
+@click.option("--stream-state/--no-stream-state", default=False)
+def run(ctx, galaxy_name, players, raise_exceptions, verbose, stream_state, *args, **kwargs):
+
     game_mode = ClassicMode()
-    galaxy_name = random_name(6)
+    galaxy_name = galaxy_name if galaxy_name else random_name(6)
+
+    logfile = Path.cwd() / f"{galaxy_name}.log"
+    setup_logger(logfile, verbose=verbose)
 
     _players = []
     for player_module in players:
@@ -42,13 +44,17 @@ def run(ctx, galaxy_name, players, raise_exceptions, verbose, *args, **kwargs):
         _player = player.Player()
         _players.append(_player)
 
+    if stream_state:
+        output_handler = StreamOutputHanlder()
+    else:
+        output_handler = StandardOutputHanlder()
+
     game = Game(
         name=galaxy_name,
         players=_players,
         gmode=game_mode,
+        output_handler=output_handler,
         raise_exceptions=raise_exceptions,
-        # stream_state=stream_state
-        stream_state=False,
     )
     game.play()
 
