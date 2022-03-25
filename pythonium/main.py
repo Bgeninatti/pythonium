@@ -1,5 +1,7 @@
 import importlib
+import os
 import random
+import re
 import time
 import uuid
 from pathlib import Path
@@ -14,6 +16,8 @@ from .logger import setup_logger
 from .output_handler import StandardOutputHanlder, StreamOutputHanlder
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
+dir_path = os.path.dirname(os.path.realpath(__file__))
+WEB_RENDERER_TEMPLATE = os.path.join(dir_path, "webrenderer/index.html")
 
 
 def set_seed(seed):
@@ -76,6 +80,70 @@ def run(
     game.play()
 
 
+import os
+from datetime import date
+from datetime import datetime as dt
+
+
 @cli.command()
-def visualize():
-    click.echo("implement me")
+@click.argument("state")
+@click.option("--html", default=None)
+def visualize(state, html):
+    with open(state, "r") as state_file:
+        state_data = parseToJS(state_file.read())
+
+    with open(WEB_RENDERER_TEMPLATE, "r") as template_file:
+        template = template_file.read()
+        web = template.replace("<!-- DATA PLACEHOLDER -->", state_data)
+
+    output_fname = html
+    if output_fname is None:
+        prefix, ext = os.path.splitext(state)
+        ts = dt.timestamp(dt.now())
+        output_fname = prefix + str(ts) + ".html"
+
+    with open(output_fname, "w") as out_file:
+        out_file.write(web)
+        click.echo("Visualization in " + output_fname)
+
+
+def parseToJS(data_json):
+    match_data = f"""{{
+        turns: {get_data_turns(data_json)},
+        galaxyName: {get_data_galaxy_name(data_json)},
+        players: {get_data_players(data_json)},
+    }}"""
+
+    return match_data
+
+
+def get_data_galaxy_name(data_json):
+    name_end = data_json.index("\n")
+    data_turns = data_json[: name_end + 1]
+    name = re.findall("\w+\n", data_turns)[0][:-1]
+    return f'"{name}"'
+
+
+def get_data_turns(data_json):
+    data_js_start = data_json.index("\n")
+    data_turns = data_json[data_js_start:]
+    data_turns = data_turns.replace("}{", "}, {")
+    data_turns = data_turns.replace("}\n{", "},\n{")
+
+    start_tail = data_turns.index("|") - len("pythonium")
+    data_turns = data_turns[0:start_tail]
+    data_turns = f"[{data_turns}]"
+
+    return data_turns
+
+
+def get_data_players(data_json):
+    def oc_to_name(oc):
+        return oc[len('"player": ') :]
+
+    names_occurrencies = re.findall('"player": "[^(?!")]*"', data_json)
+    names = list(set([oc_to_name(name_oc) for name_oc in names_occurrencies]))
+
+    if len(names) == 1:
+        return f"[{names[0]}]"
+    return f"[{names[0]}, {names[1]}]"
