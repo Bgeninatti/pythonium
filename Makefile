@@ -1,31 +1,24 @@
-COMPOSE = docker compose -f docker-compose.yml
-DEV_COMPOSE = $(COMPOSE) -f docker-compose.develop.yml
-ARGS = $(filter-out $@,$(MAKECMDGOALS))
-
 help:
 	@echo "play             -- Open shell to play"
 	@echo "test             -- Run tests"
 	@echo "devshell         -- Open shell with development dependencies"
 
+
 play:
-	$(COMPOSE) run --rm pserver /bin/bash
+	docker build --progress plain --target production --tag pythonium:latest .; \
+	docker run --rm -ti pythonium pythonium
 
 devshell:
-	$(DEV_COMPOSE) run --rm pserver /bin/bash
+	docker build --progress plain --target development --tag pythonium:development .; \
+	docker run --rm -ti -v $(pwd):/opt/pythonium pythonium:development bash
 
 test:
-	$(DEV_COMPOSE) run --rm pserver pytest $(ARGS)
+	docker build --progress plain --target development --tag pythonium:development .; \
+	docker run --rm -ti pythonium:development pytest
 
-check-imports:
-	$(DEV_COMPOSE) run --rm pserver isort **/*.py
+clean:
+	docker rmi pythonium:latest; \
+	docker rmi pythonium:development;
 
-check-style:
-	$(DEV_COMPOSE) run --rm pserver black **/*.py
 
-build:
-	$(COMPOSE) build
-
-build-dev:
-	$(DEV_COMPOSE) build
-
-.PHONY: help play test devshell
+.PHONY: help clean play test devshell
