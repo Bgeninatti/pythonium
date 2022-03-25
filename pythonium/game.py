@@ -5,6 +5,7 @@ from . import cfg
 from .orders import galaxy as galaxy_orders
 from .orders import planet as planet_orders
 from .orders import ship as ship_orders
+from .orders.request import ShipOrderRequest, PlanetOrderRequest
 
 logger = logging.getLogger("game")
 
@@ -41,42 +42,6 @@ class Game:
         self.galaxy = self.game_mode.build_galaxy(name, self.players)
         logger.info("Galaxy initialized")
         self.output_handler.start(self.galaxy)
-
-    def extract_player_orders(self, player, galaxy, context):
-        player_galaxy = player.next_turn(galaxy, context)
-
-        # The function must return the mutated galaxy
-
-        if id(galaxy) != id(player_galaxy):
-            raise ValueError(
-                "The `run_player` method must return a mutated galaxy"
-            )
-
-        planets_orders = [
-            p.get_orders()
-            for p in player_galaxy.planets.values()
-            if p.player == player.name
-        ]
-        ships_orders = [
-            s.get_orders()
-            for s in player_galaxy.ships
-            if s.player == player.name
-        ]
-
-        orders = [
-            o for orders in ships_orders + planets_orders for o in orders
-        ]
-        logger.info(
-            "Player orders computed",
-            extra={
-                "turn": self.galaxy.turn,
-                "player": player.name,
-                "orders": len(orders),
-            },
-        )
-
-        grouped_actions = groupby(orders, lambda o: o[0])
-        return grouped_actions
 
     def play(self):
         while True:
@@ -191,24 +156,19 @@ class Game:
         :type orders: tuple
         """
         func = getattr(self, f"action_{name}", None)
-        for player, params in orders:
-            if name.startswith("ship"):
-                nid = params[0]
-                args = params[1:]
-
-                obj = self.galaxy.search_ship(nid)
-            elif name.startswith("planet"):
-                pid = params[0]
-                args = params[1:]
-
-                obj = self.galaxy.search_planet(pid)
+        for order in orders:
+            kwargs = order.kwargs
+            if isinstance(order, ShipOrderRequest):
+                obj = self.galaxy.search_ship(order.id)
+            elif isinstance(order, PlanetOrderRequest):
+                obj = self.galaxy.search_planet(order.id)
             else:
                 logger.warning(
                     "Unknown params",
                     extra={
                         "turn": self.galaxy.turn,
-                        "player": player.name,
-                        "params": params,
+                        "player": order.player,
+                        "kwargs": kwargs,
                     },
                 )
                 continue
@@ -218,21 +178,9 @@ class Game:
                     "Object not found",
                     extra={
                         "turn": self.galaxy.turn,
-                        "player": player.name,
-                        "params": params,
+                        "player": order.name,
+                        "kwargs": kwargs,
                         "name": name,
-                    },
-                )
-                continue
-
-            if obj.player != player.name:
-                logger.warning(
-                    "This is not yours",
-                    extra={
-                        "turn": self.galaxy.turn,
-                        "player": player.name,
-                        "owner": obj.player,
-                        "obj": type(obj),
                     },
                 )
                 continue
@@ -244,12 +192,12 @@ class Game:
                     "player": obj.player,
                     "action": name,
                     "obj": type(obj),
-                    "args": args,
+                    "kwargs": kwargs,
                 },
             )
 
             try:
-                func(obj, *args)
+                func(obj, **kwargs)
             except Exception as e:
                 logger.error(
                     "Unexpected error running player params",
@@ -258,7 +206,7 @@ class Game:
                         "player": obj.player,
                         "action": name,
                         "obj": type(obj),
-                        "args": args,
+                        "kwargs": kwargs,
                         "reason": e,
                     },
                 )
