@@ -1,9 +1,10 @@
-import random
-import uuid
-import time
-import click
 import importlib
+import random
+import time
+import uuid
 from pathlib import Path
+
+import click
 
 from . import __version__
 from .game import Game
