@@ -42,6 +42,7 @@
         document.getElementById("visualization").appendChild(app.view);
 
         const textures = {};
+        const playerColors = [0x00AAFF, 0xFFAA00]
 
         function renderTheGalaxy(simulationStep) {
             data[simulationStep].things.forEach((p, index, array) => {
@@ -50,12 +51,14 @@
                     sprite = new PIXI.TilingSprite(textures.planets[index % 3]);
                     sprite.anchor.set(0.5);
                     sprite.scale.set(0.15);
-                    //sprite.visible = false;
+                    if (p.player !== null) {
+                        sprite.tint = playerColors[0];
+                    }
                 } else {
                     sprite = new PIXI.TilingSprite(textures.ships[0]);
                     sprite.anchor.set(0.5);
                     sprite.scale.set(0.15);
-                    sprite.tint = 0xFF0000;
+                    sprite.tint = playerColors[0];
                 }
                 sprite.position = {
                     x: p.position[0]*resizeFactor,
