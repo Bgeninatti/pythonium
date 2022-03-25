@@ -1,4 +1,3 @@
-import click
 import http.server
 import importlib
 import os
@@ -8,8 +7,9 @@ import socketserver
 import time
 import uuid
 import webbrowser
-
 from pathlib import Path
+
+import click
 
 from . import __version__
 from .game import Game
