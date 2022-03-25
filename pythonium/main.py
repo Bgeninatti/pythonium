@@ -4,7 +4,7 @@ from pathlib import Path
 import click
 
 from . import __version__
-from .bots import monitor_player
+from .bots import spectator_player
 from .game import Game
 from .game_modes import ClassicMode
 from .helpers import random_name
@@ -46,7 +46,7 @@ def run(
     logfile = Path.cwd() / f"{galaxy_name}.log"
     setup_logger(logfile, verbose=verbose)
 
-    _agents = [monitor_player.Player(is_player=False)]
+    _agents = [spectator_player.Player(is_player=False)]
     for player_module in players:
         player = importlib.import_module(player_module)
         _player = player.Player()

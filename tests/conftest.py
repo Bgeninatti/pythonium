@@ -6,7 +6,7 @@ import attr
 import pytest
 
 from pythonium import AbstractPlayer, Game, cfg
-from pythonium.bots import monitor_player
+from pythonium.bots import spectator_player
 from pythonium.logger import setup_logger
 from tests.factories import (
     GalaxyFactory,
