@@ -13,7 +13,8 @@ class Ship(StellarThing):
     It can be moved from one point to another, it can be used to move any resource, \
     and in some cases can be used to attack planets or ships.
     """
-    thing_type = 'ship'
+
+    thing_type = "ship"
 
     type: ShipType = attr.ib(
         validator=[attr.validators.instance_of((ShipType, type(None)))],
@@ -105,9 +106,9 @@ class Ship(StellarThing):
 
     @classmethod
     def deserialize(cls, data):
-        transfer_data = data.pop('transfer')
+        transfer_data = data.pop("transfer")
         transfer = Transfer(**transfer_data)
-        ship_type_data = data.pop('type')
-        ship_type_cost = Transfer(**ship_type_data.pop('cost'))
+        ship_type_data = data.pop("type")
+        ship_type_cost = Transfer(**ship_type_data.pop("cost"))
         ship_type = ShipType(**ship_type_data, cost=ship_type_cost)
         return cls(**data, transfer=transfer, type=ship_type)

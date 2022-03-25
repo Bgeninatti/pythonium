@@ -1,8 +1,9 @@
-import attr
 from itertools import groupby
 from typing import Dict, Iterable, List, Set, Tuple
 
+import attr
 import numpy as np
+
 from .core import Position, StellarThing
 from .explosion import Explosion
 from .planet import Planet
@@ -20,6 +21,7 @@ class Galaxy:
     :param explosions: Known explosions in the galaxy
     :param turn: Time in galaxy
     """
+
     name: str = attr.ib()
     """
     Galaxxy name.
@@ -64,9 +66,7 @@ class Galaxy:
     @property
     def planets(self):
         if not self._planets:
-            planets = filter(
-                lambda t: isinstance(t, Planet), self.things
-            )
+            planets = filter(lambda t: isinstance(t, Planet), self.things)
             self._planets = {p.position: p for p in planets}
         return self._planets
 
@@ -90,9 +90,7 @@ class Galaxy:
         List all the known races that own at least one ship or one planet.
         """
         return {
-            thing.player
-            for thing in self.things
-            if thing.player is not None
+            thing.player for thing in self.things if thing.player is not None
         }
 
     @staticmethod
@@ -269,23 +267,25 @@ class Galaxy:
         self._ships = []
 
     def serialize(self):
-        return attr.asdict(self, filter=lambda a, v: a.name not in ('_planets', '_ships'))
+        return attr.asdict(
+            self, filter=lambda a, v: a.name not in ("_planets", "_ships")
+        )
 
     @classmethod
     def deserialize(cls, data):
         things = []
-        for serialized_thing in data['things']:
-            thing_type = serialized_thing.pop('thing_type')
-            if thing_type == 'planet':
+        for serialized_thing in data["things"]:
+            thing_type = serialized_thing.pop("thing_type")
+            if thing_type == "planet":
                 things.append(Planet.deserialize(serialized_thing))
-            elif thing_type == 'ship':
+            elif thing_type == "ship":
                 things.append(Ship.deserialize(serialized_thing))
             else:
                 raise TypeError(f"Unknown thing {thing_type}")
         return cls(
             things=things,
-            turn=data['turn'],
-            explosions=data['explosions'],
-            size=data['size'],
-            name=data['name'],
+            turn=data["turn"],
+            explosions=data["explosions"],
+            size=data["size"],
+            name=data["name"],
         )

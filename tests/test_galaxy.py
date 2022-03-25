@@ -247,14 +247,13 @@ class TestGetShipsInDeepSpace:
 
 
 class TestGalaxySerialization:
-
     def test_serialize(self, galaxy):
         serialized_galaxy = galaxy.serialize()
         assert isinstance(serialized_galaxy, dict)
-        assert 'things' in serialized_galaxy
-        assert 'turn' in serialized_galaxy
-        assert 'explosions' in serialized_galaxy
-        assert 'size' in serialized_galaxy
+        assert "things" in serialized_galaxy
+        assert "turn" in serialized_galaxy
+        assert "explosions" in serialized_galaxy
+        assert "size" in serialized_galaxy
 
     def test_deserialize(self, galaxy):
         serialized_galaxy = galaxy.serialize()

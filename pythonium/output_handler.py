@@ -1,7 +1,8 @@
-import sys
-import attr
 import json
+import sys
 from typing import IO
+
+import attr
 
 from pythonium import __version__
 
@@ -22,7 +23,6 @@ class OutputHandler:
 
 @attr.s
 class StandardOutputHanlder(OutputHandler):
-
     def start(self, galaxy):
         self.output.write("** Pythonium **\n")
         self.output.write(f"Running battle in galaxy #{galaxy.name}\n")
@@ -39,16 +39,14 @@ class StandardOutputHanlder(OutputHandler):
         self.output.write(message)
 
 
-
 @attr.s
 class StreamOutputHanlder(OutputHandler):
-
     def start(self, galaxy):
-        self.output.write(f'pythonium|{__version__}|{galaxy.name}\n')
+        self.output.write(f"pythonium|{__version__}|{galaxy.name}\n")
 
     def step(self, galaxy, context):
         self.output.write(json.dumps(galaxy.serialize()))
-        self.output.write('\n')
+        self.output.write("\n")
 
     def finish(self, galaxy, winner):
-        self.output.write(f'pythonium|{galaxy.name}|{galaxy.turn}|{winner}\n')
+        self.output.write(f"pythonium|{galaxy.name}|{galaxy.turn}|{winner}\n")

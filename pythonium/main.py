@@ -1,17 +1,18 @@
 import argparse
-import click
 import importlib
 import logging
 import sys
 import time
 from pathlib import Path
 
+import click
+
 from . import __version__
 from .game import Game
 from .game_modes import ClassicMode
 from .helpers import random_name
 from .logger import setup_logger
-from .output_handler import StreamOutputHanlder, StandardOutputHanlder
+from .output_handler import StandardOutputHanlder, StreamOutputHanlder
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 
@@ -30,7 +31,16 @@ def cli(ctx):
 @click.option("--raise-exceptions/--no-raise-exceptions", default=False)
 @click.option("--verbose/--no-verbose", default=False)
 @click.option("--stream-state/--no-stream-state", default=False)
-def run(ctx, galaxy_name, players, raise_exceptions, verbose, stream_state, *args, **kwargs):
+def run(
+    ctx,
+    galaxy_name,
+    players,
+    raise_exceptions,
+    verbose,
+    stream_state,
+    *args,
+    **kwargs,
+):
 
     game_mode = ClassicMode()
     galaxy_name = galaxy_name if galaxy_name else random_name(6)
@@ -61,4 +71,4 @@ def run(ctx, galaxy_name, players, raise_exceptions, verbose, stream_state, *arg
 
 @cli.command()
 def visualize():
-    click.echo('implement me')
+    click.echo("implement me")

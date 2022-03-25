@@ -27,7 +27,8 @@ class Planet(StellarThing):
     planet production of ``clans``, ``pythonium``, and ``megacredits`` will be
     (in proportion of ``rioting_index``).
     """
-    thing_type = 'planet'
+
+    thing_type = "planet"
 
     temperature: int = attr.ib(
         validator=validators.number_between_zero_100, kw_only=True
@@ -294,6 +295,6 @@ class Planet(StellarThing):
 
     @classmethod
     def deserialize(cls, data):
-        mine_cost_data = data.pop('mine_cost')
+        mine_cost_data = data.pop("mine_cost")
         mine_cost = Transfer(**mine_cost_data)
         return cls(**data, mine_cost=mine_cost)

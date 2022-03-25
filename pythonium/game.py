@@ -1,7 +1,7 @@
 import logging
-
 from collections import defaultdict
 from itertools import groupby
+
 from . import cfg
 from .orders import galaxy as galaxy_orders
 from .orders import planet as planet_orders
@@ -31,7 +31,7 @@ class Game:
         :param raise_exceptions: If ``True`` stop the game if an exception is raised when
             computing player actions. Useful for debuging players.
         :type raise_exceptions: bool
-        :param stream_state: Default ``False``. If ``True`` each step in the 
+        :param stream_state: Default ``False``. If ``True`` each step in the
             simulation will be serialized & printed to standard output.
         :type stream_state: bool
         """
