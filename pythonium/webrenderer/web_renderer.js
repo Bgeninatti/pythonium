@@ -37,7 +37,8 @@ var timer;
 let DEFAULT_DELAY = 500;  // milliseconds
 var counter = 0; 
 
-let stepInputElem = document.getElementById("step-input");
+let stepInputElem = document.getElementById("step-slider");
+let stepLabelElem = document.getElementById("step-label");
 let animationControlElem = document.getElementById("animation-control");
 let animationPrevElem = document.getElementById("animation-prev");
 let animationNextElem = document.getElementById("animation-next");
@@ -47,6 +48,7 @@ function renderStep(n) {
     app.stage.removeChildren();
     renderTheGalaxy(n);
     stepInputElem.value = n;
+    stepLabelElem.innerText = n;
 };
 
 function playNext(){
@@ -93,6 +95,12 @@ document.getElementById("fullscreen-input").onclick = () => {
 
 animationNextElem.onclick = playNext;
 animationPrevElem.onclick = playPrevious;
+stepInputElem.onchange = function(e) {
+    let step = e.srcElement.value;
+    renderStep(step);
+    counter = step;
+    stepLabelElem.innerText = step;
+}
 
 
 
