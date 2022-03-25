@@ -4,7 +4,7 @@ from . import cfg
 from .rules import galaxy as galaxy_rules
 from .rules import planet as planet_rules
 from .rules import ship as ship_rules
-from .rules.order import ShipOrder, PlanetOrder
+from .rules.order import PlanetOrder, ShipOrder
 
 logger = logging.getLogger("game")
 
