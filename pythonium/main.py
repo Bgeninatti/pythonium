@@ -75,7 +75,6 @@ import os
 @cli.command()
 @click.argument("state")
 def visualize(state):
-    click.echo('implement me')
     with open(state, "r") as state_file:
         state_data = state_file.read()
 
@@ -91,4 +90,5 @@ def visualize(state):
     output_fname = prefix + str(ts) + ".html"
     with open(output_fname, "w") as out_file:
         out_file.write(web)
+        click.echo('Visualizarion in ' + output_fname)
 
