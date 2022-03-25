@@ -103,7 +103,7 @@ class Ship(StellarThing):
                     name="ship_transfer",
                     player=self.player,
                     id=self.id,
-                    kwargs={'transfer': self.transfer}
+                    kwargs={"transfer": self.transfer},
                 )
             )
 
@@ -113,7 +113,7 @@ class Ship(StellarThing):
                     name="ship_move",
                     player=self.player,
                     id=self.id,
-                    kwargs={'target': self.target}
+                    kwargs={"target": self.target},
                 )
             )
 

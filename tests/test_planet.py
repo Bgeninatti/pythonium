@@ -382,10 +382,7 @@ class TestPlanetOrders:
     def test_get_orders_return_list(self, colonized_planet):
         orders = colonized_planet.get_orders()
         assert isinstance(orders, list)
-        assert all([
-            isinstance(order, PlanetOrderRequest)
-            for order in orders
-        ])
+        assert all([isinstance(order, PlanetOrderRequest) for order in orders])
 
     @pytest.mark.parametrize("taxes", range(0, 101))
     def test_set_taxes_order(self, taxes, colonized_planet):
@@ -393,8 +390,8 @@ class TestPlanetOrders:
         orders = colonized_planet.get_orders()
         taxes_order = next(o for o in orders if o.name == "planet_set_taxes")
         assert taxes_order.id == colonized_planet.id
-        assert 'taxes' in taxes_order.kwargs
-        assert taxes_order.kwargs['taxes'] == taxes
+        assert "taxes" in taxes_order.kwargs
+        assert taxes_order.kwargs["taxes"] == taxes
 
     @pytest.mark.parametrize("new_mines", range(1, 101))
     def test_build_mines_order(self, new_mines, colonized_planet):
@@ -404,8 +401,8 @@ class TestPlanetOrders:
             o for o in orders if o.name == "planet_build_mines"
         )
         assert build_mines_order.id == colonized_planet.id
-        assert 'new_mines' in  build_mines_order.kwargs
-        assert build_mines_order.kwargs['new_mines'] == new_mines
+        assert "new_mines" in build_mines_order.kwargs
+        assert build_mines_order.kwargs["new_mines"] == new_mines
 
     def test_no_mines_order_if_new_mines_is_zero(self, colonized_planet):
         orders = colonized_planet.get_orders()
@@ -419,8 +416,8 @@ class TestPlanetOrders:
             o for o in orders if o.name == "planet_build_ship"
         )
         assert build_ship_order.id == colonized_planet.id
-        assert 'ship_type' in build_ship_order.kwargs
-        assert build_ship_order.kwargs['ship_type'] is ship_type
+        assert "ship_type" in build_ship_order.kwargs
+        assert build_ship_order.kwargs["ship_type"] is ship_type
 
     def test_no_ship_order_if_new_ship_is_none(self, colonized_planet):
         orders = colonized_planet.get_orders()
