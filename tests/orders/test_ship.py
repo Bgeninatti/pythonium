@@ -53,4 +53,8 @@ class TestShipMoveOrder:
         order = ShipMoveOrder(ship=random_ship, target=long_target)
         order.execute(galaxy)
         assert random_ship.target == long_target
-        assert np.all(np.isclose(random_ship.position, long_movement_expected_stop, atol=1))
+        assert np.all(
+            np.isclose(
+                random_ship.position, long_movement_expected_stop, atol=1
+            )
+        )
