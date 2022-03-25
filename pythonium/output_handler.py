@@ -32,7 +32,7 @@ class StandardOutputHanlder(OutputHandler):
         self.output.flush()
 
     def finish(self, galaxy, winner):
-        if winner is None:
+        if winner is not None:
             message = f"\nPlayer {winner} wins\n"
         else:
             message = "\nNobody won\n"
