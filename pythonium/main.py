@@ -69,6 +69,26 @@ def run(
     game.play()
 
 
+from datetime import date, datetime as dt
+import os
+
 @cli.command()
-def visualize():
-    click.echo("implement me")
+@click.argument("state")
+def visualize(state):
+    click.echo('implement me')
+    with open(state, "r") as state_file:
+        state_data = state_file.read()
+
+    with open("pythonium/index.html", "r") as template_file:
+        template = template_file.read()
+        web = template.replace(
+            "<!-- DATA PLACEHOLDER -->",
+            state_data
+        )
+    
+    prefix, ext = os.path.splitext(state)
+    ts = dt.timestamp(dt.now())
+    output_fname = prefix + str(ts) + ".html"
+    with open(output_fname, "w") as out_file:
+        out_file.write(web)
+
