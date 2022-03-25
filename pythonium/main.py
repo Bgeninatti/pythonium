@@ -4,6 +4,7 @@ from pathlib import Path
 import click
 
 from . import __version__
+from .bots import monitor_player
 from .game import Game
 from .game_modes import ClassicMode
 from .helpers import random_name
@@ -45,11 +46,11 @@ def run(
     logfile = Path.cwd() / f"{galaxy_name}.log"
     setup_logger(logfile, verbose=verbose)
 
-    _players = []
+    _agents = [monitor_player.Player(is_player=False)]
     for player_module in players:
         player = importlib.import_module(player_module)
         _player = player.Player()
-        _players.append(_player)
+        _agents.append(_player)
 
     if stream_state:
         output_handler = StreamOutputHanlder()
@@ -60,7 +61,7 @@ def run(
 
     game = Game(
         name=galaxy_name,
-        players=_players,
+        players=_agents,
         game_mode=game_mode,
         output_handler=output_handler,
         orders_extractor=orders_extractor,
