@@ -7,7 +7,8 @@ import attr
 class OrderRequest:
 
     name: str = attr.ib()
-    id: UUID = attr.ib()
+    id: str = attr.ib()
+    player: str = attr.ib()
     kwargs: dict = attr.ib()
 
 
