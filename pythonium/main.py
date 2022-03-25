@@ -1,12 +1,15 @@
+import click
+import http.server
 import importlib
 import os
 import random
 import re
+import socketserver
 import time
 import uuid
-from pathlib import Path
+import webbrowser
 
-import click
+from pathlib import Path
 
 from . import __version__
 from .game import Game
@@ -18,6 +21,7 @@ from .output_handler import StandardOutputHanlder, StreamOutputHanlder
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 dir_path = os.path.dirname(os.path.realpath(__file__))
 WEB_RENDERER_TEMPLATE = os.path.join(dir_path, "webrenderer/index.html")
+PORT = 8000
 
 
 def set_seed(seed):
@@ -104,7 +108,17 @@ def visualize(state, html):
 
     with open(output_fname, "w") as out_file:
         out_file.write(web)
-        click.echo("Visualization in " + output_fname)
+
+    handler = http.server.SimpleHTTPRequestHandler
+
+    with socketserver.TCPServer(("", PORT), handler) as httpd:
+        click.echo("Server started at localhost:" + str(PORT))
+        url = "http://localhost:{port}/{path}".format(
+            port=PORT, path=output_fname
+        )
+        click.echo("Visualization in: " + url)
+        webbrowser.open(url)
+        httpd.serve_forever()
 
 
 def parseToPOJO(data_json):
@@ -117,19 +131,22 @@ def parseToPOJO(data_json):
 
     return pojo
 
+
 def get_data_galaxy_name(prefix):
     return prefix.split("|")[2]
+
 
 def get_data_turns(states):
     return "[{}]".format(",\n".join(states))
 
+
 def get_data_players(data_json):
     def oc_to_name(oc):
-        return oc[len('"player": '):]
+        return oc[len('"player": ') :]
 
     names_occurrencies = re.findall('"player": "[^(?!")]*"', data_json)
     names = list(set([oc_to_name(name_oc) for name_oc in names_occurrencies]))
 
     if len(names) == 1:
-        return f'[{names[0]}]'
-    return f'[{names[0]}, {names[1]}]'
+        return f"[{names[0]}]"
+    return f"[{names[0]}, {names[1]}]"
