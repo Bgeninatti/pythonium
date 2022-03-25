@@ -46,11 +46,13 @@
 
     <script>
         // Create the application helper and add its render target to the page
-        let app = new PIXI.Application({ width: 500, height: 500});
+        let SIZE = 700;
+        let resizeFactor = SIZE / 500;  // 500 is the galaxy size
+        let app = new PIXI.Application({ width: SIZE, height: SIZE});
         document.getElementById("visualization").appendChild(app.view);
 
         function renderTheGalaxy(simulationStep) {
-            data[simulationStep].things.forEach(function callback(p, index, array) {
+            data[simulationStep].things.forEach((p, index, array) => {
                 let sprite;
                 if (p.thing_type == "planet") {
                     sprite = PIXI.Sprite.from(planets[index % 3]);
@@ -62,7 +64,10 @@
                     sprite.width = 10;
                     sprite.height = 10;
                 }
-                sprite.position = {x: p.position[0], y: p.position[1]};
+                sprite.position = {
+                    x: p.position[0]*resizeFactor, 
+                    y: p.position[1]*resizeFactor
+                };
                 app.stage.addChild(sprite);
             });
         }
