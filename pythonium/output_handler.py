@@ -50,3 +50,7 @@ class StreamOutputHanlder(OutputHandler):
 
     def finish(self, galaxy, winner):
         self.output.write(f"pythonium|{galaxy.name}|{galaxy.turn}|{winner}\n")
+OUTPUT_HANDLERS = {
+    "standard": StandardOutputHanlder,
+    "stream": StreamOutputHanlder,
+}
