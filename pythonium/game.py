@@ -19,7 +19,7 @@ class Game:
         output_handler,
         *,
         raise_exceptions=False,
-        stream_state=False
+        stream_state=False,
     ):
         """
         :param name: Name for the galaxy. Also used as game identifier.
