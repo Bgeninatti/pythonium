@@ -6,7 +6,7 @@ document.getElementById("visualization").appendChild(app.view);
 app.stage.scale.set(resizeFactor);
 
 function renderTheGalaxy(simulationStep) {
-    data.turns[simulationStep].things.forEach(
+    data.turns[simulationStep].galaxy.things.forEach(
         (thing, index) => {
             let texture = thing.thing_type == "planet"
                 ? textures.planets[index % 3]
@@ -14,10 +14,10 @@ function renderTheGalaxy(simulationStep) {
             let sprite = new PIXI.TilingSprite(texture);
             sprite.anchor.set(0.5);
             sprite.scale.set(0.1);
-            if (thing.player == data.players[0]) {
+            if (thing.player == data.meta.players[0]) {
                 sprite.tint = playerColors[0];
             }
-            if (thing.player == data.players[1]) {
+            if (thing.player == data.meta.players[1]) {
                 sprite.tint = playerColors[1];
             }
             if (thing.thing_type == "planet" && data.turns[simulationStep].explosions.length > 0) {
@@ -136,10 +136,10 @@ loader.load((loader, resources) => {
 });
 
 window.onload = function() {
-    document.getElementById("galaxy-name-placeholder").innerText = data.galaxyName;
+    document.getElementById("galaxy-name-placeholder").innerText = data.meta.galaxy;
 
     let botsListElem = document.getElementById("bots-list");
-    data.players.forEach((bot, i) => {
+    data.meta.players.forEach((bot, i) => {
         var li = document.createElement("li");
         li.innerHTML = "&#9632;" + bot;
         li.style = "color:" + playerColorsStr[i];
