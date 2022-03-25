@@ -10,6 +10,8 @@ import webbrowser
 from pathlib import Path
 
 import click
+from datetime import datetime as dt
+from pathlib import Path
 
 from . import __version__
 from .game import Game
@@ -85,11 +87,6 @@ def run(
         orders_extractor=orders_extractor,
     )
     game.play()
-
-
-import os
-from datetime import date
-from datetime import datetime as dt
 
 
 @cli.command()
