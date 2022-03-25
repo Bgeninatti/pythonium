@@ -44,6 +44,7 @@
         let app = new PIXI.Application({ width: SIZE, height: SIZE});
         document.getElementById("visualization").appendChild(app.view);
 
+        app.stage.scale.set(resizeFactor);
         const textures = {};
         const playerColors = [0x00AAFF, 0xFFAA00]
 
@@ -53,19 +54,19 @@
                 if (p.thing_type == "planet") {
                     sprite = new PIXI.TilingSprite(textures.planets[index % 3]);
                     sprite.anchor.set(0.5);
-                    sprite.scale.set(0.15);
+                    sprite.scale.set(0.1);
                     if (p.player !== null) {
                         sprite.tint = playerColors[0];
                     }
                 } else {
                     sprite = new PIXI.TilingSprite(textures.ships[0]);
                     sprite.anchor.set(0.5);
-                    sprite.scale.set(0.15);
+                    sprite.scale.set(0.1);
                     sprite.tint = playerColors[0];
                 }
                 sprite.position = {
-                    x: p.position[0]*resizeFactor,
-                    y: p.position[1]*resizeFactor
+                    x: p.position[0],
+                    y: p.position[1]
                 };
                 app.stage.addChild(sprite);
             });
