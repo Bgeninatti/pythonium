@@ -388,7 +388,7 @@ class TestPlanetOrders:
     def test_set_taxes_order(self, taxes, colonized_planet):
         colonized_planet.taxes = taxes
         orders = colonized_planet.get_orders()
-        taxes_order = next(o for o in orders if o.name == "planet_set_taxes")
+        taxes_order = next(o for o in orders if o.name == "set_taxes")
         assert taxes_order.id == colonized_planet.id
         assert 'taxes' in taxes_order.kwargs
         assert taxes_order.kwargs['taxes'] == taxes
@@ -398,7 +398,7 @@ class TestPlanetOrders:
         colonized_planet.new_mines = new_mines
         orders = colonized_planet.get_orders()
         build_mines_order = next(
-            o for o in orders if o.name == "planet_build_mines"
+            o for o in orders if o.name == "build_mines"
         )
         assert build_mines_order.id == colonized_planet.id
         assert 'new_mines' in  build_mines_order.kwargs
@@ -407,13 +407,13 @@ class TestPlanetOrders:
     def test_no_mines_order_if_new_mines_is_zero(self, colonized_planet):
         orders = colonized_planet.get_orders()
         order_names = [o.name for o in orders]
-        assert "planet_build_mines" not in order_names
+        assert "build_mines" not in order_names
 
     def test_build_ship_order(self, ship_type, colonized_planet):
         colonized_planet.new_ship = ship_type
         orders = colonized_planet.get_orders()
         build_ship_order = next(
-            o for o in orders if o.name == "planet_build_ship"
+            o for o in orders if o.name == "build_ship"
         )
         assert build_ship_order.id == colonized_planet.id
         assert 'ship_type' in build_ship_order.kwargs
@@ -422,4 +422,4 @@ class TestPlanetOrders:
     def test_no_ship_order_if_new_ship_is_none(self, colonized_planet):
         orders = colonized_planet.get_orders()
         order_names = [o.name for o in orders]
-        assert "planet_build_ship" not in order_names
+        assert "build_ship" not in order_names

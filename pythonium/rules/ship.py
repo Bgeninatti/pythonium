@@ -16,7 +16,6 @@ class ShipMoveRule(ShipRule):
     target: Tuple[int, int] = attr.ib()
 
     def execute(self, galaxy):
-
         _from = self.ship.position
         distance_to_target = galaxy.compute_distance(
             self.ship.position, self.target

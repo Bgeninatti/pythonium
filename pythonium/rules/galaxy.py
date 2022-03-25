@@ -4,6 +4,7 @@ from itertools import groupby
 import attr
 import numpy as np
 
+from .. import cfg
 from ..explosion import Explosion
 from .core import GalaxyRule
 
@@ -81,7 +82,7 @@ class ProduceResources(GalaxyRule):
 class ResolveShipsConflicts(GalaxyRule):
 
     name = "resolve_ships_conflicts"
-    tenacity: float = attr.ib()
+    tenacity: float = attr.ib(default=cfg.tenacity)
 
     def execute(self) -> None:
         ships_in_conflict = self.galaxy.get_ships_conflicts()
