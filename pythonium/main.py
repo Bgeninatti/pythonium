@@ -1,9 +1,6 @@
 import argparse
 import importlib
-import logging
-import re
-import sys
-import time
+import os
 from pathlib import Path
 
 import click
@@ -16,6 +13,8 @@ from .logger import setup_logger
 from .output_handler import StandardOutputHanlder, StreamOutputHanlder
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
+dir_path = os.path.dirname(os.path.realpath(__file__))
+WEB_RENDERER_TEMPLATE = os.path.join(dir_path, "webrenderer/index.html")
 
 
 @click.group(help=HELP_EPILOG)
@@ -80,7 +79,7 @@ def visualize(state, html):
     with open(state, "r") as state_file:
         state_data = parseToJS(state_file.read())
 
-    with open("pythonium/index.html", "r") as template_file:
+    with open(WEB_RENDERER_TEMPLATE, "r") as template_file:
         template = template_file.read()
         web = template.replace(
             "<!-- DATA PLACEHOLDER -->",
