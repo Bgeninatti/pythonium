@@ -21,6 +21,9 @@
                 <div class="col-auto">
                     <input id="step-input" type="number" readonly="true" class="form-control">
                 </div>
+                <div class="col-auto">
+                    <input id="fullscreen-input" type="button" class="form-control" value="Fullscreen">
+                </div>
             </div>
 
         </div>
@@ -105,6 +108,11 @@
             ];
         });
         loader.onComplete.add(main);
+
+        document.getElementById("fullscreen-input").onclick = () => {
+            app.view.requestFullscreen();            
+        };
+
 
     </script>
 </html>
