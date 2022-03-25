@@ -57,14 +57,14 @@ class OrdersExtractor:
             },
         )
 
-        grouped_actions = groupby(orders, lambda o: o[0])
+        grouped_actions = groupby(orders, lambda o: o.name)
         return grouped_actions
 
     def __call__(self, galaxy, players, context, raise_exceptions=False):
         orders = defaultdict(lambda: [])
         for player in players:
             # Filtra cosas que ve el player según las reglas del juego
-            galaxy = self.game_mode.galaxy_for_player(galaxy, player)
+            player_galaxy = self.game_mode.galaxy_for_player(galaxy, player)
             try:
                 logger.info(
                     "Computing orders for player",
@@ -75,7 +75,7 @@ class OrdersExtractor:
                 )
 
                 player_orders = self.extract_player_orders(
-                    player, galaxy, context
+                    player, player_galaxy, context
                 )
                 for name, player_orders in player_orders:
                     for order in player_orders:

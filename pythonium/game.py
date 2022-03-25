@@ -1,8 +1,5 @@
 import logging
-from collections import defaultdict
 from itertools import groupby
-
-import sys
 
 from . import cfg
 from .orders import galaxy as galaxy_orders
@@ -115,7 +112,7 @@ class Game:
                 "winner": self.game_mode.winner,
             },
         )
-        self.output_handler.finish(self.galaxy, self.gmode.winner)
+        self.output_handler.finish(self.galaxy, self.game_mode.winner)
 
     def run_turn(self, orders):
         """
