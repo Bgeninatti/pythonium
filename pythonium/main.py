@@ -1,8 +1,4 @@
-import argparse
 import importlib
-import logging
-import sys
-import time
 from pathlib import Path
 
 import click
@@ -60,7 +56,7 @@ def run(
     else:
         output_handler = StandardOutputHanlder()
 
-    orders_extractor = OrdersExtractor(game_mode, args.raise_exceptions)
+    orders_extractor = OrdersExtractor(game_mode, raise_exceptions)
 
     game = Game(
         name=galaxy_name,
