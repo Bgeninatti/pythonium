@@ -101,6 +101,7 @@ class Ship(StellarThing):
             orders.append(
                 ShipOrderRequest(
                     name="ship_transfer",
+                    player=self.player,
                     id=self.id,
                     kwargs={'transfer': self.transfer}
                 )
@@ -110,6 +111,7 @@ class Ship(StellarThing):
             orders.append(
                 ShipOrderRequest(
                     name="ship_move",
+                    player=self.player,
                     id=self.id,
                     kwargs={'target': self.target}
                 )

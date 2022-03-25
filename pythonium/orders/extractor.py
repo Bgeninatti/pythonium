@@ -56,6 +56,7 @@ class OrdersExtractor:
                 "orders": len(orders),
             },
         )
+        assert all(o.player == player.name for o in orders)
 
         grouped_actions = groupby(orders, lambda o: o.name)
         return grouped_actions
@@ -73,14 +74,11 @@ class OrdersExtractor:
                         "player": player.name,
                     },
                 )
-
                 player_orders = self.extract_player_orders(
                     player, player_galaxy, context
                 )
                 for name, player_orders in player_orders:
-                    for order in player_orders:
-                        orders[name].append((player, order[1:]))
-
+                    orders[name] += player_orders
             except Exception as e:
                 logger.error(
                     "Player lost turn",
@@ -104,6 +102,6 @@ class OrdersExtractor:
 
         # Sort orders by object id
         for o in orders.values():
-            o.sort(key=lambda x: x[1][0])
+            o.sort(key=lambda x: x.id)
 
         return orders
