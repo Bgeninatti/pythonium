@@ -131,6 +131,6 @@ def get_data_players(data_json):
     names_occurrencies = re.findall('"player": "[^(?!")]*"', data_json)
     names = list(set([oc_to_name(name_oc) for name_oc in names_occurrencies]))
 
-    if len(names) is 1:
+    if len(names) == 1:
         return f'[{names[0]}]'
     return f'[{names[0]}, {names[1]}]'
