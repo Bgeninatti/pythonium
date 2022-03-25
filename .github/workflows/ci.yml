@@ -21,7 +21,7 @@ jobs:
       - name: Play singleplayer
         run: |
           python setup.py install
-          pythonium --players pythonium.bots.standard_player --metrics
+          pythonium run players pythonium.bots.standard_player
   play-multiplayer:
     runs-on: ubuntu-latest
     needs: play-singleplayer
@@ -34,7 +34,7 @@ jobs:
       - name: Play multiplayer
         run: |
           python setup.py install
-          pythonium --players pythonium.bots.standard_player pythonium.bots.pacific_player --metrics
+          pythonium run players pythonium.bots.standard_player pythonium.bots.pacific_player
   tests:
     runs-on: ubuntu-latest
     needs: play-multiplayer

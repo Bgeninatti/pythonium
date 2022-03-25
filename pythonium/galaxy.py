@@ -1,15 +1,16 @@
 from itertools import groupby
-from typing import Dict, Iterable, Iterator, List, Set, Tuple
+from typing import Dict, Iterable, List, Set, Tuple
 
+import attr
 import numpy as np
 
-from . import cfg
 from .core import Position, StellarThing
 from .explosion import Explosion
 from .planet import Planet
 from .ship import Ship
 
 
+@attr.s(repr=False)
 class Galaxy:
     """
     Galaxy of planets that represents the map of the game, and all the \
@@ -21,55 +22,51 @@ class Galaxy:
     :param turn: Time in galaxy
     """
 
-    def __init__(
-        self,
-        name: str,
-        size: Position,
-        things: List[StellarThing],
-        explosions: List[Explosion] = None,
-        turn: int = 0,
-    ):
-        self.name = name
-        """
-        Galaxxy name.
-        """
+    name: str = attr.ib()
+    """
+    Galaxxy name.
+    """
 
-        self.turn: int = turn
-        """
-        Turn or actual time in the galaxy
-        """
+    size: Position = attr.ib(converter=tuple)
+    """
+    Width and height of the galaxy
+    """
 
-        self.size: Position = size
-        """
-        Width and height of the galaxy
-        """
+    things: List[StellarThing] = attr.ib()
+    """
+    All the things that compounds the galaxy
+    """
 
-        self.stellar_things = things
-        """
-        All the things that compounds the galaxy
-        """
+    _planets: Dict[Position, Planet] = attr.ib(init=False, default=None)
+    """
+    All the :class:`Planet` in the galaxy indexed by position
+    """
 
-        self._planets: Dict[Position, Planet] = {}
-        """
-        All the :class:`Planet` in the galaxy indexed by position
-        """
+    _ships: List[Ship] = attr.ib(init=False, default=None)
+    """
+    A list with all the :class:`Ship` in the galaxy
+    """
 
-        self._ships: List[Ship] = []
-        """
-        A list with all the :class:`Ship` in the galaxy
-        """
+    explosions: List[Explosion] = attr.ib(default=None)
+    """
+    A list with all the recent :class:`Explosion`.
+    """
 
-        self.explosions: List[Explosion] = explosions or []
-        """
-        A list with all the recent :class:`Explosion`.
-        """
+    turn: int = attr.ib(default=0)
+    """
+    Turn or actual time in the galaxy
+    """
+
+    def __attrs_post_init__(self):
+        self._planets = {}
+        self._ships = []
+        if self.explosions is None:
+            self.explosions = []
 
     @property
     def planets(self):
         if not self._planets:
-            planets = filter(
-                lambda t: isinstance(t, Planet), self.stellar_things
-            )
+            planets = filter(lambda t: isinstance(t, Planet), self.things)
             self._planets = {p.position: p for p in planets}
         return self._planets
 
@@ -77,7 +74,7 @@ class Galaxy:
     def ships(self):
         if not self._ships:
             self._ships = list(
-                filter(lambda t: isinstance(t, Ship), self.stellar_things)
+                filter(lambda t: isinstance(t, Ship), self.things)
             )
         return self._ships
 
@@ -93,9 +90,7 @@ class Galaxy:
         List all the known races that own at least one ship or one planet.
         """
         return {
-            thing.player
-            for thing in self.stellar_things
-            if thing.player is not None
+            thing.player for thing in self.things if thing.player is not None
         }
 
     @staticmethod
@@ -112,7 +107,7 @@ class Galaxy:
         """
         Add a new ship to the known ships in the galaxy and assign an Id to it.
         """
-        self.stellar_things.append(ship)
+        self.things.append(ship)
         self._ships = []
 
     def distances_to_planets(self, point: Position) -> Dict[Position, float]:
@@ -263,10 +258,34 @@ class Galaxy:
         Remove the destroyed ships from the list
         """
         explosions_ids = [e.ship.id for e in self.explosions]
-        self.stellar_things = list(
+        self.things = list(
             filter(
                 lambda things: things.id not in explosions_ids,
-                self.stellar_things,
+                self.things,
             )
         )
         self._ships = []
+
+    def serialize(self):
+        return attr.asdict(
+            self, filter=lambda a, v: a.name not in ("_planets", "_ships")
+        )
+
+    @classmethod
+    def deserialize(cls, data):
+        things = []
+        for serialized_thing in data["things"]:
+            thing_type = serialized_thing.pop("thing_type")
+            if thing_type == "planet":
+                things.append(Planet.deserialize(serialized_thing))
+            elif thing_type == "ship":
+                things.append(Ship.deserialize(serialized_thing))
+            else:
+                raise TypeError(f"Unknown thing {thing_type}")
+        return cls(
+            things=things,
+            turn=data["turn"],
+            explosions=data["explosions"],
+            size=data["size"],
+            name=data["name"],
+        )

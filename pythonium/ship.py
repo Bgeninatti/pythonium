@@ -14,6 +14,8 @@ class Ship(StellarThing):
     and in some cases can be used to attack planets or ships.
     """
 
+    thing_type = "ship"
+
     type: ShipType = attr.ib(
         validator=[attr.validators.instance_of((ShipType, type(None)))],
         kw_only=True,
@@ -46,30 +48,30 @@ class Ship(StellarThing):
     """
 
     # State in turn
-    megacredits: int = attr.ib(converter=int, default=0, init=False)
+    megacredits: int = attr.ib(converter=int, default=0)
     """
     Amount of megacredits on the ship
     """
 
-    pythonium: int = attr.ib(converter=int, default=0, init=False)
+    pythonium: int = attr.ib(converter=int, default=0)
     """
     Amount of pythonium on the ship
     """
 
-    clans: int = attr.ib(converter=int, default=0, init=False)
+    clans: int = attr.ib(converter=int, default=0)
     """
     Amount of clans on the ship
     """
 
     # User controls
-    target: Position = attr.ib(converter=Position, default=None, init=False)
+    target: Position = attr.ib(converter=Position, default=None)
     """
     **Attribute that can be modified by the player**
 
     Indicates where the ship is going, or ``None`` if it is stoped.
     """
 
-    transfer: Transfer = attr.ib(default=Transfer(), init=False)
+    transfer: Transfer = attr.ib(default=Transfer())
     """
     **Attribute that can be modified by the player**
 
@@ -101,3 +103,12 @@ class Ship(StellarThing):
             orders.append(("ship_move", self.id, self.target))
 
         return orders
+
+    @classmethod
+    def deserialize(cls, data):
+        transfer_data = data.pop("transfer")
+        transfer = Transfer(**transfer_data)
+        ship_type_data = data.pop("type")
+        ship_type_cost = Transfer(**ship_type_data.pop("cost"))
+        ship_type = ShipType(**ship_type_data, cost=ship_type_cost)
+        return cls(**data, transfer=transfer, type=ship_type)

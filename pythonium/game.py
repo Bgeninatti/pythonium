@@ -1,16 +1,11 @@
 import logging
-import sys
 from collections import defaultdict
 from itertools import groupby
 
-import numpy as np
-
 from . import cfg
-from .explosion import Explosion
 from .orders import galaxy as galaxy_orders
 from .orders import planet as planet_orders
 from .orders import ship as ship_orders
-from .renderer import GifRenderer
 
 logger = logging.getLogger("game")
 
@@ -21,8 +16,8 @@ class Game:
         name,
         players,
         gmode,
+        output_handler,
         *,
-        renderer=GifRenderer,
         raise_exceptions=False,
     ):
         """
@@ -33,26 +28,27 @@ class Game:
             from :class:`AbstractPlayer`
         :param gmode: Class that define some game rules
         :type gmode: :class:GameMode
-        :param renderer: Instance that renders the game on each turn
         :param raise_exceptions: If ``True`` stop the game if an exception is raised when
             computing player actions. Useful for debuging players.
         :type raise_exceptions: bool
+        :param stream_state: Default ``False``. If ``True`` each step in the
+            simulation will be serialized & printed to standard output.
+        :type stream_state: bool
         """
         if len(players) != len({p.name for p in players}):
             raise ValueError("Player names must be unique")
 
-        sys.stdout.write("** Pythonium **\n")
         self.gmode = gmode
         self.players = players
         self.raise_exceptions = raise_exceptions
+        self.output_handler = output_handler
         logger.info(
             "Initializing galaxy",
             extra={"players": len(self.players), "galaxy_name": name},
         )
         self.galaxy = self.gmode.build_galaxy(name, self.players)
         logger.info("Galaxy initialized")
-        sys.stdout.write(f"Running battle in galaxy #{name}\n")
-        self._renderer = renderer(self.galaxy, f"Galaxy #{name}")
+        self.output_handler.start(self.galaxy)
 
     def extract_player_orders(self, player, galaxy, context):
         player_galaxy = player.next_turn(galaxy, context)
@@ -93,18 +89,13 @@ class Game:
     def play(self):
         while True:
 
-            sys.stdout.write(f"\rPlaying game{'.' * int(self.galaxy.turn/4)}")
-            sys.stdout.flush()
-
             logger.info("Turn started", extra={"turn": self.galaxy.turn})
             orders = defaultdict(lambda: [])
             context = self.gmode.get_context(
                 self.galaxy, self.players, self.galaxy.turn
             )
 
-            # Should I record the state?
-            if self._renderer:
-                self._renderer.render_frame(context)
+            self.output_handler.step(self.galaxy, context)
 
             # log current score
             for player_score in context["score"]:
@@ -151,30 +142,14 @@ class Game:
                     continue
 
             if self.gmode.has_ended(self.galaxy, self.galaxy.turn):
-                if self.gmode.winner:
-                    logger.info(
-                        "Winner!",
-                        extra={
-                            "turn": self.galaxy.turn,
-                            "winner": self.gmode.winner,
-                        },
-                    )
-                    message = f"Player {self.gmode.winner} wins\n"
-                else:
-                    logger.info("Nobody won", extra={"turn": self.galaxy.turn})
-                    message = "Nobody won\n"
-
-                sys.stdout.write("\n")
-                sys.stdout.write(message)
-
-                if self._renderer:
-                    # Render last frame
-                    context = self.gmode.get_context(
-                        self.galaxy, self.players, self.galaxy.turn
-                    )
-                    self._renderer.render_frame(context)
-                    # Save as gif
-                    self._renderer.save_gif(f"{self.galaxy.name}.gif")
+                logger.info(
+                    "Game ended",
+                    extra={
+                        "turn": self.galaxy.turn,
+                        "winner": self.gmode.winner,
+                    },
+                )
+                self.output_handler.finish(self.galaxy, self.gmode.winner)
                 break
 
             # Reset explosions

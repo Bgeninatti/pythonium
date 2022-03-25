@@ -5,78 +5,70 @@ import sys
 import time
 from pathlib import Path
 
+import click
+
 from . import __version__
 from .game import Game
 from .game_modes import ClassicMode
 from .helpers import random_name
 from .logger import setup_logger
-from .metrics_collector import MetricsCollector
+from .output_handler import StandardOutputHanlder, StreamOutputHanlder
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
 
 
-def go():
-    parser = argparse.ArgumentParser(prog="pythonium", epilog=HELP_EPILOG)
-    parser.add_argument(
-        "-V",
-        "--version",
-        action="store_true",
-        help="show version and info about the system, and exit",
-    )
-    parser.add_argument("--players", action="extend", nargs="+", help="")
-    parser.add_argument(
-        "--metrics",
-        action="store_true",
-        default=False,
-        help="Generate a report with metrics of the game",
-    )
-    parser.add_argument(
-        "--verbose",
-        action="store_true",
-        default=False,
-        help="Show logs in stdout",
-    )
-    parser.add_argument(
-        "--raise-exceptions",
-        action="store_true",
-        default=False,
-        help="If the commands computations (for any player) fails, raise "
-        "the exception and stop.",
-    )
-    parser.add_argument(
-        "--galaxy-name", default="", help="An identification for the game"
-    )
+@click.group(help=HELP_EPILOG)
+@click.version_option(__version__)
+@click.pass_context
+def cli(ctx):
+    pass
 
-    args = parser.parse_args()
 
-    if args.version:
-        print("Running 'pythonium' version", __version__)
-        return 0
+@cli.command()
+@click.pass_context
+@click.argument("galaxy-name")
+@click.argument("players", nargs=-1)
+@click.option("--raise-exceptions/--no-raise-exceptions", default=False)
+@click.option("--verbose/--no-verbose", default=False)
+@click.option("--stream-state/--no-stream-state", default=False)
+def run(
+    ctx,
+    galaxy_name,
+    players,
+    raise_exceptions,
+    verbose,
+    stream_state,
+    *args,
+    **kwargs,
+):
 
     game_mode = ClassicMode()
-    galaxy_name = random_name(6)
+    galaxy_name = galaxy_name if galaxy_name else random_name(6)
 
     logfile = Path.cwd() / f"{galaxy_name}.log"
-    setup_logger(logfile, verbose=args.verbose)
+    setup_logger(logfile, verbose=verbose)
 
-    players = []
-    for player_module in args.players:
-        player_class = importlib.import_module(player_module)
-        player = player_class.Player()
-        players.append(player)
+    _players = []
+    for player_module in players:
+        player = importlib.import_module(player_module)
+        _player = player.Player()
+        _players.append(_player)
+
+    if stream_state:
+        output_handler = StreamOutputHanlder()
+    else:
+        output_handler = StandardOutputHanlder()
 
     game = Game(
         name=galaxy_name,
-        players=players,
+        players=_players,
         gmode=game_mode,
-        raise_exceptions=args.raise_exceptions,
+        output_handler=output_handler,
+        raise_exceptions=raise_exceptions,
     )
     game.play()
 
-    if args.metrics:
-        sys.stdout.write("\n")
-        sys.stdout.write("Building report...\n")
-        with open(logfile) as logs:
-            metrics = MetricsCollector(logs)
-        metrics.build_report()
-        sys.stdout.write("Done.\n")
+
+@cli.command()
+def visualize():
+    click.echo("implement me")

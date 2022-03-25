@@ -28,6 +28,8 @@ class Planet(StellarThing):
     (in proportion of ``rioting_index``).
     """
 
+    thing_type = "planet"
+
     temperature: int = attr.ib(
         validator=validators.number_between_zero_100, kw_only=True
     )
@@ -85,7 +87,7 @@ class Planet(StellarThing):
     Amount of mines on the planet
     """
 
-    max_happypoints: int = attr.ib(converter=int, init=False, kw_only=True)
+    max_happypoints: int = attr.ib(converter=int, default=0, kw_only=True)
     """
     The maximum level of happypoints that the population of this planet can reach.
 
@@ -95,7 +97,7 @@ class Planet(StellarThing):
     to ``cfg.optimal_temperature``
     """
 
-    happypoints: int = attr.ib(converter=int, init=False, kw_only=True)
+    happypoints: int = attr.ib(converter=int, default=0, kw_only=True)
     """
     The level of happyness on the planet.
 
@@ -147,7 +149,6 @@ class Planet(StellarThing):
     taxes_collection_factor: int = attr.ib(
         default=cfg.taxes_collection_factor,
         validator=[validators.is_valid_ratio],
-        init=False,
     )
 
     def __attrs_post_init__(self):
@@ -291,3 +292,9 @@ class Planet(StellarThing):
 
     def move(self, position: Position) -> None:
         return
+
+    @classmethod
+    def deserialize(cls, data):
+        mine_cost_data = data.pop("mine_cost")
+        mine_cost = Transfer(**mine_cost_data)
+        return cls(**data, mine_cost=mine_cost)

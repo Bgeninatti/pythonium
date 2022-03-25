@@ -22,8 +22,15 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=requirements,
+    extras_require={
+        "render": ["matplotlib==3.4.3"]
+    },
     python_requires=">=3.7",
-    scripts=["bin/pythonium"],
+    entry_points = {
+        'console_scripts': [
+            'pythonium = pythonium.main:cli'
+        ]
+    },
     include_package_data=True,
     data_files=[('font', ['font/jmh_typewriter.ttf'])],
 )

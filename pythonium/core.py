@@ -9,12 +9,17 @@ Position = NewType("Position", Tuple[int, int])
 
 @attr.s
 class StellarThing(ABC):
-    position: Position = attr.ib(converter=Position)
+    thing_type: str = attr.ib(init=False)
+    """
+    A reference of what kind of thing is this
+    """
+
+    position: Position = attr.ib(converter=tuple)
     """
     Position of the `StellarThing` in (x, y) coordinates.
     """
 
-    id: uuid = attr.ib(factory=uuid.uuid4)
+    id: str = attr.ib(factory=lambda: str(uuid.uuid4()))
     """
     Unique identifier for the `StellarThing`
     """
