@@ -44,14 +44,14 @@ class StandardOutputHanlder(OutputHandler):
 @attr.s
 class StreamOutputHanlder(OutputHandler):
     def start(self, galaxy):
-        pass
+        self.output.write(f"pythonium|{__version__}|{galaxy.name}\n")
 
     def step(self, galaxy, context):
         self.output.write(json.dumps(galaxy.serialize()))
         self.output.write("\n")
 
     def finish(self, galaxy, winner):
-        pass
+        self.output.write(f"pythonium|{galaxy.name}|{galaxy.turn}|{winner}\n")
 
 
 @attr.s
