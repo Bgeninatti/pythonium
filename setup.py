@@ -27,7 +27,11 @@ setuptools.setup(
     },
     entry_points = {
         'console_scripts': [
+<<<<<<< HEAD
             'pythoniu = pythonium.main:cli'
+=======
+            'pythonium = pythonium.main:cli'
+>>>>>>> ebc3d15601beca0bbb56c1768d9f5e9e460f2c59
         ]
     },
     python_requires=">=3.7",
