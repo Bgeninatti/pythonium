@@ -6,35 +6,26 @@ document.getElementById("visualization").appendChild(app.view);
 app.stage.scale.set(resizeFactor);
 
 function renderTheGalaxy(simulationStep) {
-    data.turns[simulationStep].things.forEach((p, index, array) => {
-        let sprite;
-        if (p.thing_type == "planet") {
-            sprite = new PIXI.TilingSprite(textures.planets[index % 3]);
+    data.turns[simulationStep].things.forEach(
+        (thing, index) => {
+            let texture = thing.thing_type == "planet"
+                ? textures.planets[index % 3]
+                : textures.ships[0]
+            let sprite = new PIXI.TilingSprite(texture);
             sprite.anchor.set(0.5);
             sprite.scale.set(0.1);
-            if (p.player == data.players[0]) {
+            if (thing.player == data.players[0]) {
                 sprite.tint = playerColors[0];
             }
-            if (p.player == data.players[1]) {
+            if (thing.player == data.players[1]) {
                 sprite.tint = playerColors[1];
             }
-        } else {
-            sprite = new PIXI.TilingSprite(textures.ships[0]);
-            sprite.anchor.set(0.5);
-            sprite.scale.set(0.1);
-            if (p.player == data.players[0]) {
-                sprite.tint = playerColors[0];
-            }
-            if (p.player == data.players[1]) {
-                sprite.tint = playerColors[1];
-            }
-        }
-        sprite.position = {
-            x: p.position[0],
-            y: p.position[1]
-        };
-        app.stage.addChild(sprite);
-    });
+            sprite.position = {
+                x: thing.position[0],
+                y: thing.position[1]
+            };
+            app.stage.addChild(sprite);
+        });
 }
 
 /**
