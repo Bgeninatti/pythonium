@@ -11,7 +11,7 @@ class Player(AbstractPlayer):
 
     name = "Walkers"
 
-    def run_turn(self, galaxy, context):
+    def next_turn(self, galaxy, context):
 
         my_ships = galaxy.get_player_ships(self.name)
 

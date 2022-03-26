@@ -1,7 +1,8 @@
+import attr
 from .ship import Ship
 
 
-# TODO: Use attrs in this class
+@attr.s
 class Explosion:
     """
     A ship that has exploded because of a conflict
@@ -13,18 +14,17 @@ class Explosion:
     :param total_attack: Total attack involved in the combat
     """
 
-    def __init__(self, ship: Ship, ships_involved: int, total_attack: int):
-        self.ship = ship
-        """
-        :class:`Ship` that has been destroyed.
-        """
+    ship: Ship = attr.ib()
+    """
+    :class:`Ship` that has been destroyed.
+    """
 
-        self.ships_involved = ships_involved
-        """
-        Amount of ships involved in the combat.
-        """
+    ships_involved: int = attr.ib()
+    """
+    Amount of ships involved in the combat.
+    """
 
-        self.total_attack = total_attack
-        """
-        Total attack involved in the combat.
-        """
+    total_attack: int = attr.ib()
+    """
+    Total attack involved in the combat.
+    """
