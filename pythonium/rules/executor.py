@@ -1,11 +1,11 @@
 import logging
-
-import attr
 from typing import List
 
+import attr
+
 from pythonium import Galaxy
-from pythonium.rules.core import Rule, GalaxyRule
-from pythonium.rules.order import ShipOrder, PlanetOrder
+from pythonium.rules.core import GalaxyRule, Rule
+from pythonium.rules.order import PlanetOrder, ShipOrder
 
 logger = logging.getLogger("game")
 

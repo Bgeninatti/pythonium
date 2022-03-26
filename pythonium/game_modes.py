@@ -5,8 +5,16 @@ from collections import Counter
 from . import cfg
 from .galaxy import Galaxy
 from .planet import Planet
-from .rules.galaxy import ProduceResources, ResolvePlanetsConflicts, ResolveShipsConflicts
-from .rules.planet import PlanetBuildShipRule, PlanetSetTaxesRule, PlanetBuildMinesRule
+from .rules.galaxy import (
+    ProduceResources,
+    ResolvePlanetsConflicts,
+    ResolveShipsConflicts,
+)
+from .rules.planet import (
+    PlanetBuildMinesRule,
+    PlanetBuildShipRule,
+    PlanetSetTaxesRule,
+)
 from .rules.ship import ShipMoveRule, ShipTransferRule
 from .ship import Ship
 from .ship_type import ShipType

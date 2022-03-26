@@ -390,19 +390,17 @@ class TestPlanetOrders:
         orders = colonized_planet.get_orders()
         taxes_order = next(o for o in orders if o.name == "set_taxes")
         assert taxes_order.id == colonized_planet.id
-        assert 'taxes' in taxes_order.kwargs
-        assert taxes_order.kwargs['taxes'] == taxes
+        assert "taxes" in taxes_order.kwargs
+        assert taxes_order.kwargs["taxes"] == taxes
 
     @pytest.mark.parametrize("new_mines", range(1, 101))
     def test_build_mines_order(self, new_mines, colonized_planet):
         colonized_planet.new_mines = new_mines
         orders = colonized_planet.get_orders()
-        build_mines_order = next(
-            o for o in orders if o.name == "build_mines"
-        )
+        build_mines_order = next(o for o in orders if o.name == "build_mines")
         assert build_mines_order.id == colonized_planet.id
-        assert 'new_mines' in  build_mines_order.kwargs
-        assert build_mines_order.kwargs['new_mines'] == new_mines
+        assert "new_mines" in build_mines_order.kwargs
+        assert build_mines_order.kwargs["new_mines"] == new_mines
 
     def test_no_mines_order_if_new_mines_is_zero(self, colonized_planet):
         orders = colonized_planet.get_orders()
@@ -412,12 +410,10 @@ class TestPlanetOrders:
     def test_build_ship_order(self, ship_type, colonized_planet):
         colonized_planet.new_ship = ship_type
         orders = colonized_planet.get_orders()
-        build_ship_order = next(
-            o for o in orders if o.name == "build_ship"
-        )
+        build_ship_order = next(o for o in orders if o.name == "build_ship")
         assert build_ship_order.id == colonized_planet.id
-        assert 'ship_type' in build_ship_order.kwargs
-        assert build_ship_order.kwargs['ship_type'] is ship_type
+        assert "ship_type" in build_ship_order.kwargs
+        assert build_ship_order.kwargs["ship_type"] is ship_type
 
     def test_no_ship_order_if_new_ship_is_none(self, colonized_planet):
         orders = colonized_planet.get_orders()

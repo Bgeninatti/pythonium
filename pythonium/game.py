@@ -1,4 +1,5 @@
 import logging
+
 from .rules.executor import OrdersExecutor
 
 logger = logging.getLogger("game")
@@ -35,7 +36,9 @@ class Game:
         )
         self.galaxy = self.game_mode.build_galaxy(name, self.players)
         logger.info("Galaxy initialized")
-        self._execute_orders = OrdersExecutor(galaxy=self.galaxy, rules=self.game_mode.rules)
+        self._execute_orders = OrdersExecutor(
+            galaxy=self.galaxy, rules=self.game_mode.rules
+        )
         self.output_handler.start(self.galaxy)
 
     def play(self):

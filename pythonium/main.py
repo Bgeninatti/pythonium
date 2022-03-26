@@ -7,11 +7,10 @@ import socketserver
 import time
 import uuid
 import webbrowser
+from datetime import datetime as dt
 from pathlib import Path
 
 import click
-from datetime import datetime as dt
-from pathlib import Path
 
 from . import __version__
 from .game import Game
