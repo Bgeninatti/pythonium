@@ -20,6 +20,17 @@ function renderTheGalaxy(simulationStep) {
             if (thing.player == data.players[1]) {
                 sprite.tint = playerColors[1];
             }
+            if (thing.thing_type == "planet" && data.turns[simulationStep].explosions.length > 0) {
+                let explosion = data.turns[simulationStep].explosions.find(
+                    explosion => explosion.ship.position[0] == thing.position[0]
+                                && explosion.ship.position[1] == thing.position[1]
+                )
+                if (explosion) {
+                    sprite.scale.set(0.05 * Math.log(explosion.total_attack));
+                    sprite.tint = 0xFF0000;
+                }
+
+            }
             sprite.position = {
                 x: thing.position[0],
                 y: thing.position[1]
