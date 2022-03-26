@@ -17,7 +17,7 @@ from .game import Game
 from .game_modes import ClassicMode
 from .helpers import random_name
 from .logger import setup_logger
-from .output_handler import StandardOutputHanlder, StreamOutputHanlder
+from .output_handler import OUTPUT_HANDLERS
 from .rules.extractor import OrdersExtractor
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
@@ -42,18 +42,18 @@ def cli(ctx):
 @click.pass_context
 @click.argument("galaxy-name")
 @click.argument("players", nargs=-1)
+@click.option("--output_handler", default='standard')
 @click.option("--seed", default=time.time(), type=int)
 @click.option("--raise-exceptions/--no-raise-exceptions", default=False)
 @click.option("--verbose/--no-verbose", default=False)
-@click.option("--stream-state/--no-stream-state", default=False)
 def run(
     ctx,
     galaxy_name,
     players,
+    output_handler,
     seed,
     raise_exceptions,
     verbose,
-    stream_state,
     *args,
     **kwargs,
 ):
@@ -61,6 +61,7 @@ def run(
 
     game_mode = ClassicMode()
     galaxy_name = galaxy_name if galaxy_name else random_name(6)
+    output_handler = OUTPUT_HANDLERS[output_handler]()
 
     logfile = Path.cwd() / f"{galaxy_name}.log"
     setup_logger(logfile, verbose=verbose)
@@ -70,11 +71,6 @@ def run(
         player = importlib.import_module(player_module)
         _player = player.Player()
         _players.append(_player)
-
-    if stream_state:
-        output_handler = StreamOutputHanlder()
-    else:
-        output_handler = StandardOutputHanlder()
 
     orders_extractor = OrdersExtractor(game_mode, raise_exceptions)
 
