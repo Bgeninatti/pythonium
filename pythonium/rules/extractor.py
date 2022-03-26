@@ -49,11 +49,11 @@ class OrdersExtractor:
             o for orders in ships_orders + planets_orders for o in orders
         ]
         logger.info(
-            "Player orders computed",
+            "Player rules computed",
             extra={
                 "turn": galaxy.turn,
                 "player": player.name,
-                "orders": len(orders),
+                "rules": len(orders),
             },
         )
         assert all(o.player == player.name for o in orders)
@@ -68,7 +68,7 @@ class OrdersExtractor:
             player_galaxy = self.game_mode.galaxy_for_player(galaxy, player)
             try:
                 logger.info(
-                    "Computing orders for player",
+                    "Computing rules for player",
                     extra={
                         "turn": galaxy.turn,
                         "player": player.name,
@@ -89,18 +89,18 @@ class OrdersExtractor:
                     },
                 )
                 logger.info(
-                    "Player orders computed",
+                    "Player rules computed",
                     extra={
                         "turn": galaxy.turn,
                         "player": player.name,
-                        "orders": 0,
+                        "rules": 0,
                     },
                 )
                 if self._raise_exceptions:
                     raise e
                 continue
 
-        # Sort orders by object id
+        # Sort rules by object id
         for o in orders.values():
             o.sort(key=lambda x: x.id)
 

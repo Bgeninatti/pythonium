@@ -1,4 +1,4 @@
-from pythonium.orders.extractor import OrdersExtractor
+from pythonium.rules.extractor import OrdersExtractor
 
 
 class TestOrdersExtractor:

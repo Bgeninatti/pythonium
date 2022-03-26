@@ -1,7 +1,7 @@
 import pytest
 
 from pythonium import Transfer, cfg
-from pythonium.orders.request import PlanetOrderRequest
+from pythonium.rules.order import PlanetOrder
 
 from .factories import PlanetFactory, ShipTypeFactory
 
@@ -382,7 +382,7 @@ class TestPlanetOrders:
     def test_get_orders_return_list(self, colonized_planet):
         orders = colonized_planet.get_orders()
         assert isinstance(orders, list)
-        assert all([isinstance(order, PlanetOrderRequest) for order in orders])
+        assert all([isinstance(order, PlanetOrder) for order in orders])
 
     @pytest.mark.parametrize("taxes", range(0, 101))
     def test_set_taxes_order(self, taxes, colonized_planet):

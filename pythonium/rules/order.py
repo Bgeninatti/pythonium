@@ -1,10 +1,8 @@
-from uuid import UUID
-
 import attr
 
 
 @attr.s
-class OrderRequest:
+class Order:
 
     name: str = attr.ib()
     id: str = attr.ib()
@@ -12,9 +10,9 @@ class OrderRequest:
     kwargs: dict = attr.ib()
 
 
-class ShipOrderRequest(OrderRequest):
+class ShipOrder(Order):
     ...
 
 
-class PlanetOrderRequest(OrderRequest):
+class PlanetOrder(Order):
     ...

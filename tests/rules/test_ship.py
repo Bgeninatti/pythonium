@@ -2,10 +2,10 @@ import numpy as np
 import pytest
 
 from pythonium.core import Position
-from pythonium.orders.ship import ShipMoveOrder
+from pythonium.rules.ship import ShipMoveRule
 
 
-class TestShipMoveOrder:
+class TestShipMoveRule:
     @pytest.fixture
     def short_target(self, faker, random_ship, random_direction):
         magnitude = faker.pyint(max_value=random_ship.speed)
@@ -41,17 +41,17 @@ class TestShipMoveOrder:
             )
         )
 
-    def test_ship_short_move_order(self, galaxy, random_ship, short_target):
-        order = ShipMoveOrder(ship=random_ship, target=short_target)
-        order.execute(galaxy)
+    def test_ship_short_move_rule(self, galaxy, random_ship, short_target):
+        rule = ShipMoveRule(ship=random_ship, target=short_target)
+        rule.execute(galaxy)
         assert random_ship.position == short_target
         assert random_ship.target is None
 
-    def test_ship_long_move_order(
+    def test_ship_long_move_rule(
         self, galaxy, random_ship, long_target, long_movement_expected_stop
     ):
-        order = ShipMoveOrder(ship=random_ship, target=long_target)
-        order.execute(galaxy)
+        rule = ShipMoveRule(ship=random_ship, target=long_target)
+        rule.execute(galaxy)
         assert random_ship.target == long_target
         assert np.all(
             np.isclose(

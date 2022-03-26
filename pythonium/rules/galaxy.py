@@ -5,13 +5,13 @@ import attr
 import numpy as np
 
 from ..explosion import Explosion
-from .core import GalaxyOrder
+from .core import GalaxyRule
 
 logger = logging.getLogger("game")
 
 
 @attr.s()
-class ProduceResources(GalaxyOrder):
+class ProduceResources(GalaxyRule):
 
     name = "produce_resources"
 
@@ -78,7 +78,7 @@ class ProduceResources(GalaxyOrder):
 
 
 @attr.s()
-class ResolveShipsConflicts(GalaxyOrder):
+class ResolveShipsConflicts(GalaxyRule):
 
     name = "resolve_ships_conflicts"
     tenacity: float = attr.ib()
@@ -158,7 +158,7 @@ class ResolveShipsConflicts(GalaxyOrder):
 
 
 @attr.s()
-class ResolvePlanetsConflicts(GalaxyOrder):
+class ResolvePlanetsConflicts(GalaxyRule):
 
     name = "resolve_planets_conflicts"
 

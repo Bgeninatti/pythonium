@@ -2,7 +2,7 @@ import random
 
 import pytest
 
-from pythonium.orders.galaxy import (
+from pythonium.rules.galaxy import (
     ProduceResources,
     ResolvePlanetsConflicts,
     ResolveShipsConflicts,
@@ -15,49 +15,49 @@ class TestProduceResources:
         return len(list(galaxy.get_ocuped_planets()))
 
     @pytest.fixture()
-    def order(self, galaxy):
+    def rule(self, galaxy):
         return ProduceResources(galaxy=galaxy)
 
     def test_produce_in_occuped_planets(
-        self, order, mocker, galaxy, player_planets_count
+        self, rule, mocker, galaxy, player_planets_count
     ):
-        spy = mocker.spy(order, "_produce_resources")
-        order.execute()
+        spy = mocker.spy(rule, "_produce_resources")
+        rule.execute()
         assert spy.call_count == player_planets_count
 
     def test_produce_happypoints(
-        self, order, colonized_planet, happypoints_tolerance
+        self, rule, colonized_planet, happypoints_tolerance
     ):
         dhappypoints = colonized_planet.dhappypoints
         happypoints = colonized_planet.happypoints
-        order._produce_resources(colonized_planet)
+        rule._produce_resources(colonized_planet)
         assert colonized_planet.happypoints == happypoints + dhappypoints
         assert colonized_planet.happypoints > happypoints_tolerance
 
     def test_produce_megacredits(
-        self, order, colonized_planet, happypoints_tolerance
+        self, rule, colonized_planet, happypoints_tolerance
     ):
         dmegacredits = colonized_planet.dmegacredits
         megacredits = colonized_planet.megacredits
-        order._produce_resources(colonized_planet)
+        rule._produce_resources(colonized_planet)
         assert colonized_planet.megacredits == megacredits + dmegacredits
         assert colonized_planet.happypoints > happypoints_tolerance
 
     def test_produce_pythonium(
-        self, order, colonized_planet, happypoints_tolerance
+        self, rule, colonized_planet, happypoints_tolerance
     ):
         dpythonium = colonized_planet.dpythonium
         pythonium = colonized_planet.pythonium
-        order._produce_resources(colonized_planet)
+        rule._produce_resources(colonized_planet)
         assert colonized_planet.pythonium == pythonium + dpythonium
         assert colonized_planet.happypoints > happypoints_tolerance
 
     def test_produce_clans(
-        self, order, colonized_planet, happypoints_tolerance
+        self, rule, colonized_planet, happypoints_tolerance
     ):
         dclans = colonized_planet.dclans
         clans = colonized_planet.clans
-        order._produce_resources(colonized_planet)
+        rule._produce_resources(colonized_planet)
         assert colonized_planet.clans == clans + dclans
         assert colonized_planet.happypoints > happypoints_tolerance
 
@@ -76,23 +76,23 @@ class TestResolveShipsConflicts:
         return [s for s in ships_in_conflict if s.player != winner]
 
     @pytest.fixture(autouse=True)
-    def execute_order(
+    def execute_rule(
         self,
         spy_remove_destroyed_ships,
         ships_in_conflict_galaxy,
         tenacity,
         winner,
     ):
-        order = ResolveShipsConflicts(ships_in_conflict_galaxy, tenacity)
+        rule = ResolveShipsConflicts(ships_in_conflict_galaxy, tenacity)
         assert not ships_in_conflict_galaxy.explosions
-        order.execute()
-        return order
+        rule.execute()
+        return rule
 
     @pytest.fixture
     def winner(self, ships_in_conflict_galaxy, mocker):
         winner = random.choice(list(ships_in_conflict_galaxy.known_races))
         mocker.patch(
-            "pythonium.orders.galaxy.ResolveShipsConflicts._compute_winner",
+            "pythonium.rules.galaxy.ResolveShipsConflicts._compute_winner",
             return_value=winner,
         )
         return winner
@@ -126,16 +126,16 @@ class TestResolvePlanetsConflicts:
     def test_ship_without_attack_do_nothing(
         self, mocker, planet_pasive_conflict_galaxy
     ):
-        order = ResolvePlanetsConflicts(planet_pasive_conflict_galaxy)
-        spy_resolve_conflict = mocker.spy(order, "_resolve_planets_conflicts")
-        order.execute()
+        rule = ResolvePlanetsConflicts(planet_pasive_conflict_galaxy)
+        spy_resolve_conflict = mocker.spy(rule, "_resolve_planets_conflicts")
+        rule.execute()
         assert spy_resolve_conflict.call_count == 0
 
     def test_enemy_ships_conquer_planet(
         self, conquered_planet_id, winner, planet_conflict_galaxy
     ):
-        order = ResolvePlanetsConflicts(planet_conflict_galaxy)
-        order.execute()
+        rule = ResolvePlanetsConflicts(planet_conflict_galaxy)
+        rule.execute()
         conquered_planet = planet_conflict_galaxy.search_planet(
             conquered_planet_id
         )
@@ -144,8 +144,8 @@ class TestResolvePlanetsConflicts:
     def test_conquered_planet_state(
         self, planet_conflict_galaxy, conquered_planet_id
     ):
-        order = ResolvePlanetsConflicts(planet_conflict_galaxy)
-        order.execute()
+        rule = ResolvePlanetsConflicts(planet_conflict_galaxy)
+        rule.execute()
         conquered_planet = planet_conflict_galaxy.search_planet(
             conquered_planet_id
         )
