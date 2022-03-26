@@ -2,23 +2,11 @@ import copy
 import random
 from collections import Counter
 
-from . import cfg
-from .galaxy import Galaxy
-from .planet import Planet
-from .rules.galaxy import (
-    ProduceResources,
-    ResolvePlanetsConflicts,
-    ResolveShipsConflicts,
-)
-from .rules.planet import (
-    PlanetBuildMinesRule,
-    PlanetBuildShipRule,
-    PlanetSetTaxesRule,
-)
-from .rules.ship import ShipMoveRule, ShipTransferRule
-from .ship import Ship
-from .ship_type import ShipType
-from .vectors import Transfer
+from pythonium import ShipType, Transfer, cfg, Planet, Galaxy, Ship
+from pythonium.game_modes.base import GameMode
+from pythonium.rules.galaxy import ResolveShipsConflicts, ResolvePlanetsConflicts, ProduceResources
+from pythonium.rules.planet import PlanetBuildMinesRule, PlanetSetTaxesRule, PlanetBuildShipRule
+from pythonium.rules.ship import ShipTransferRule, ShipMoveRule
 
 CLASSIC_MODE_SHIPS = (
     ShipType(
@@ -38,45 +26,7 @@ CLASSIC_MODE_SHIPS = (
         speed=cfg.ship_speed,
     ),
 )
-
 CLASSIC_MINE_COST = Transfer(megacredits=3, pythonium=5)
-
-
-class GameMode:
-
-    name: str
-
-    def __init__(
-        self,
-        ship_types=CLASSIC_MODE_SHIPS,
-        mine_cost=CLASSIC_MINE_COST,
-        tenacity=cfg.tenacity,
-    ):
-        self.cfg = cfg
-        self.ship_types = {st.name: st for st in ship_types}
-        self.mine_cost = mine_cost
-        self.tenacity = tenacity
-
-    def build_galaxy(self, name, players):
-        """
-        Fabrica la galaxy
-
-        Retorna una instancia de :class:`Galaxy`
-        """
-        raise NotImplementedError("Metodo no implementado")
-
-    def galaxy_for_player(self, player, t):
-        """
-        Devuelve una galaxy que muestra sólo las cosas que puede ver el player
-        en un turn determinado
-        """
-        raise NotImplementedError("Metodo no implementado")
-
-    def get_context(self, galaxy, players, turn):
-        """
-        Genera variables de context para el player en un turn determinado
-        """
-        raise NotImplementedError("Metodo no implementado")
 
 
 class ClassicMode(GameMode):
@@ -93,6 +43,8 @@ class ClassicMode(GameMode):
         starting_ships=(("carrier", 2),),
         starting_resources=(10**4, 2 * 10**3, 5 * 10**3),
         max_turn=150,
+        ship_types=CLASSIC_MODE_SHIPS,
+        mine_cost=CLASSIC_MINE_COST,
         *args,
         **kwargs,
     ):
@@ -113,6 +65,8 @@ class ClassicMode(GameMode):
         :type limi: int
         """
         super().__init__(*args, **kwargs)
+        self.ship_types = {st.name: st for st in ship_types}
+        self.mine_cost = mine_cost
         self.planets_count = planets_count
         self.map_size = map_size
         self.pythonium_stock = pythonium_stock
