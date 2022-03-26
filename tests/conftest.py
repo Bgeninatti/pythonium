@@ -6,6 +6,7 @@ import attr
 import pytest
 
 from pythonium import AbstractPlayer, Game, cfg
+from pythonium.game_modes.sandbox_mode import SandboxGameMode
 from pythonium.logger import setup_logger
 from tests.factories import (
     GalaxyFactory,
@@ -14,8 +15,6 @@ from tests.factories import (
     ShipTypeFactory,
     fake_positions,
 )
-
-from .game_modes import SandboxGameMode
 
 
 @pytest.fixture

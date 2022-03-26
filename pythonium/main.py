@@ -14,7 +14,7 @@ import click
 
 from . import __version__
 from .game import Game
-from .game_modes import ClassicMode
+from .game_modes.classic_mode import ClassicMode
 from .helpers import random_name
 from .logger import setup_logger
 from .output_handler import OUTPUT_HANDLERS
@@ -42,7 +42,7 @@ def cli(ctx):
 @click.pass_context
 @click.argument("galaxy-name")
 @click.argument("players", nargs=-1)
-@click.option("--output_handler", default='standard')
+@click.option("--output_handler", default="standard")
 @click.option("--seed", default=time.time(), type=int)
 @click.option("--raise-exceptions/--no-raise-exceptions", default=False)
 @click.option("--verbose/--no-verbose", default=False)

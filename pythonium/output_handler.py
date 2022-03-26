@@ -94,7 +94,7 @@ class CursesOutputHandler(OutputHandler):
             curses.init_pair(color_index, *color_pair.value)
             self.colors[color_pair.name] = curses.color_pair(color_index)
 
-        self.win.bkgd(' ', self._get_color(ColorPairs.SPACE))
+        self.win.bkgd(" ", self._get_color(ColorPairs.SPACE))
         self.win.border(0)
         self.win.refresh()
 
@@ -103,7 +103,7 @@ class CursesOutputHandler(OutputHandler):
         planets = self._get_planets(galaxy)
         self._show_explosions(galaxy.explosions)
         self._show_planets(planets)
-        sleep(.5)
+        sleep(0.5)
 
     def finish(self, galaxy, winner):
         self.win.timeout(2)
@@ -123,26 +123,34 @@ class CursesOutputHandler(OutputHandler):
         for ship in ships:
             position = self._get_screen_position(ship)
             color_pair = self._get_ship_color_pair(ship, galaxy, position)
-            character = 'Ö' if ship.type.name == 'carrier' else '╬'
+            character = "Ö" if ship.type.name == "carrier" else "╬"
 
             old_ship = self._find_old_ship(ship)
             if old_ship is not None:
                 (current_position_h, current_position_w) = old_position = (
                     int(old_ship.position[0] * self.h_pixels_for_unit),
-                    int(old_ship.position[1] * self.w_pixels_for_unit)
+                    int(old_ship.position[1] * self.w_pixels_for_unit),
                 )
 
                 for current_position_h in range(old_position[0], position[0]):
                     current_position = (current_position_h, old_position[1])
                     if not self._exists_planet(galaxy, current_position):
-                        color_pair = self._get_ship_color_pair(ship, galaxy, current_position)
-                        self._show_step(current_position, character, color_pair)
+                        color_pair = self._get_ship_color_pair(
+                            ship, galaxy, current_position
+                        )
+                        self._show_step(
+                            current_position, character, color_pair
+                        )
 
                 for current_position_w in range(old_position[1], position[1]):
                     current_position = (current_position_h, current_position_w)
                     if not self._exists_planet(galaxy, current_position):
-                        color_pair = self._get_ship_color_pair(ship, galaxy, current_position)
-                        self._show_step(current_position, character, color_pair)
+                        color_pair = self._get_ship_color_pair(
+                            ship, galaxy, current_position
+                        )
+                        self._show_step(
+                            current_position, character, color_pair
+                        )
 
             color_pair = self._get_ship_color_pair(ship, galaxy, position)
             self.win.addch(*position, character, color_pair)
@@ -176,11 +184,11 @@ class CursesOutputHandler(OutputHandler):
     def _show_box(self, box_h, box_w, size):
         if 0 < box_h <= self.height and 0 < box_w <= self.width:
             box = self.sc.subwin(size, size, box_h, box_w)
-            box.bkgd(' ', self._get_color(ColorPairs.EXPLOSION))
+            box.bkgd(" ", self._get_color(ColorPairs.EXPLOSION))
             box.box()
             box.refresh()
-            sleep(.06)
-            box.bkgd(' ', self._get_color(ColorPairs.SPACE))
+            sleep(0.06)
+            box.bkgd(" ", self._get_color(ColorPairs.SPACE))
             box.erase()
             box.refresh()
 
@@ -204,15 +212,18 @@ class CursesOutputHandler(OutputHandler):
     def _exists_planet(self, galaxy, position):
         for planet in self._get_planets(galaxy):
             planet_position = self._get_screen_position(planet)
-            if planet_position[0] == position[0] and planet_position[1] == position[1]:
+            if (
+                planet_position[0] == position[0]
+                and planet_position[1] == position[1]
+            ):
                 return True
         return False
 
     def _show_step(self, position, character, color_pair):
         self.win.addch(*position, character, color_pair)
         self.win.refresh()
-        sleep(.1)
-        self.win.addch(*position, ' ', self._get_color(ColorPairs.SPACE))
+        sleep(0.1)
+        self.win.addch(*position, " ", self._get_color(ColorPairs.SPACE))
 
     def _is_player_1(self, player):
         return self.players.index(player) == 0
@@ -242,5 +253,5 @@ class CursesOutputHandler(OutputHandler):
 OUTPUT_HANDLERS = {
     "standard": StandardOutputHandler,
     "stream": StreamOutputHandler,
-    "curses": CursesOutputHandler
+    "curses": CursesOutputHandler,
 }
