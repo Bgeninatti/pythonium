@@ -17,7 +17,7 @@ from .game import Game
 from .game_modes import ClassicMode
 from .helpers import random_name
 from .logger import setup_logger
-from .output_handler import OUTPUT_HANDLERS, StandardOutputHanlder, StreamOutputHanlder
+from .output_handler import OUTPUT_HANDLERS
 from .rules.extractor import OrdersExtractor
 
 HELP_EPILOG = "A space strategy algorithmic-game build in python"
