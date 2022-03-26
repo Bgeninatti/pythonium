@@ -4,7 +4,7 @@ from itertools import groupby
 
 import attr
 
-from pythonium import GameMode
+from pythonium.game_modes.base import GameMode
 
 logger = logging.getLogger("game")
 

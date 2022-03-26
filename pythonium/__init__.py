@@ -2,8 +2,6 @@ from . import bots, core, debugger, logger
 from .explosion import Explosion
 from .galaxy import Galaxy
 from .game import Game
-from .game_modes.base import GameMode
-from .game_modes.classic_mode import ClassicMode
 from .planet import Planet
 from .player import AbstractPlayer
 from .ship import Ship
