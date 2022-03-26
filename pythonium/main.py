@@ -3,7 +3,6 @@ from pathlib import Path
 
 import click
 
-
 from . import __version__
 from .game import Game
 from .game_modes import ClassicMode
