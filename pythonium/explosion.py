@@ -1,4 +1,5 @@
 import attr
+
 from .ship import Ship
 
 

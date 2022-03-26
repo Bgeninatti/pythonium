@@ -90,8 +90,9 @@ def run(
 
 @cli.command()
 @click.argument("state")
+@click.option("--port", default=PORT)
 @click.option("--html", default=None)
-def visualize(state, html):
+def visualize(state, port, html):
     with open(state, "r") as state_file:
         state_data = parseToPOJO(state_file.read())
 
@@ -110,10 +111,10 @@ def visualize(state, html):
 
     handler = http.server.SimpleHTTPRequestHandler
 
-    with socketserver.TCPServer(("", PORT), handler) as httpd:
-        click.echo("Server started at localhost:" + str(PORT))
+    with socketserver.TCPServer(("", port), handler) as httpd:
+        click.echo("Server started at localhost:" + str(port))
         url = "http://localhost:{port}/{path}".format(
-            port=PORT, path=output_fname
+            port=port, path=output_fname
         )
         click.echo("Visualization in: " + url)
         webbrowser.open(url)
@@ -121,31 +122,14 @@ def visualize(state, html):
 
 
 def parseToPOJO(data_json):
-    prefix, *states, suffix = data_json.splitlines()
+    meta, *states, end = data_json.splitlines()
     pojo = f"""{{
+        meta: {meta},
         turns: {get_data_turns(states)},
-        galaxyName: "{get_data_galaxy_name(prefix)}",
-        players: {get_data_players(data_json)},
+        end: {end},
     }}"""
-
     return pojo
-
-
-def get_data_galaxy_name(prefix):
-    return prefix.split("|")[2]
 
 
 def get_data_turns(states):
     return "[{}]".format(",\n".join(states))
-
-
-def get_data_players(data_json):
-    def oc_to_name(oc):
-        return oc[len('"player": ') :]
-
-    names_occurrencies = re.findall('"player": "[^(?!")]*"', data_json)
-    names = list(set([oc_to_name(name_oc) for name_oc in names_occurrencies]))
-
-    if len(names) == 1:
-        return f"[{names[0]}]"
-    return f"[{names[0]}, {names[1]}]"
