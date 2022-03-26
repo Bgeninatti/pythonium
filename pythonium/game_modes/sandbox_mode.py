@@ -1,4 +1,8 @@
-from pythonium import Galaxy, GameMode, Planet, Ship, core
+from pythonium import core
+from pythonium.galaxy import Galaxy
+from pythonium.game_modes.base import GameMode
+from pythonium.planet import Planet
+from pythonium.ship import Ship
 
 
 class SandboxGameMode(GameMode):
