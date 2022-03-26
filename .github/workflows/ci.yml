@@ -92,3 +92,4 @@ jobs:
       - uses: jamescurtin/isort-action@master
         with:
             requirementsFiles: "requirements.txt"
+            configuration: "--check-only --diff --trailing-comma --multi-line=3"
