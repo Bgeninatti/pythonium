@@ -1,6 +1,7 @@
 // Globals
 let SIZE = 700;
 let resizeFactor = SIZE / 500;  // 500 is the galaxy size
+let playerColors = {};
 let app = new PIXI.Application({ width: SIZE, height: SIZE});
 document.getElementById("visualization").appendChild(app.view);
 app.stage.scale.set(resizeFactor);
@@ -14,11 +15,8 @@ function renderTheGalaxy(simulationStep) {
             let sprite = new PIXI.TilingSprite(texture);
             sprite.anchor.set(0.5);
             sprite.scale.set(0.1);
-            if (thing.player == data.meta.players[0]) {
-                sprite.tint = playerColors[0];
-            }
-            if (thing.player == data.meta.players[1]) {
-                sprite.tint = playerColors[1];
+            if (thing.player) {
+                sprite.tint = playerColors[thing.player];
             }
             if (thing.thing_type == "planet" && data.turns[simulationStep].explosions.length > 0) {
                 let explosion = data.turns[simulationStep].explosions.find(
@@ -116,8 +114,6 @@ stepInputElem.onchange = function(e) {
 
 // Create the application helper and add its render target to the page
 const textures = {};
-const playerColors = [0x00AAFF, 0xFFAA00];
-const playerColorsStr = ["#00AAFF", "#FFAA00"];
 const loader = PIXI.Loader.shared;
 loader.add('planet01', 'assets/planet01.png');
 loader.add('planet02', 'assets/planet02.png');
@@ -138,11 +134,16 @@ loader.load((loader, resources) => {
 window.onload = function() {
     document.getElementById("galaxy-name-placeholder").innerText = data.meta.galaxy;
 
+    const colors = [0x00AAFF, 0xFFAA00, 0x03fc0f, 0xbf061b, 0xdb12db, 0x308c0e, 0x1cbed4];
+    const colorsStr = ["#00AAFF", "#FFAA00", "#03fc0f", "#bf061b", "#db12db", "#308c0e", "#1cbed4"];
+
     let botsListElem = document.getElementById("bots-list");
-    data.meta.players.forEach((bot, i) => {
+    data.meta.players.forEach((bot, idx) => {
+        let i = idx % colors.length;  // As we only have a limited number of colors, they may be reused...
+        playerColors[bot] = colors[i];
         var li = document.createElement("li");
         li.innerHTML = "&#9632;" + bot;
-        li.style = "color:" + playerColorsStr[i];
+        li.style = "color:" + colorsStr[i];
         botsListElem.appendChild(li);
     });
 
