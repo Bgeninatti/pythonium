@@ -105,7 +105,8 @@ stepInputElem.onchange = function(e) {
 
 // Create the application helper and add its render target to the page
 const textures = {};
-const playerColors = [0x00AAFF, 0xFFAA00]
+const playerColors = [0x00AAFF, 0xFFAA00];
+const playerColorsStr = ["#00AAFF", "#FFAA00"];
 const loader = PIXI.Loader.shared;
 loader.add('planet01', 'assets/planet01.png');
 loader.add('planet02', 'assets/planet02.png');
@@ -125,6 +126,15 @@ loader.load((loader, resources) => {
 
 window.onload = function() {
     document.getElementById("galaxy-name-placeholder").innerText = data.galaxyName;
+
+    let botsListElem = document.getElementById("bots-list");
+    data.players.forEach((bot, i) => {
+        var li = document.createElement("li");
+        li.innerHTML = "&#9632;" + bot;
+        li.style = "color:" + playerColorsStr[i];
+        botsListElem.appendChild(li);
+    });
+
     loader.onComplete.add(() => {
         renderStep(0);
         timer = setInterval(playNext, DEFAULT_DELAY);

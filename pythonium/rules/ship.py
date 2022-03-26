@@ -4,19 +4,18 @@ from typing import Tuple
 import attr
 
 from ..vectors import Transfer
-from .core import ShipOrder
+from .core import ShipRule
 
 logger = logging.getLogger("game")
 
 
 @attr.s()
-class ShipMoveOrder(ShipOrder):
+class ShipMoveRule(ShipRule):
 
     name = "ship_move"
     target: Tuple[int, int] = attr.ib()
 
     def execute(self, galaxy):
-
         _from = self.ship.position
         distance_to_target = galaxy.compute_distance(
             self.ship.position, self.target
@@ -53,7 +52,7 @@ class ShipMoveOrder(ShipOrder):
 
 
 @attr.s()
-class ShipTransferOrder(ShipOrder):
+class ShipTransferRule(ShipRule):
 
     name = "ship_transfer"
     transfer: Transfer = attr.ib()

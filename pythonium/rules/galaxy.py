@@ -4,14 +4,15 @@ from itertools import groupby
 import attr
 import numpy as np
 
+from .. import cfg
 from ..explosion import Explosion
-from .core import GalaxyOrder
+from .core import GalaxyRule
 
 logger = logging.getLogger("game")
 
 
 @attr.s()
-class ProduceResources(GalaxyOrder):
+class ProduceResources(GalaxyRule):
 
     name = "produce_resources"
 
@@ -78,10 +79,10 @@ class ProduceResources(GalaxyOrder):
 
 
 @attr.s()
-class ResolveShipsConflicts(GalaxyOrder):
+class ResolveShipsConflicts(GalaxyRule):
 
     name = "resolve_ships_conflicts"
-    tenacity: float = attr.ib()
+    tenacity: float = attr.ib(default=cfg.tenacity)
 
     def execute(self) -> None:
         ships_in_conflict = self.galaxy.get_ships_conflicts()
@@ -158,7 +159,7 @@ class ResolveShipsConflicts(GalaxyOrder):
 
 
 @attr.s()
-class ResolvePlanetsConflicts(GalaxyOrder):
+class ResolvePlanetsConflicts(GalaxyRule):
 
     name = "resolve_planets_conflicts"
 

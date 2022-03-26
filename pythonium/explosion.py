@@ -1,10 +1,8 @@
 import attr
-
 from .ship import Ship
 
 
-# TODO: Use attrs in this class
-@attr.s(repr=True)
+@attr.s
 class Explosion:
     """
     A ship that has exploded because of a conflict

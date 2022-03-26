@@ -8,29 +8,25 @@ from ..ship import Ship
 
 
 @attr.s()
-class ShipOrder(ABC):
-
+class Rule(ABC):
     name: str = attr.ib(init=False)
+
+    def execute(self, galaxy) -> None:
+        raise NotImplementedError
+
+
+@attr.s()
+class ShipRule(Rule, ABC):
     ship: Ship = attr.ib()
 
-    def execute(self, galaxy) -> None:
-        raise NotImplementedError
-
 
 @attr.s()
-class PlanetOrder(ABC):
-
-    name: str = attr.ib(init=False)
+class PlanetRule(Rule, ABC):
     planet: Planet = attr.ib()
 
-    def execute(self, galaxy) -> None:
-        raise NotImplementedError
-
 
 @attr.s()
-class GalaxyOrder(ABC):
-
-    name: str = attr.ib(init=False)
+class GalaxyRule(Rule, ABC):
     galaxy: Galaxy = attr.ib()
 
     def execute(self) -> None:
