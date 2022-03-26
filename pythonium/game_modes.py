@@ -5,6 +5,17 @@ from collections import Counter
 from . import cfg
 from .galaxy import Galaxy
 from .planet import Planet
+from .rules.galaxy import (
+    ProduceResources,
+    ResolvePlanetsConflicts,
+    ResolveShipsConflicts,
+)
+from .rules.planet import (
+    PlanetBuildMinesRule,
+    PlanetBuildShipRule,
+    PlanetSetTaxesRule,
+)
+from .rules.ship import ShipMoveRule, ShipTransferRule
 from .ship import Ship
 from .ship_type import ShipType
 from .vectors import Transfer
@@ -111,6 +122,16 @@ class ClassicMode(GameMode):
         self.max_turn = max_turn
         self.max_ships = max_ships
         self.winner = None
+        self.rules = [
+            ShipTransferRule,
+            PlanetBuildMinesRule,
+            PlanetSetTaxesRule,
+            ShipMoveRule,
+            ResolveShipsConflicts,
+            ResolvePlanetsConflicts,
+            PlanetBuildShipRule,
+            ProduceResources,
+        ]
 
     def build_galaxy(self, name, players):
         """

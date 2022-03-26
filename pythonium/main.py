@@ -7,6 +7,7 @@ import socketserver
 import time
 import uuid
 import webbrowser
+from datetime import datetime as dt
 from pathlib import Path
 
 import click
@@ -85,11 +86,6 @@ def run(
         orders_extractor=orders_extractor,
     )
     game.play()
-
-
-import os
-from datetime import date
-from datetime import datetime as dt
 
 
 @cli.command()

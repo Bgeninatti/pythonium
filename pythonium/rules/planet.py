@@ -57,7 +57,6 @@ class PlanetBuildShipRule(PlanetRule):
     ship_type: ShipType = attr.ib()
 
     def execute(self, galaxy):
-
         if not self.planet.can_build_ship(self.ship_type):
             logger.warning(
                 "Missing resources",

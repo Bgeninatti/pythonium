@@ -113,7 +113,7 @@ class Planet(StellarThing):
     **Attribute that can be modified by the player**
 
     New mines that the player order to build in the current turn. This value is set to
-    zero when the player rules are executed.
+    zero when the player orders are executed.
     """
 
     new_ship: ShipType = attr.ib(
@@ -126,7 +126,7 @@ class Planet(StellarThing):
 
     The new ship that the player order to build in the current turn.
 
-    This value is set to ``None`` when the player rules are executed
+    This value is set to ``None`` when the player orders are executed
     """
 
     taxes: int = attr.ib(
@@ -255,12 +255,12 @@ class Planet(StellarThing):
 
     def get_orders(self):
         """
-        Compute rules based on player control attributes: ``new_mines``, \
+        Compute orders based on player control attributes: ``new_mines``, \
         ``new_ship`` and ``taxes``
         """
         orders = [
             PlanetOrder(
-                name="planet_set_taxes",
+                name="set_taxes",
                 id=self.id,
                 player=self.player,
                 kwargs={"taxes": self.taxes},
@@ -270,7 +270,7 @@ class Planet(StellarThing):
         if self.new_ship is not None:
             orders.append(
                 PlanetOrder(
-                    name="planet_build_ship",
+                    name="build_ship",
                     id=self.id,
                     player=self.player,
                     kwargs={"ship_type": self.new_ship},
@@ -280,7 +280,7 @@ class Planet(StellarThing):
         if self.new_mines > 0:
             orders.append(
                 PlanetOrder(
-                    name="planet_build_mines",
+                    name="build_mines",
                     id=self.id,
                     player=self.player,
                     kwargs={"new_mines": self.new_mines},
