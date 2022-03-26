@@ -46,23 +46,16 @@ class StreamOutputHanlder(OutputHandler):
             "version": __version__,
             "galaxy": galaxy.name,
             "players": [player for player in galaxy.known_races],
-            "size": list(galaxy.size)
+            "size": list(galaxy.size),
         }
         self.output.write(json.dumps(data))
         self.output.write("\n")
 
-
     def step(self, galaxy, context):
-        data = {
-            "galaxy": galaxy.serialize(),
-            "score": context["score"]
-        }
+        data = {"galaxy": galaxy.serialize(), "score": context["score"]}
         self.output.write(json.dumps(data))
         self.output.write("\n")
 
     def finish(self, galaxy, winner):
-        data = {
-            "turns": galaxy.turn,
-            "winner": winner
-        }
+        data = {"turns": galaxy.turn, "winner": winner}
         self.output.write(json.dumps(data))

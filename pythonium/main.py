@@ -1,4 +1,3 @@
-import click
 import http.server
 import importlib
 import os
@@ -8,9 +7,10 @@ import socketserver
 import time
 import uuid
 import webbrowser
-
 from datetime import datetime as dt
 from pathlib import Path
+
+import click
 
 from . import __version__
 from .game import Game
@@ -129,6 +129,7 @@ def parseToPOJO(data_json):
         end: {end},
     }}"""
     return pojo
+
 
 def get_data_turns(states):
     return "[{}]".format(",\n".join(states))

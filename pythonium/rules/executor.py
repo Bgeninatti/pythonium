@@ -25,7 +25,9 @@ class OrdersExecutor:
                 self.execute_rule(rule_class, rule_orders)
 
     def execute_rule(self, rule_class, orders):
-        logger.info("Executing rule", extra={'rule': rule_class, 'orders': len(orders)})
+        logger.info(
+            "Executing rule", extra={"rule": rule_class, "orders": len(orders)}
+        )
         for order in orders:
             kwargs = order.kwargs
             if isinstance(order, ShipOrder):

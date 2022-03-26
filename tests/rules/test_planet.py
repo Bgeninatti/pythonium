@@ -157,9 +157,7 @@ class TestPlanetSetTaxesRule:
         """
         If set taxes are equal to current taxes, does nothing
         """
-        rule = PlanetSetTaxesRule(
-            planet=self.planet, taxes=self.current_taxes
-        )
+        rule = PlanetSetTaxesRule(planet=self.planet, taxes=self.current_taxes)
         rule.execute(galaxy)
         assert self.planet.taxes == self.current_taxes
 

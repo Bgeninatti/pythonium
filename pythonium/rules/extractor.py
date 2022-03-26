@@ -12,12 +12,13 @@ logger = logging.getLogger("game")
 @attr.s(auto_attribs=True)
 class OrdersExtractor:
     """
-        :param game_mode: Class that define some game rules
-        :type game_mode: :class:GameMode
-        :param _raise_exceptions: If ``True`` stop the game if an exception is raised when
-            computing player actions. Useful for debuging players.
-        :type _raise_exceptions: bool
+    :param game_mode: Class that define some game rules
+    :type game_mode: :class:GameMode
+    :param _raise_exceptions: If ``True`` stop the game if an exception is raised when
+        computing player actions. Useful for debuging players.
+    :type _raise_exceptions: bool
     """
+
     game_mode: GameMode = attr.ib()
     _raise_exceptions: bool = attr.ib(default=False)
 

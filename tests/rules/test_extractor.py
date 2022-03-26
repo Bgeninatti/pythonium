@@ -2,7 +2,6 @@ from pythonium.rules.extractor import OrdersExtractor
 
 
 class TestOrdersExtractor:
-
     def setup(self, game_mode):
         self.extract = OrdersExtractor(game_mode)
 
