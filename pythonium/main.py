@@ -9,7 +9,6 @@ import time
 import uuid
 import webbrowser
 
-from datetime import date
 from datetime import datetime as dt
 from pathlib import Path
 
