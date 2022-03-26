@@ -12,5 +12,5 @@ class Player(StandardPlayer):
     Same as :class:`standard_player.Player` but always build carriers
     """
 
-    name = "Nofight Ink."
+    class_fantasy_name = "Nofight Ink."
     tenacity = 0

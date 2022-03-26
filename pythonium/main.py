@@ -7,6 +7,7 @@ import socketserver
 import time
 import uuid
 import webbrowser
+from datetime import date
 from datetime import datetime as dt
 from pathlib import Path
 
@@ -68,8 +69,11 @@ def run(
     _players = []
     for player_module in players:
         player = importlib.import_module(player_module)
-        _player = player.Player()
+        fantasy_name = player.Player.class_fantasy_name
+        _player_name = f"{random_name(len(fantasy_name))} [{fantasy_name}]"
+        _player = player.Player(_player_name)
         _players.append(_player)
+    # breakpoint()
 
     if stream_state:
         output_handler = StreamOutputHanlder()
