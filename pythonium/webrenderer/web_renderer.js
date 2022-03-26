@@ -18,8 +18,8 @@ function renderTheGalaxy(simulationStep) {
             if (thing.player) {
                 sprite.tint = playerColors[thing.player];
             }
-            if (thing.thing_type == "planet" && data.turns[simulationStep].explosions.length > 0) {
-                let explosion = data.turns[simulationStep].explosions.find(
+            if (thing.thing_type == "planet" && data.turns[simulationStep].galaxy.explosions.length > 0) {
+                let explosion = data.turns[simulationStep].galaxy.explosions.find(
                     explosion => explosion.ship.position[0] == thing.position[0]
                                 && explosion.ship.position[1] == thing.position[1]
                 )
