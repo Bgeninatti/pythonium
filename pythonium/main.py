@@ -52,7 +52,6 @@ def run(
         _player = player.Player()
         _players.append(_player)
 
-
     game = Game(
         name=galaxy_name,
         players=_players,

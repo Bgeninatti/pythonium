@@ -169,8 +169,8 @@ class CursesOutputHandler(OutputHandler):
             for current_range in [expand_range, reversed(expand_range)]:
                 for size in current_range:
                     position = self._get_screen_position(explosion.ship)
-                    box_h = position[0] - int(size/2)
-                    box_w = position[1] - int(size/2)
+                    box_h = position[0] - int(size / 2)
+                    box_w = position[1] - int(size / 2)
                     self._show_box(box_h, box_w, size)
 
     def _show_box(self, box_h, box_w, size):
@@ -237,6 +237,7 @@ class CursesOutputHandler(OutputHandler):
         elif self._is_player_1(player):
             return self._get_color(ColorPairs.PLAYER_1)
         return self._get_color(ColorPairs.PLAYER_2)
+
 
 OUTPUT_HANDLERS = {
     "standard": StandardOutputHandler,
