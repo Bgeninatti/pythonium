@@ -23,6 +23,40 @@ The game generates several outputs that will help you to evaluate the performanc
 
 If you want to know more and learn how to play, check out the [documentation](https://pythonium.readthedocs.io/en/latest/).
 
+## Contributing
+
+### Clone the repo
+
+`$ git clone https://github.com/Bgeninatti/pythonium.git`
+
+### Install dependencies
+
+#### Using Poetry
+
+Create virtualenv and install dependencies
+
+`$ poetry install`
+
+Open poetry shell
+
+`$ poetry shell`
+
+#### Using virtualenv (using latest pip version)
+
+`python -m venv venv`
+`source venv/bin/activate`
+`pip install -e .`
+
+### Running tests
+
+`$ make tests`
+
+### Building docs locally
+
+`$ poetry install --extras docs`
+`cd docs/`
+`make html`
+
 ## Acknowledge
 
 This game is strongly inspired by [VGA Planets](https://en.wikipedia.org/wiki/VGA_Planets), a space strategy war game from 1992 created by Tim Wisseman.
