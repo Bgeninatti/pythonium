@@ -23,8 +23,6 @@ class Game:
         :param game_mode: Class that define some game rules
         :type game_mode: :class:GameMode
         """
-        if len(players) != len({p.name for p in players}):
-            raise ValueError("Player names must be unique")
 
         self.game_mode = game_mode
         self.players = players

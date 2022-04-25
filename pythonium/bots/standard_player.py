@@ -9,7 +9,7 @@ from ..vectors import Transfer
 
 class Player(AbstractPlayer):
 
-    name = "Solar Fed."
+    class_fantasy_name = "Solar Fed."
     colonization_transfer = Transfer(clans=50, megacredits=100)
     colonization_carrier_autonomy = 5
     colonization_refill_transfer = (

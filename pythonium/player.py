@@ -6,7 +6,8 @@ from .galaxy import Galaxy
 @attr.s
 class AbstractPlayer:
 
-    name: str = attr.ib(init=False)
+    name: str = attr.ib(init=True)
+
     """
     Player's name. Please make it short (less than 12 characters), or you will break the
     gif and reports.
