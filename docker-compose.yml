@@ -1,9 +1,0 @@
-version: '3'
-services:
-  pserver:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: pythonium
-    volumes:
-      - ./games:/usr/src/games

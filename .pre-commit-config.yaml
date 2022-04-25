@@ -14,3 +14,8 @@ repos:
     rev: 9042488762e10137fd535601d9f433f1e3920dad
     hooks:
     -   id: isort
+-   repo: https://github.com/commitizen-tools/commitizen
+    rev: master
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
