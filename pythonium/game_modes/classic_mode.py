@@ -44,7 +44,16 @@ CLASSIC_MINE_COST = Transfer(megacredits=3, pythonium=5)
 
 class ClassicMode(GameMode):
 
-    # Define los atributos de las ships que se pueden construir.
+    rules = [
+        ShipTransferRule,
+        PlanetBuildMinesRule,
+        PlanetSetTaxesRule,
+        ShipMoveRule,
+        ResolveShipsConflicts,
+        ResolvePlanetsConflicts,
+        PlanetBuildShipRule,
+        ProduceResources,
+    ]
 
     def __init__(
         self,
@@ -89,16 +98,6 @@ class ClassicMode(GameMode):
         self.max_turn = max_turn
         self.max_ships = max_ships
         self.winner = None
-        self.rules = [
-            ShipTransferRule,
-            PlanetBuildMinesRule,
-            PlanetSetTaxesRule,
-            ShipMoveRule,
-            ResolveShipsConflicts,
-            ResolvePlanetsConflicts,
-            PlanetBuildShipRule,
-            ProduceResources,
-        ]
 
     def build_galaxy(self, name, players):
         """
